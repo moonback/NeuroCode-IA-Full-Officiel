@@ -1,0 +1,543 @@
+.diff-panel-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.diff-panel-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.diff-panel-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.diff-panel-content::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.diff-panel-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(155, 155, 155, 0.8);
+}
+
+/* Hide scrollbar for the left panel when not hovered */
+.diff-panel:not(:hover) .diff-panel-content::-webkit-scrollbar {
+  display: none;
+}
+
+.diff-panel:not(:hover) .diff-panel-content {
+  scrollbar-width: none;
+}
+
+/* Estilos para as linhas de diff */
+.diff-block-added {
+  @apply bg-green-500/20 border-l-4 border-green-500;
+}
+
+.diff-block-removed {
+  @apply bg-red-500/20 border-l-4 border-red-500;
+}
+
+/* Melhorar contraste para mudanças */
+.diff-panel-content .group:hover .diff-block-added {
+  @apply bg-green-500/30;
+}
+
+.diff-panel-content .group:hover .diff-block-removed {
+  @apply bg-red-500/30;
+}
+
+/* Estilos unificados para ambas as visualizações */
+.diff-line {
+  @apply flex group min-w-fit transition-colors duration-150;
+}
+
+.diff-line-number {
+  @apply w-12 shrink-0 pl-2 py-0.5 text-left font-mono text-bolt-elements-textTertiary border-r border-bolt-elements-borderColor bg-bolt-elements-background-depth-1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.diff-line-content {
+  @apply px-4 py-0.5 font-mono whitespace-pre flex-1 group-hover:bg-bolt-elements-background-depth-2 text-bolt-elements-textPrimary;
+}
+
+/* Cores específicas para adições/remoções */
+.diff-added {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+  @apply border-l-4 border-green-500;
+}
+
+.diff-removed {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%);
+  @apply border-l-4 border-red-500;
+}
+
+/* Styles pour les lignes sélectionnées */
+.diff-line.selected,
+.diff-added.selected,
+.diff-removed.selected,
+.bg-blue-500\/20 {
+  @apply bg-blue-500/30 border-l-4 border-blue-500 !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.diff-line.selected:hover,
+.diff-added.selected:hover,
+.diff-removed.selected:hover {
+  @apply bg-blue-500/40 !important;
+}
+
+/* Ajouter un indicateur visuel supplémentaire pour les lignes sélectionnées */
+.diff-line.selected .diff-line-number::after {
+  content: "✓";
+  @apply ml-1 text-blue-500;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Styles améliorés pour les lignes sélectionnées */
+.diff-line.selected .diff-line-number,
+.diff-line-number.selected {
+  @apply bg-blue-500/20 text-blue-500 border-r border-blue-500;
+}
+
+.diff-line.selected .diff-line-content,
+.diff-line-content.selected {
+  @apply bg-blue-500/20 border-l-4 border-blue-500;
+}
+
+/* Effet de survol pour les lignes sélectionnées */
+.diff-line.selected:hover .diff-line-content {
+  @apply bg-blue-500/30;
+}
+
+/* Priorité des styles de sélection sur les styles de diff */
+.diff-line.selected.diff-added .diff-line-content,
+.diff-line.selected.diff-removed .diff-line-content {
+  @apply bg-blue-500/30 border-l-4 border-blue-500 !important;
+}
+
+/* Indicateur visuel pour les lignes sélectionnables */
+.diff-line:not(.selected):hover {
+  @apply outline outline-1 outline-bolt-elements-borderColor;
+  box-shadow: 0 0 0 1px rgba(var(--bolt-elements-borderColor-rgb), 0.3);
+} 
+
+/* Amélioration des boutons d'action */
+button[title="Sélectionner les modifications"],
+button[title="Copier"],
+button[title="Envoyer au chat"] {
+  @apply rounded-md transition-all duration-200 ease-in-out;
+  transform-origin: center;
+}
+
+button[title="Sélectionner les modifications"]:hover,
+button[title="Copier"]:hover,
+button[title="Envoyer au chat"]:hover {
+  @apply shadow-sm;
+  transform: translateY(-1px);
+}
+
+button[title="Sélectionner les modifications"]:active,
+button[title="Copier"]:active,
+button[title="Envoyer au chat"]:active {
+  transform: translateY(0);
+}
+
+/* Amélioration de l'affichage des lignes de code */
+.diff-line-content span {
+  @apply transition-colors duration-150;
+}
+
+/* Amélioration du mode plein écran */
+.fixed.inset-0.z-\[9999\] {
+  backdrop-filter: blur(3px);
+  transition: all 0.3s ease-in-out;
+}
+
+.fixed.inset-0.z-\[9999\] > div {
+  animation: scaleIn 0.3s ease-in-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0.5; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Amélioration de l'affichage sur petits écrans */
+@media (max-width: 640px) {
+  .diff-line-number {
+    @apply w-10 pl-1;
+  }
+  
+  .diff-line-content {
+    @apply px-2;
+  }
+}
+
+/* Ajout d'un indicateur visuel pour les types de lignes */
+.diff-added .diff-line-number::before {
+  content: "+";
+  @apply text-green-500 mr-1 font-bold;
+}
+
+.diff-removed .diff-line-number::before {
+  content: "-";
+  @apply text-red-500 mr-1 font-bold;
+}
+
+/* Style pour les numéros de ligne sélectionnés */
+.diff-line.selected .diff-line-number {
+  @apply bg-blue-500/20 text-blue-500 border-r border-blue-500;
+}
+
+/* Amélioration de la lisibilité du code */
+.diff-line-content {
+  @apply leading-relaxed tracking-wide;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Ajout d'un effet de surbrillance pour les lignes de code */
+.diff-line-content:hover {
+  @apply bg-bolt-elements-background-depth-3;
+}
+
+/* Amélioration de l'espacement entre les lignes */
+.diff-line {
+  @apply py-1;
+}
+
+/* Style pour les numéros de ligne */
+.diff-line-number {
+  @apply text-sm text-bolt-elements-textSecondary;
+  user-select: none;
+}
+
+/* Ajout d'un effet de transition fluide */
+.diff-line {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+/* Style pour les caractères modifiés */
+.char-change {
+  @apply px-1 rounded relative;
+  transition: all 0.2s ease;
+}
+
+.char-change.added {
+  @apply bg-green-500/20 text-green-700 dark:text-green-300;
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.1);
+}
+
+.char-change.removed {
+  @apply bg-red-500/20 text-red-700 dark:text-red-300;
+  text-decoration: line-through;
+  box-shadow: 0 1px 2px rgba(239, 68, 68, 0.1);
+}
+
+/* Amélioration de la sélection de texte */
+.diff-line-content::selection {
+  @apply bg-blue-500/30 text-blue-700 dark:text-blue-300;
+}
+
+/* Ajout d'un indicateur visuel pour les lignes modifiées */
+.diff-line.modified {
+  @apply border-l-4 border-yellow-500/50;
+}
+
+/* Style pour les lignes vides */
+.diff-line.empty {
+  @apply opacity-50;
+}
+
+/* Amélioration de l'affichage des fichiers volumineux */
+.large-file-warning {
+  @apply p-4 bg-yellow-500/10 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300;
+}
+
+/* Ajout d'un effet de focus pour les lignes sélectionnées */
+.diff-line.selected {
+  @apply ring-2 ring-blue-500/50;
+}
+
+/* Amélioration de l'affichage des messages d'information */
+.info-message {
+  @apply p-4 bg-blue-500/10 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 relative overflow-hidden;
+}
+
+.info-message::before {
+  content: '';
+  @apply absolute inset-y-0 left-0 w-1 bg-blue-500 animate-pulse;
+}
+
+/* Style pour les erreurs de syntaxe */
+.syntax-error {
+  @apply bg-red-500/10 border-l-4 border-red-500 text-red-700 dark:text-red-300;
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+/* Amélioration de l'affichage des commentaires */
+.comment {
+  @apply text-bolt-elements-textSecondary italic;
+}
+
+/* Ajout d'un effet de zoom au survol */
+.diff-line:hover {
+  @apply shadow-lg transform scale-[1.005] z-10;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Style pour les lignes de séparation */
+.separator-line {
+  @apply my-3;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(var(--bolt-elements-borderColor-rgb), 0) 0%, rgba(var(--bolt-elements-borderColor-rgb), 0.3) 50%, rgba(var(--bolt-elements-borderColor-rgb), 0) 100%);
+}
+
+/* Amélioration de l'affichage des numéros de ligne */
+.diff-line-number::before {
+  content: attr(data-line-number);
+  @apply text-bolt-elements-textTertiary;
+}
+
+/* Style pour les lignes pliées */
+.folded-line {
+  @apply bg-bolt-elements-background-depth-2 relative;
+}
+
+.folded-line::after {
+  content: '...';
+  @apply absolute right-2 top-1/2 transform -translate-y-1/2 text-bolt-elements-textTertiary;
+}
+
+/* Ajout d'un effet de transition pour les changements */
+.diff-line-content {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Amélioration de l'affichage des fichiers binaires */
+.binary-file-warning {
+  @apply p-4 bg-red-500/10 border-l-4 border-red-500 text-red-700 dark:text-red-300;
+}
+
+/* Style pour les lignes de code longues */
+.long-line {
+  @apply whitespace-pre-wrap break-words relative;
+}
+
+.long-line::after {
+  content: '';
+  @apply absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bolt-elements-background-depth-1 to-transparent pointer-events-none;
+}
+
+/* Amélioration de l'affichage des messages d'erreur */
+.error-message {
+  @apply p-4 bg-red-500/10 border-l-4 border-red-500 text-red-700 dark:text-red-300;
+}
+
+/* Ajout d'un effet de surbrillance pour les correspondances de recherche */
+.search-match {
+  @apply bg-yellow-500/20 border-l-4 border-yellow-500 relative;
+}
+
+.search-match::after {
+  content: '';
+  @apply absolute inset-0 bg-yellow-500/10 animate-pulse pointer-events-none;
+}
+
+/* Style pour les lignes de code sélectionnées */
+.selected-line {
+  @apply bg-blue-500/10 border-l-4 border-blue-500 relative;
+}
+
+.selected-line::after {
+  content: '';
+  @apply absolute inset-0 bg-blue-500/5 animate-pulse pointer-events-none;
+}
+
+/* Amélioration de l'affichage des fichiers volumineux */
+.large-file-warning {
+  @apply p-4 bg-yellow-500/10 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 flex items-center gap-2;
+}
+
+.large-file-warning::before {
+  content: '⚠';
+  @apply animate-bounce text-xl;
+}
+
+/* Style pour les lignes de code vides */
+.empty-line {
+  @apply opacity-50 relative;
+}
+
+.empty-line::after {
+  content: '...';
+  @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-bolt-elements-textTertiary;
+}
+
+/* Amélioration de l'affichage des commentaires */
+.comment-line {
+  @apply text-bolt-elements-textSecondary italic relative pl-4;
+}
+
+.comment-line::before {
+  content: '//';
+  @apply absolute left-0 text-bolt-elements-textTertiary;
+}
+
+/* Animation subtile pour les nouvelles modifications */
+@keyframes highlightChange {
+  0% { opacity: 0.5; transform: translateX(-2px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.diff-line.modified {
+  animation: highlightChange 0.3s ease-out;
+}
+
+/* Effet de profondeur pour le panneau de diff */
+.diff-panel-content {
+  @apply relative;
+}
+
+.diff-panel-content::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-b from-transparent to-bolt-elements-background-depth-1 pointer-events-none;
+  opacity: 0.3;
+}
+
+/* Style pour les lignes de code pliées */
+.folded-line {
+  @apply bg-bolt-elements-background-depth-2 relative;
+}
+
+.folded-line::after {
+  content: '...';
+  @apply absolute right-2 top-1/2 transform -translate-y-1/2 text-bolt-elements-textTertiary;
+}
+
+/* Effet de transition pour les changements de thème */
+.diff-line-content {
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+/* Style pour les lignes de code longues avec effet de dégradé */
+.long-line {
+  @apply whitespace-pre-wrap break-words relative;
+}
+
+.long-line::after {
+  content: '';
+  @apply absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bolt-elements-background-depth-1 to-transparent pointer-events-none;
+}
+
+/* Amélioration de l'affichage des messages d'information avec animation */
+.info-message {
+  @apply p-4 bg-blue-500/10 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 relative overflow-hidden;
+}
+
+.info-message::before {
+  content: '';
+  @apply absolute inset-y-0 left-0 w-1 bg-blue-500 animate-pulse;
+}
+
+/* Style pour les erreurs de syntaxe avec effet de vibration */
+.syntax-error {
+  @apply bg-red-500/10 border-l-4 border-red-500 text-red-700 dark:text-red-300;
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+/* Effet de surbrillance pour les correspondances de recherche */
+.search-match {
+  @apply bg-yellow-500/20 border-l-4 border-yellow-500 relative;
+}
+
+.search-match::after {
+  content: '';
+  @apply absolute inset-0 bg-yellow-500/10 animate-pulse pointer-events-none;
+}
+
+/* Style pour les lignes de code sélectionnées avec effet de halo */
+.selected-line {
+  @apply bg-blue-500/10 border-l-4 border-blue-500 relative;
+}
+
+.selected-line::after {
+  content: '';
+  @apply absolute inset-0 bg-blue-500/5 animate-pulse pointer-events-none;
+}
+
+/* Amélioration de l'affichage des fichiers volumineux avec icône animée */
+.large-file-warning {
+  @apply p-4 bg-yellow-500/10 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 flex items-center gap-2;
+}
+
+.large-file-warning::before {
+  content: '⚠';
+  @apply animate-bounce text-xl;
+}
+
+/* Style pour les lignes de code vides avec effet de pointillés */
+.empty-line {
+  @apply opacity-50 relative;
+}
+
+.empty-line::after {
+  content: '...';
+  @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-bolt-elements-textTertiary;
+}
+
+/* Amélioration de l'affichage des commentaires avec effet de citation */
+.comment-line {
+  @apply text-bolt-elements-textSecondary italic relative pl-4;
+}
+
+.comment-line::before {
+  content: '//';
+  @apply absolute left-0 text-bolt-elements-textTertiary;
+}
+
+/* Effet de transition avancé pour les changements */
+.diff-line-content {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Effet de parallaxe pour les numéros de ligne */
+.diff-line-number {
+  @apply relative;
+  transform-style: preserve-3d;
+}
+
+.diff-line-number::after {
+  content: '';
+  @apply absolute inset-0 bg-bolt-elements-background-depth-2 opacity-0;
+  transform: translateZ(-1px);
+  transition: opacity 0.2s ease;
+}
+
+.diff-line:hover .diff-line-number::after {
+  @apply opacity-100;
+}

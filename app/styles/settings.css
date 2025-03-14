@@ -1,0 +1,48 @@
+.settings-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.tab-controls {
+  width: 200px;
+  padding: 1rem;
+  border-right: 1px solid var(--border-color);
+}
+
+.tab-control {
+  margin-bottom: 1rem;
+}
+
+.tabs {
+  flex: 1;
+}
+
+.provider-status {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--background-secondary);
+  border-radius: 8px;
+}
+
+.provider-status ul {
+  list-style: none;
+  padding: 0;
+}
+
+.provider-status li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.status.online {
+  color: var(--success-color);
+}
+
+.status.offline {
+  color: var(--error-color);
+} 
