@@ -78,6 +78,44 @@ interface BaseChatProps {
   actionRunner?: ActionRunner;
 }
 
+const QuickActions = ({ onAction, chatStarted }: { onAction: (action: string) => void, chatStarted: boolean }) => {
+  if (!chatStarted) return null;
+
+  const actions = [
+    { label: 'Continue', icon: 'i-ph:arrow-right', command: 'Continue' },
+    { label: 'Redonne', icon: 'i-ph:arrow-clockwise', command: 'Redonne ta dernière réponse' },
+    { label: 'Reformule', icon: 'i-ph:arrows-clockwise', command: 'Reformule la dernière réponse' },
+    { label: 'Corrige', icon: 'i-ph:warning', command: 'Corrige les erreurs' },
+  ];
+
+  return (
+    <div className="flex gap-1">
+      {actions.map((action) => (
+        <Tooltip.Root key={action.label}>
+          <Tooltip.Trigger asChild>
+            <IconButton
+              title={action.command}
+              className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
+              onClick={() => onAction(action.command)}
+            >
+              <div className={`${action.icon} text-xl`} />
+            </IconButton>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              className="bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary p-2 rounded-md text-xs border border-bolt-elements-borderColor"
+              sideOffset={5}
+            >
+              {action.command}
+              <Tooltip.Arrow className="fill-bolt-elements-background-depth-3" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      ))}
+    </div>
+  );
+};
+
 export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
   (
     {
@@ -741,6 +779,10 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         {!chatStarted && ImportButtons(importChat)}
                         {!chatStarted && <GitCloneButton importChat={importChat} />}
 
+                        <QuickActions 
+                          onAction={(action) => sendMessage?.({} as any, action)} 
+                          chatStarted={chatStarted} 
+                        />
                         <SpeechRecognitionButton
                           isListening={isListening}
                           onStart={startListening}
