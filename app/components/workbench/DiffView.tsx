@@ -755,7 +755,7 @@ const InstructionModal = memo(({
             <div className="w-full max-w-lg bg-bolt-elements-background-depth-2 rounded-xl border border-bolt-elements-borderColor shadow-2xl overflow-hidden transform transition-all duration-200 ease-out scale-95 hover:scale-100">
               <div className="p-5 border-b border-bolt-elements-borderColor bg-gradient-to-r from-bolt-elements-background-depth-2 to-bolt-elements-background-depth-3">
                 <h3 className="text-lg font-semibold text-bolt-elements-textPrimary flex items-center gap-2">
-                  <span className="i-lucide-message-square-plus w-5 h-5 text-bolt-elements-textSecondary" />
+                  <span className="i-ph-pencil w-5 h-5 text-bolt-elements-textSecondary" />
                   Ajouter une instruction au code sélectionnée
                 </h3>
                 <p className="text-sm text-bolt-elements-textSecondary mt-1">
@@ -785,10 +785,10 @@ const InstructionModal = memo(({
               <div className="p-5 border-t border-bolt-elements-borderColor flex justify-end gap-3 bg-bolt-elements-background-depth-3">
                 <button
                   onClick={onCancel}
-                  className="px-5 py-2.5 rounded-lg bg-bolt-elements-background-depth-1 text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary transition-colors flex items-center gap-2 hover:scale-[1.02] active:scale-95"
+                  className="px-5 py-2.5 rounded-lg bg-bolt-elements-background-depth-1 text-bolt-elements-textSecondary hover:bg-red-500 hover:text-bolt-elements-textPrimary transition-colors flex items-center gap-2 hover:scale-[1.02] active:scale-95"
                   aria-label="Annuler"
                 >
-                  <span className="i-lucide-x w-4 h-4" />
+                  <span className="i-ph-x w-4 h-4" />
                   Annuler
                 </button>
                 <button
@@ -797,7 +797,7 @@ const InstructionModal = memo(({
                   disabled={!instruction.trim()}
                   aria-label="Envoyer au chat"
                 >
-                  <span className="i-lucide-send w-4 h-4" />
+                  <span className="i-ph:chat-circle-text-duotone w-4 h-4" />
                   Envoyer au chat
                 </button>
               </div>
