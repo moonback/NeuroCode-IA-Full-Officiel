@@ -105,7 +105,6 @@
     "istextorbinary": "^9.5.0",
     "jose": "^5.9.6",
     "js-cookie": "^3.0.5",
-    "set-cookie-parser": "^2.6.0",
     "jspdf": "^2.5.2",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
