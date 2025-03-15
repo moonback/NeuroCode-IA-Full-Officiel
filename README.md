@@ -1,16 +1,16 @@
 # NeuroCode - AI-Powered Web Development Platform
 
-[![Version](https://img.shields.io/badge/version-1.0.0-important)](https://github.com/moonback/NeuroCode-IA/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0-important)](https://github.com/moonback/NeuroCode-IA-Full-Officiel/releases)
 [![License](https://img.shields.io/badge/license-MIT-success)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/moonback/NeuroCode-IA/build.yml?branch=main)](https://github.com/moonback/NeuroCode-IA/actions)
-[![Downloads](https://img.shields.io/github/downloads/moonback/NeuroCode-IA/total?color=blue)](https://github.com/moonback/NeuroCode-IA/releases)
-[![Stars](https://img.shields.io/github/stars/moonback/NeuroCode-IA?style=social)](https://github.com/moonback/NeuroCode-IA)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/moonback/NeuroCode-IA-Full-Officiel/build.yml?branch=main)](https://github.com/moonback/NeuroCode-IA-Full-Officiel/actions)
+[![Downloads](https://img.shields.io/github/downloads/moonback/NeuroCode-IA-Full-Officiel/total?color=blue)](https://github.com/moonback/NeuroCode-IA-Full-Officiel/releases)
+[![Stars](https://img.shields.io/github/stars/moonback/NeuroCode-IA-Full-Officiel?style=social)](https://github.com/moonback/NeuroCode-IA-Full-Officiel)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fneurocode.app)](https://neurocode.app)
 [![Documentation](https://img.shields.io/badge/docs-neurocode.app-informational)](https://docs.neurocode.app)
 
 # NeuroCode
-![NeuroCode Interface](https://raw.githubusercontent.com/moonback/NeuroCode-IA/main/public/neurocode-interface.png)
-![NeuroCode Architecture](https://raw.githubusercontent.com/moonback/NeuroCode-IA/main/public/neurocode-interface-2.png)
+![NeuroCode Interface](https://raw.githubusercontent.com/moonback/NeuroCode-IA-Full-Officiel-Full-Officiel/main/public/neurocode-interface.png)
+![NeuroCode Architecture](https://raw.githubusercontent.com/moonback/NeuroCode-IA-Full-Officiel-Full-Officiel/main/public/neurocode-interface-2.png)
 
 NeuroCode est une plateforme de développement full-stack de nouvelle génération qui intègre l'intelligence artificielle pour accélérer et optimiser le processus de développement web. Ce README fournit un aperçu du projet, de sa structure, et de ses composants principaux.
 
