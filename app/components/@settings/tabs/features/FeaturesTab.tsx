@@ -34,18 +34,26 @@ const FeatureCard = memo(
       className={classNames(
         'relative group cursor-pointer',
         'bg-bolt-elements-background-depth-2',
-        'hover:bg-bolt-elements-background-depth-3',
-        'transition-colors duration-200',
-        'rounded-lg overflow-hidden',
+        'bg-bolt-elements-background-depth-1 hover:bg-bolt-elements-background-depth-3',
+        'transition-all duration-200 ease-in-out',
+        'rounded-xl overflow-hidden',
+        'shadow-sm hover:shadow-md',
+        'border border-bolt-elements-borderColor/20 hover:border-bolt-elements-borderColor/40'
       )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ delay: index * 0.1, type: 'spring', stiffness: 100 }}
     >
-      <div className="p-4">
+      <div className="p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={classNames(feature.icon, 'w-5 h-5 text-bolt-elements-textSecondary')} />
+            <div className={classNames(
+              feature.icon, 
+              'w-6 h-6 p-1 rounded-lg',
+              'text-bolt-elements-textSecondary',
+              'bg-green-500'
+            )} />
             <div className="flex items-center gap-2">
               <h4 className="font-medium text-bolt-elements-textPrimary">{feature.title}</h4>
               {feature.beta && (
@@ -58,10 +66,18 @@ const FeatureCard = memo(
               )}
             </div>
           </div>
-          <Switch checked={feature.enabled} onCheckedChange={(checked) => onToggle(feature.id, checked)} />
+          <Switch 
+            checked={feature.enabled} 
+            onCheckedChange={(checked) => onToggle(feature.id, checked)}
+            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-bolt-elements-borderColor/50"
+          />
         </div>
-        <p className="mt-2 text-sm text-bolt-elements-textSecondary">{feature.description}</p>
-        {feature.tooltip && <p className="mt-1 text-xs text-bolt-elements-textTertiary">{feature.tooltip}</p>}
+        <p className="mt-3 text-sm text-bolt-elements-textSecondary">{feature.description}</p>
+        {feature.tooltip && (
+          <p className="mt-2 text-xs text-bolt-elements-textTertiary/80">
+            {feature.tooltip}
+          </p>
+        )}
       </div>
     </motion.div>
   ),
@@ -83,20 +99,25 @@ const FeatureSection = memo(
   }) => (
     <motion.div
       layout
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.3, type: 'spring' }}
     >
-      <div className="flex items-center gap-3">
-        <div className={classNames(icon, 'text-xl text-green-500')} />
+      <div className="flex items-center gap-4">
+        <div className={classNames(
+          icon, 
+          'text-2xl p-2 rounded-lg',
+          'bg-bolt-elements-background-depth-3',
+          'text-green-500'
+        )} />
         <div>
-          <h3 className="text-lg font-medium text-bolt-elements-textPrimary">{title}</h3>
-          <p className="text-sm text-bolt-elements-textSecondary">{description}</p>
+          <h3 className="text-xl font-semibold text-bolt-elements-textPrimary">{title}</h3>
+          <p className="text-sm text-bolt-elements-textSecondary/90 mt-1">{description}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {features.map((feature, index) => (
           <FeatureCard key={feature.id} feature={feature} index={index} onToggle={onToggleFeature} />
         ))}
@@ -241,8 +262,9 @@ export default function FeaturesTab() {
           'bg-bolt-elements-background-depth-2',
           'hover:bg-bolt-elements-background-depth-3',
           'transition-all duration-200',
-          'rounded-lg p-4',
+          'rounded-xl p-6',
           'group',
+          'flex flex-col gap-6'
         )}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -251,7 +273,7 @@ export default function FeaturesTab() {
         <div className="flex items-center gap-4">
           <div
             className={classNames(
-              'p-2 rounded-lg text-xl',
+              'p-3 rounded-xl text-2xl',
               'bg-bolt-elements-background-depth-3 group-hover:bg-bolt-elements-background-depth-4',
               'transition-colors duration-200',
               'text-green-500',
@@ -259,35 +281,56 @@ export default function FeaturesTab() {
           >
             <div className="i-ph:book" />
           </div>
-          <div className="flex-1">
-            <h4 className="text-sm font-medium text-bolt-elements-textPrimary group-hover:text-green-500 transition-colors">
+          <div>
+            <h4 className="text-lg font-semibold text-bolt-elements-textPrimary group-hover:text-green-500 transition-colors">
               Bibliothèque de prompts
             </h4>
-            <p className="text-xs text-bolt-elements-textSecondary mt-0.5">
-              Choisissez un prompt de la bibliothèque pour l'utiliser comme prompt système
+            <p className="text-sm text-bolt-elements-textSecondary mt-1">
+              Sélectionnez un prompt système prédéfini
             </p>
           </div>
-          <select
-            value={promptId}
-            onChange={(e) => {
-              setPromptId(e.target.value);
-              toast('Modèle de prompt mis à jour');
-            }}
-            className={classNames(
-              'p-2 rounded-lg text-sm min-w-[200px]',
-              'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor',
-              'text-bolt-elements-textPrimary',
-              'focus:outline-none focus:ring-2 focus:ring-green-500/30',
-              'group-hover:border-green-500/30',
-              'transition-all duration-200',
-            )}
-          >
-            {PromptLibrary.getList().map((x) => (
-              <option key={x.id} value={x.id}>
-                {x.label}
-              </option>
-            ))}
-          </select>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PromptLibrary.getList().map((prompt) => (
+            <motion.div
+              key={prompt.id}
+              className={classNames(
+                'p-4 rounded-lg cursor-pointer',
+                'border border-bolt-elements-borderColor/20',
+                'transition-all duration-200',
+                promptId === prompt.id
+                  ? 'bg-green-500/10 border-green-500/30'
+                  : 'hover:bg-bolt-elements-background-depth-3 hover:border-bolt-elements-borderColor/40'
+              )}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => {
+                setPromptId(prompt.id);
+                toast(`Prompt sélectionné : ${prompt.label}`);
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className={classNames(
+                  'p-2 rounded-lg',
+                  'bg-bolt-elements-background-depth-3',
+                  promptId === prompt.id ? 'text-green-500' : 'text-bolt-elements-textSecondary'
+                )}>
+                  <div className="i-ph:file-text text-xl" />
+                </div>
+                <div>
+                  <h5 className={classNames(
+                    'font-medium',
+                    promptId === prompt.id ? 'text-green-500' : 'text-bolt-elements-textPrimary'
+                  )}>
+                    {prompt.label}
+                  </h5>
+                  <p className="text-xs text-bolt-elements-textSecondary mt-1 line-clamp-2">
+                    {prompt.description}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </motion.div>
     </div>
