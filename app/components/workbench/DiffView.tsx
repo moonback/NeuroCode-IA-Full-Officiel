@@ -813,7 +813,10 @@ const DiffLine = memo(({
     >
       <div className={classNames("diff-line-number", { "selected": isSelected })}>
         {isSelected && <span className="text-blue-500 mr-1">✓</span>}
-        {block.type === 'removed' ? block.lineNumber + 1 : block.correspondingLine ? block.correspondingLine + 1 : '-'}
+        {/* Fix: Display the correct line number based on type */}
+        {block.type === 'removed' ? block.lineNumber + 1 : 
+         block.type === 'added' ? block.lineNumber + 1 : 
+         block.lineNumber + 1}
       </div>
       <div className={classNames("diff-line-content", {
         'bg-blue-500/30 border-l-4 border-blue-500': isSelected
@@ -829,8 +832,8 @@ const DiffLine = memo(({
           hideLineNumber
         />
       </div>
-      </div>
-    );
+    </div>
+  );
 });
 
 // Nouveau composant pour la barre d'outils
