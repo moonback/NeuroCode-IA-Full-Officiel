@@ -9,8 +9,8 @@
 [![Documentation](https://img.shields.io/badge/docs-neurocode.app-informational)](https://docs.neurocode.app)
 
 # NeuroCode
-![NeuroCode Interface](https://raw.githubusercontent.com/moonback/NeuroCode-IA-Full-Officiel-Full-Officiel/main/public/neurocode-interface.png)
-![NeuroCode Architecture](https://raw.githubusercontent.com/moonback/NeuroCode-IA-Full-Officiel-Full-Officiel/main/public/neurocode-interface-2.png)
+![NeuroCode Interface](https://github.com/moonback/NeuroCode-IA-Full-Officiel/blob/main/public/neurocode-interface.png?raw=true)
+![NeuroCode Architecture](https://github.com/moonback/NeuroCode-IA-Full-Officiel/blob/main/public/neurocode-interface-2.png?raw=true)
 
 NeuroCode est une plateforme de développement full-stack de nouvelle génération qui intègre l'intelligence artificielle pour accélérer et optimiser le processus de développement web. Ce README fournit un aperçu du projet, de sa structure, et de ses composants principaux.
 
