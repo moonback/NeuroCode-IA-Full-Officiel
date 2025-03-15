@@ -369,18 +369,13 @@ export default function DataTab() {
                 </button>
               </DialogClose>
               <motion.button
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm bg-white dark:bg-[#1A1A1A] text-red-500 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 border border-transparent hover:border-red-500/10 dark:hover:border-red-500/20"
-                onClick={() => setShowDeleteInlineConfirm(true)}
-                disabled={isDeleting}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-50 text-red-500 text-sm hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={handleDeleteAllChats}
               >
-                {isDeleting ? (
-                  <div className="i-ph:spinner-gap-bold animate-spin w-4 h-4" />
-                ) : (
-                  <div className="i-ph:trash w-4 h-4" />
-                )}
-                Tout supprimer
+                <div className="i-ph:trash w-4 h-4" />
+                Supprimer tout
               </motion.button>
             </div>
           </div>
