@@ -22,7 +22,7 @@ import { SyncSidebar } from '~/components/sync/SyncSidebar';
 import styles from './BaseChat.module.scss';
 import { ExportChatButton } from '~/components/chat/chatExportAndImport/ExportChatButton';
 import { ImportButtons } from '~/components/chat/chatExportAndImport/ImportButtons';
-// import { ExamplePrompts } from '~/components/chat/ExamplePrompts';
+import { ExamplePrompts } from '~/components/chat/ExamplePrompts';
 import GitCloneButton from './GitCloneButton';
 
 import FilePreview from './FilePreview';
@@ -31,7 +31,7 @@ import { SpeechRecognitionButton } from '~/components/chat/SpeechRecognition';
 import type { ProviderInfo } from '~/types/model';
 import { ScreenshotStateManager } from './ScreenshotStateManager';
 import { toast } from 'react-toastify';
-// import StarterTemplates from './StarterTemplates';
+import StarterTemplates from './StarterTemplates';
 import type { ActionAlert } from '~/types/actions';
 import ChatAlert from './ChatAlert';
 import type { ModelInfo } from '~/lib/modules/llm/types';
@@ -795,10 +795,10 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   <div className="flex items-center gap-2">
                   </div>
                 </div>
-                {/* <ExamplePrompts 
+                <ExamplePrompts 
                   sendMessage={sendMessage}
-                  className="bg-gray-900/50 p-6 rounded-xl border border-gray-800/50"
-                /> */}
+                  // className="bg-gray-900/50 p-6 rounded-xl border border-gray-800/50"
+                />
               </div>
             )}
           </div>
