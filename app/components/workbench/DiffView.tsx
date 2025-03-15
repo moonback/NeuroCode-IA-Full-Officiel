@@ -43,7 +43,7 @@ interface FullscreenButtonProps {
 const FullscreenButton = memo(({ onClick, isFullscreen }: FullscreenButtonProps) => (
   <button
     onClick={onClick}
-    className="ml-4 p-1 rounded hover:bg-bolt-elements-background-depth-3 text-bolt-elements-textTertiary hover:text-bolt-elements-textPrimary transition-colors"
+    className="ml-4 p-1 bg-bolt-elements-background-depth-1 text-xl rounded hover:bg-bolt-elements-background-depth-3 text-bolt-elements-textTertiary hover:text-bolt-elements-textPrimary transition-colors"
     title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
   >
     <div className={isFullscreen ? 'i-ph:corners-in' : 'i-ph:corners-out'} />
@@ -847,51 +847,104 @@ const DiffToolbar = memo(({
   onClearSelection: () => void;
   onCopy: () => void;
   onSendToChat: () => void;
-}) => (
-  <div className="flex items-center justify-between p-2 border-b border-bolt-elements-borderColor bg-bolt-elements-background-depth-1">
-    <div className="flex items-center gap-2">
-      <span className="text-xs text-bolt-elements-textSecondary">
-        {selectedLines.length > 0 
-          ? `${selectedLines.length} ligne${selectedLines.length > 1 ? 's' : ''} sélectionnée${selectedLines.length > 1 ? 's' : ''}` 
-          : 'Sélectionnez des lignes'}
-      </span>
-      {selectedLines.length > 0 && (
-        <button 
-          onClick={onClearSelection}
-          className="text-xs p-1 rounded transition-colors bg-red-500/20 text-bolt-elements-textTertiary hover:bg-red-500/50 hover:text-bolt-elements-textPrimary"
+}) => {
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  
+  const handleExport = useCallback(() => {
+    const content = selectedLines.map(line => line.content).join('\n');
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `selection_${new Date().toISOString()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Sélection exportée avec succès');
+  }, [selectedLines]);
+
+  const handleCreateSnippet = useCallback(() => {
+    const content = selectedLines.map(line => line.content).join('\n');
+    navigator.clipboard.writeText(`\`\`\`\n${content}\n\`\`\``);
+    toast.success('Snippet copié dans le presse-papiers');
+  }, [selectedLines]);
+
+  return (
+    <div className="flex items-center justify-between p-2 border-b border-bolt-elements-borderColor bg-bolt-elements-background-depth-1 relative">
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-bolt-elements-textSecondary">
+          {selectedLines.length > 0 
+            ? `${selectedLines.length} ligne${selectedLines.length > 1 ? 's' : ''} sélectionnée${selectedLines.length > 1 ? 's' : ''}` 
+            : 'Sélectionnez des lignes'}
+        </span>
+        {selectedLines.length > 0 && (
+          <button 
+            onClick={onClearSelection}
+            className="text-xs p-1 rounded transition-colors bg-red-500/20 text-bolt-elements-textTertiary hover:bg-red-500/50 hover:text-bolt-elements-textPrimary"
+            title="Effacer la sélection"
+          >
+            <div className="i-ph:x-circle" />
+          </button>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onCopy}
+          disabled={selectedLines.length === 0}
+          className={`p-1.5 rounded transition-colors ${
+            selectedLines.length > 0 
+              ? 'bg-bolt-elements-background-depth-2 text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary' 
+              : 'bg-bolt-elements-background-depth-1 text-bolt-elements-textTertiary cursor-not-allowed'
+          }`}
+          title="Copier"
         >
-          <div className="i-ph:x-circle" />
+          <div className="i-ph:copy text-xl" />
         </button>
-      )}
+        <button
+          onClick={onSendToChat}
+          disabled={selectedLines.length === 0}
+          className={`p-1.5 rounded transition-colors ${
+            selectedLines.length > 0 
+              ? 'bg-green-500/20 text-green-500 hover:bg-green-500/30' 
+              : 'bg-bolt-elements-background-depth-1 text-bolt-elements-textTertiary cursor-not-allowed'
+          }`}
+          title="Envoyer au chat"
+        >
+          <div className="i-ph:chat-circle-text text-xl" />
+        </button>
+        <button
+          onClick={() => setShowMoreOptions(!showMoreOptions)}
+          className="p-1.5 rounded transition-colors bg-bolt-elements-background-depth-2 text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary"
+          title="Plus d'options"
+        >
+          <div className="i-ph:dots-three-vertical text-xl" />
+        </button>
+        
+        {showMoreOptions && (
+          <div className="absolute right-0 top-10 z-50 bg-bolt-elements-background-depth-2 rounded-lg border border-bolt-elements-borderColor shadow-lg">
+            <div className="p-1">
+              <button
+                onClick={handleExport}
+                disabled={selectedLines.length === 0}
+                className="w-full px-4 py-2 text-white text-sm bg-green-500/20 text-left text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 rounded-md flex items-center gap-2"
+              >
+                <div className="i-ph:export text-xl" />
+                Exporter la sélection
+              </button>
+              <button
+                onClick={handleCreateSnippet}
+                disabled={selectedLines.length === 0}
+                className="w-full px-4 py-2 text-white text-sm bg-green-500/20 text-left text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 rounded-md flex items-center gap-2"
+              >
+                <div className="i-ph:code text-xl" />
+                Créer un snippet
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-    <div className="flex items-center gap-2">
-      <button
-        onClick={onCopy}
-        disabled={selectedLines.length === 0}
-        className={`p-1.5 rounded transition-colors ${
-          selectedLines.length > 0 
-            ? 'bg-bolt-elements-background-depth-2 text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary' 
-            : 'bg-bolt-elements-background-depth-1 text-bolt-elements-textTertiary cursor-not-allowed'
-        }`}
-        title="Copier"
-      >
-        <div className="i-ph:copy text-sm" />
-      </button>
-      <button
-        onClick={onSendToChat}
-        disabled={selectedLines.length === 0}
-        className={`p-1.5 rounded transition-colors ${
-          selectedLines.length > 0 
-            ? 'bg-green-500/20 text-green-500 hover:bg-green-500/30' 
-            : 'bg-bolt-elements-background-depth-1 text-bolt-elements-textTertiary cursor-not-allowed'
-        }`}
-        title="Envoyer au chat"
-      >
-        <div className="i-ph:chat-circle-text text-sm" />
-      </button>
-    </div>
-  </div>
-));
+  );
+});
 
 interface DiffViewProps {
   fileHistory: Record<string, FileHistory>;
