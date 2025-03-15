@@ -503,7 +503,7 @@ export default function LocalProvidersTab() {
   return (
     <div
       className={classNames(
-        'rounded-lg bg-bolt-elements-background text-bolt-elements-textPrimary shadow-sm p-4',
+        'rounded-xl bg-bolt-elements-background text-bolt-elements-textPrimary shadow-sm p-6',
         'hover:bg-bolt-elements-background-depth-2',
         'transition-all duration-200',
       )}
@@ -511,37 +511,40 @@ export default function LocalProvidersTab() {
       aria-label="Local Providers Configuration"
     >
       <motion.div
-        className="space-y-6"
+        className="space-y-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.3, type: 'spring' }}
       >
         {/* Header section */}
-        <div className="flex items-center justify-between gap-4 border-b border-bolt-elements-borderColor pb-4">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-4 border-b border-bolt-elements-borderColor/30 pb-6">
+          <div className="flex items-center gap-4">
             <motion.div
               className={classNames(
-                'w-10 h-10 flex items-center justify-center rounded-xl',
+                'w-12 h-12 flex items-center justify-center rounded-xl',
                 'bg-green-500/10 text-green-500',
+                'shadow-sm'
               )}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, rotate: 5 }}
             >
-              <BiChip className="w-6 h-6" />
+              <BiChip className="w-7 h-7" />
             </motion.div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold text-bolt-elements-textPrimary">Local AI Models</h2>
-              </div>
-              <p className="text-sm text-bolt-elements-textSecondary">Configure and manage your local AI providers</p>
+              <h2 className="text-xl font-semibold text-bolt-elements-textPrimary">Local AI Models</h2>
+              <p className="text-sm text-bolt-elements-textSecondary/90 mt-1">
+                Configure and manage your local AI providers
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="text-sm text-bolt-elements-textSecondary">Enable All</span>
             <Switch
               checked={categoryEnabled}
               onCheckedChange={handleToggleCategory}
               aria-label="Toggle all local providers"
+              className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-bolt-elements-borderColor/50"
+              // thumbClassName="bg-white"
             />
           </div>
         </div>
@@ -555,8 +558,9 @@ export default function LocalProvidersTab() {
               className={classNames(
                 'bg-bolt-elements-background-depth-2 rounded-xl',
                 'hover:bg-bolt-elements-background-depth-3',
-                'transition-all duration-200 p-5',
+                'transition-all duration-200 p-6',
                 'relative overflow-hidden group',
+                provider.settings.enabled ? 'border-green-500/20' : 'border-bolt-elements-borderColor/20'
               )}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -570,6 +574,7 @@ export default function LocalProvidersTab() {
                       'w-12 h-12 flex items-center justify-center rounded-xl',
                       'bg-bolt-elements-background-depth-3',
                       provider.settings.enabled ? 'text-green-500' : 'text-bolt-elements-textSecondary',
+                      'shadow-sm'
                     )}
                     whileHover={{ scale: 1.1, rotate: 5 }}
                   >
@@ -580,10 +585,10 @@ export default function LocalProvidersTab() {
                   </motion.div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-md font-semibold text-bolt-elements-textPrimary">{provider.name}</h3>
+                      <h3 className="text-lg font-semibold text-bolt-elements-textPrimary">{provider.name}</h3>
                       <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/10 text-green-500">Local</span>
                     </div>
-                    <p className="text-sm text-bolt-elements-textSecondary mt-1">
+                    <p className="text-sm text-bolt-elements-textSecondary/90 mt-1">
                       {PROVIDER_DESCRIPTIONS[provider.name as ProviderName]}
                     </p>
                   </div>
@@ -592,6 +597,8 @@ export default function LocalProvidersTab() {
                   checked={provider.settings.enabled}
                   onCheckedChange={(checked) => handleToggleProvider(provider, checked)}
                   aria-label={`Toggle ${provider.name} provider`}
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-bolt-elements-borderColor/50"
+                  // thumbClassName="bg-white"
                 />
               </div>
 
@@ -602,9 +609,9 @@ export default function LocalProvidersTab() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-4"
+                    className="mt-6"
                   >
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-3">
                       <div className="flex items-center justify-between">
                         <label className="text-sm text-bolt-elements-textSecondary">API Endpoint</label>
                         {editingProvider === provider.name && (
@@ -620,9 +627,9 @@ export default function LocalProvidersTab() {
                           placeholder={`Enter ${provider.name} base URL`}
                           className={classNames(
                             'w-full px-3 py-2 rounded-lg text-sm',
-                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor',
+                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor/30',
                             'text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary',
-                            'focus:outline-none focus:ring-2 focus:ring-green-500/30',
+                            'focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500/50',
                             'transition-all duration-200',
                           )}
                           onKeyDown={(e) => {
@@ -640,7 +647,7 @@ export default function LocalProvidersTab() {
                           onClick={() => setEditingProvider(provider.name)}
                           className={classNames(
                             'w-full px-3 py-2 rounded-lg text-sm cursor-pointer',
-                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor',
+                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor/30',
                             'hover:border-green-500/30 hover:bg-bolt-elements-background-depth-4',
                             'transition-all duration-200',
                           )}
@@ -661,11 +668,11 @@ export default function LocalProvidersTab() {
 
               {/* Ollama Models Section */}
               {provider.settings.enabled && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 space-y-4">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 space-y-6">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="i-ph:cube-duotone text-green-500" />
-                      <h4 className="text-sm font-medium text-bolt-elements-textPrimary">Installed Models</h4>
+                    <div className="flex items-center gap-3">
+                      <div className="i-ph:cube-duotone text-green-500 text-xl" />
+                      <h4 className="text-base font-semibold text-bolt-elements-textPrimary">Installed Models</h4>
                     </div>
                     {isLoadingModels ? (
                       <div className="flex items-center gap-2">
@@ -679,9 +686,9 @@ export default function LocalProvidersTab() {
                     )}
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {isLoadingModels ? (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {Array.from({ length: 3 }).map((_, i) => (
                           <div
                             key={i}
