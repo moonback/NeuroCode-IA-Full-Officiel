@@ -508,7 +508,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     'shadow-lg hover:shadow-xl transition-shadow duration-300 backdrop-blur-sm'
                   )}
                 >
-                  <svg className={classNames(styles.PromptEffectContainer)}>
+                  {/* <svg className={classNames(styles.PromptEffectContainer)}>
                     <defs>
                       <linearGradient
                         id="line-gradient"
@@ -533,7 +533,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     </defs>
                     <rect className={classNames(styles.PromptEffectLine)} pathLength="100" strokeLinecap="round"></rect>
                     <rect className={classNames(styles.PromptShine)} x="48" y="24" width="70" height="1"></rect>
-                  </svg>
+                  </svg> */}
                   <div>
                     <div ref={modelSettingsRef}>
                       <TargetedFilesDisplay textareaRef={textareaRef} />
