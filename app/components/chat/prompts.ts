@@ -1,30 +1,29 @@
 export const EXAMPLE_PROMPTS = [
   {
     id: 'saas-landing',
-    text: 'Concevoir une landing page SaaS hautement performante avec animations scroll-driven fluides, sections interactives optimisées pour le SEO, et chargement ultra-rapide grâce à des techniques de lazy loading et de cache intelligent',
-    ariaLabel: 'Landing SaaS'
+    text: 'Create a SaaS landing page with hero section, features grid, pricing table, testimonials, and CTA sections. Include scroll animations and SEO optimization.',
+    ariaLabel: 'SaaS Landing'
   },
   {
     id: 'startup-landing',
-    text: 'Développer une landing page startup avec une hero section dynamique et responsive, intégration de métriques en temps réel, témoignages clients animés, et système de tracking analytique complet',
-    ariaLabel: 'Landing Startup'
+    text: 'Design a startup landing page with animated hero, metrics dashboard, customer success stories, and feature highlights. Add analytics integration.',
+    ariaLabel: 'Startup Landing'
   },
   {
     id: 'product-landing',
-    text: 'Créer une landing page produit avec démo interactive en temps réel, comparatifs de prix dynamiques, tunnel de conversion optimisé pour le mobile, et intégration de paiement sécurisé',
-    ariaLabel: 'Landing Produit'
+    text: 'Build a product landing page with interactive demo, pricing comparison, mobile-first design, and secure checkout integration.',
+    ariaLabel: 'Product Landing'
   },
   {
     id: 'agency-landing',
-    text: 'Concevoir une landing page agence avec portfolio dynamique et interactif, animations fluides basées sur WebGL, formulaire de contact intelligent avec validation en temps réel, et intégration de chatbot IA',
-    ariaLabel: 'Landing Agence'
+    text: 'Design an agency landing page with interactive portfolio, smooth animations, contact form, and case studies section.',
+    ariaLabel: 'Agency Landing'
   },
   {
     id: 'event-landing',
-    text: 'Développer une landing page événement avec compte à rebours interactif, système d\'inscription simplifié avec validation instantanée, intégration de calendrier intelligent, et notifications push personnalisées',
-    ariaLabel: 'Landing Événement'
-  },
-  
+    text: 'Create an event landing page with countdown timer, registration form, schedule display, and speaker showcase section.',
+    ariaLabel: 'Event Landing'
+  }
 ];
 
 export type Prompt = typeof EXAMPLE_PROMPTS[number];
