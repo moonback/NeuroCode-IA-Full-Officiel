@@ -16,7 +16,7 @@ interface AvatarDropdownProps {
 }
 
 export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
-  const profile = useStore(profileStore) as Profile;
+  const { avatar, username, bio } = useStore(profileStore);
 
   return (
     <DropdownMenu.Root>
@@ -26,10 +26,10 @@ export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          {profile?.avatar ? (
+          {avatar ? (
             <img
-              src={profile.avatar}
-              alt={profile?.username || 'Profile'}
+              src={avatar}
+              alt={username || 'Profile'}
               className="w-full h-full rounded-full object-cover"
               loading="eager"
               decoding="sync"
@@ -62,10 +62,10 @@ export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
             )}
           >
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-white dark:bg-gray-800 shadow-sm">
-              {profile?.avatar ? (
+              {avatar ? (
                 <img
-                  src={profile.avatar}
-                  alt={profile?.username || 'Profile'}
+                  src={avatar}
+                  alt={username || 'Profile'}
                   className={classNames('w-full h-full', 'object-cover', 'transform-gpu', 'image-rendering-crisp')}
                   loading="eager"
                   decoding="sync"
@@ -78,9 +78,9 @@ export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-medium text-sm text-gray-900 dark:text-white truncate">
-                {profile?.username || 'Guest User'}
+                {username || 'Guest User'}
               </div>
-              {profile?.bio && <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{profile.bio}</div>}
+              {bio && <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{bio}</div>}
             </div>
           </div>
 
