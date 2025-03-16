@@ -69,7 +69,7 @@ const isBinaryFile = (content: string) => {
   return content.length > MAX_FILE_SIZE || BINARY_REGEX.test(content);
 };
 
-const processChanges = (beforeCode: string, afterCode: string) => {
+const processChanges = (beforeCode: string, afterCode: string, ignoreWhitespace: boolean = false) => {
   try {
     if (isBinaryFile(beforeCode) || isBinaryFile(afterCode)) {
       return {
@@ -391,8 +391,8 @@ const NoChangesView = memo(
 );
 
 // Otimização do processamento de diferenças com memoização
-const useProcessChanges = (beforeCode: string, afterCode: string) => {
-  return useMemo(() => processChanges(beforeCode, afterCode), [beforeCode, afterCode]);
+const useProcessChanges = (beforeCode: string, afterCode: string, ignoreWhitespace: boolean = false) => {
+  return useMemo(() => processChanges(beforeCode, afterCode, ignoreWhitespace), [beforeCode, afterCode, ignoreWhitespace]);
 };
 
 // Componente otimizado para renderização de linhas de código
@@ -590,6 +590,10 @@ const useLineSelection = (unifiedBlocks: DiffBlock[]) => {
   };
 };
 
+// Import des nouveaux composants
+import { DiffModeSelector, type DiffComparisonMode } from './DiffModeSelector';
+import { SideBySideDiffComparison } from './SideBySideDiffComparison';
+
 // Refactorisation du composant InlineDiffComparison
 const InlineDiffComparison = memo(
   ({ beforeCode, afterCode, filename, language, lightTheme, darkTheme }: CodeComparisonProps) => {
@@ -597,9 +601,12 @@ const InlineDiffComparison = memo(
     const [highlighter, setHighlighter] = useState<any>(null);
     const [showInstructionModal, setShowInstructionModal] = useState(false);
     const [instruction, setInstruction] = useState('');
+    const [comparisonMode, setComparisonMode] = useState<DiffComparisonMode>('inline');
+    const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
+    const [syntaxHighlighting, setSyntaxHighlighting] = useState(true);
     const theme = useStore(themeStore);
     
-    const { unifiedBlocks, hasChanges, isBinary, error } = useProcessChanges(beforeCode, afterCode);
+    const { unifiedBlocks, hasChanges, isBinary, error } = useProcessChanges(beforeCode, afterCode, ignoreWhitespace);
     
     const {
       selectedLines,
@@ -680,12 +687,25 @@ const InlineDiffComparison = memo(
 
     return (
       <div className="flex flex-col h-full">
-        <DiffToolbar
-          selectedLines={selectedLines}
-          onClearSelection={clearSelection}
-          onCopy={copySelectedLines}
-          onSendToChat={sendSelectedLinesToChat}
-        />
+        <div className="flex items-center justify-between bg-bolt-elements-background-depth-1 p-2 border-b border-bolt-elements-borderColor">
+          <DiffModeSelector
+            currentMode={comparisonMode}
+            onModeChange={setComparisonMode}
+            ignoreWhitespace={ignoreWhitespace}
+            onIgnoreWhitespaceChange={setIgnoreWhitespace}
+            syntaxHighlighting={syntaxHighlighting}
+            onSyntaxHighlightingChange={setSyntaxHighlighting}
+          />
+          
+          {comparisonMode !== 'sideBySide' && (
+            <DiffToolbar
+              selectedLines={selectedLines}
+              onClearSelection={clearSelection}
+              onCopy={copySelectedLines}
+              onSendToChat={sendSelectedLinesToChat}
+            />
+          )}
+        </div>
         
         <FullscreenOverlay isFullscreen={isFullscreen}>
           <div className="w-full h-full flex flex-col">
@@ -697,28 +717,45 @@ const InlineDiffComparison = memo(
               beforeCode={beforeCode}
               afterCode={afterCode}
             />
-            <div className={diffPanelStyles}>
-              {hasChanges ? (
-                <div className="overflow-x-auto min-w-full">
-                  {unifiedBlocks.map((block, index) => (
-                    <DiffLine
-                      key={`${block.type}-${block.lineNumber}-${index}`}
-                      block={block}
-                      isSelected={selectedLines.some(line => 
-                      line.lineNumber === block.lineNumber && 
-                      line.type === block.type
-                      )}
-                      onSelect={(e) => toggleLineSelection(block, e)}
-                      highlighter={highlighter}
-                      language={language}
-                      theme={theme}
-                    />
-                  ))}
-                </div>
+            
+            {hasChanges ? (
+              comparisonMode === 'sideBySide' ? (
+                <SideBySideDiffComparison
+                  beforeCode={beforeCode}
+                  afterCode={afterCode}
+                  filename={filename}
+                  language={language}
+                  lightTheme={lightTheme}
+                  darkTheme={darkTheme}
+                  unifiedBlocks={unifiedBlocks}
+                  ignoreWhitespace={ignoreWhitespace}
+                  syntaxHighlighting={syntaxHighlighting}
+                />
               ) : (
+                <div className={diffPanelStyles}>
+                  <div className="overflow-x-auto min-w-full">
+                    {unifiedBlocks.map((block, index) => (
+                      <DiffLine
+                        key={`${block.type}-${block.lineNumber}-${index}`}
+                        block={block}
+                        isSelected={selectedLines.some(line => 
+                        line.lineNumber === block.lineNumber && 
+                        line.type === block.type
+                        )}
+                        onSelect={(e) => toggleLineSelection(block, e)}
+                        highlighter={highlighter}
+                        language={language}
+                        theme={theme}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            ) : (
+              <div className={diffPanelStyles}>
                 <NoChangesView beforeCode={beforeCode} language={language} highlighter={highlighter} theme={theme} />
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </FullscreenOverlay>
         
@@ -973,6 +1010,8 @@ interface DiffViewProps {
   setFileHistory: React.Dispatch<React.SetStateAction<Record<string, FileHistory>>>;
   actionRunner: ActionRunner;
 }
+
+export type { DiffBlock };
 
 export const DiffView = memo(({ fileHistory, setFileHistory, actionRunner }: DiffViewProps) => {
   const files = useStore(workbenchStore.files) as FileMap;

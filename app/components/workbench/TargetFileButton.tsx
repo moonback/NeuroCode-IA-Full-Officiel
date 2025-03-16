@@ -94,5 +94,30 @@ export function TargetFileButton({
     }
   };
 
-  
-} 
+
+  // Render the button based on the variant
+  return (
+    <button
+      onClick={handleTargetFile}
+      className={classNames(
+        'transition-colors duration-200',
+        {
+          'p-1.5 rounded text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary hover:bg-bolt-elements-background-depth-2': variant === 'icon',
+          'px-3 py-1.5 rounded text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary hover:bg-bolt-elements-background-depth-2 flex items-center gap-2': variant === 'text',
+          'w-full px-4 py-2 text-left text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 rounded-md flex items-center gap-2': variant === 'menu-item'
+        },
+        className
+      )}
+      title="Envoyer au chat"
+    >
+      {variant === 'icon' ? (
+        <div className="i-ph:chat-circle-text text-xl" />
+      ) : (
+        <>
+          <div className="i-ph:chat-circle-text" />
+          <span>Envoyer au chat</span>
+        </>
+      )}
+    </button>
+  );
+}
