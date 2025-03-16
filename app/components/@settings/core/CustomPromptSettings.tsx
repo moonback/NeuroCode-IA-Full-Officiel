@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { Input } from '~/components/ui/Input';
 import { Card } from '~/components/ui/Card';
 import { useCharacterCount } from '~/lib/hooks/useCharacterCount';
+import DOMPurify from 'dompurify';
 
 interface Variable {
   name: string;
@@ -106,7 +107,15 @@ export const CustomPromptSettings = ({ open, onClose }: CustomPromptSettingsProp
     }
 
     try {
-      const cleanedPrompt = prompt.replace(/\\"/g, '"').trim();
+      const sanitizedPrompt = DOMPurify.sanitize(prompt, {
+        ALLOWED_TAGS: [], // Ne permet aucun tag HTML
+        ALLOWED_ATTR: [], // Ne permet aucun attribut
+        FORBID_TAGS: ['style', 'script', 'iframe', 'frame', 'object', 'embed'],
+        FORBID_ATTR: ['style', 'onerror', 'onload', 'onclick'],
+        KEEP_CONTENT: true // Conserve le texte mais supprime les balises
+      });
+      
+      const cleanedPrompt = sanitizedPrompt.replace(/\\"/g, '"').trim();
       promptStore.set(cleanedPrompt);
       toast(MESSAGES.SAVE_SUCCESS, TOAST_CONFIG);
       setIsModified(false);
