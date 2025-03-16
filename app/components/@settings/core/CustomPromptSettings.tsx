@@ -32,7 +32,15 @@ const FORBIDDEN_PATTERNS = [
   /eval\(/i, // eval function
   /document\./i, // Document object access
   /window\./i, // Window object access
-  /<script.*?>.*?<\/script>/is // Script tags
+  /<script.*?>.*?<\/script>/is, // Script tags
+  /['";\\-]/, // Caractères spéciaux SQL
+  /UNION\s+SELECT/i, // Injection SQL UNION
+  /INSERT\s+INTO/i, // Injection SQL INSERT
+  /&lt;|&gt;|&amp;|&quot;|&#x?[0-9a-f]+;/i, // Encodage HTML
+  /expression\(/i, // CSS expressions
+  /data:/i, // Data URIs
+  /;|\||&|\$\(|`/, // Caractères spéciaux shell
+  /rm\s+-rf|wget|curl|nc|sh\s+/i // Commandes dangereuses
 ];
 
 const TOAST_CONFIG: ToastConfig = {
