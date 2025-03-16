@@ -84,7 +84,7 @@ export const DiffModeSelector = memo(({
               className={classNames(
                 'w-full px-2 py-1.5 text-sm text-left rounded-md flex items-center gap-2 transition-colors',
                 currentMode === 'inline'
-                  ? 'bg-blue-500/20 text-blue-500'
+                  ? 'bg-green-500/20 text-green-500'
                   : 'text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
               )}
             >
@@ -98,8 +98,8 @@ export const DiffModeSelector = memo(({
               className={classNames(
                 'w-full px-2 py-1.5 text-sm text-left rounded-md flex items-center gap-2 transition-colors',
                 currentMode === 'sideBySide'
-                  ? 'bg-blue-500/20 text-blue-500'
-                  : 'text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
+                  ? 'bg-green-500/20 text-green-500'
+                  : 'text-bolt-elements-textSecondary bg-bolt-elements-background-depth-1 hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
               )}
             >
               <div className="i-ph:columns" />
@@ -118,8 +118,8 @@ export const DiffModeSelector = memo(({
               className={classNames(
                 'w-full px-2 py-1.5 text-sm text-left rounded-md flex items-center gap-2 transition-colors',
                 ignoreWhitespace
-                  ? 'bg-blue-500/20 text-blue-500'
-                  : 'text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
+                  ? 'bg-green-500/20 text-green-500'
+                  : 'text-bolt-elements-textSecondary bg-bolt-elements-background-depth-1 hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
               )}
             >
               <div className="i-ph:selection-background" />
@@ -132,7 +132,7 @@ export const DiffModeSelector = memo(({
               className={classNames(
                 'w-full px-2 py-1.5 text-sm text-left rounded-md flex items-center gap-2 transition-colors',
                 syntaxHighlighting
-                  ? 'bg-blue-500/20 text-blue-500'
+                  ? 'bg-green-500/20 text-green-500'
                   : 'text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
               )}
             >
