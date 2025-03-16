@@ -36,7 +36,7 @@ export default function SyncTab() {
           <motion.div
             className={classNames(
               'w-10 h-10 flex items-center justify-center rounded-xl',
-              'bg-purple-500/10 text-purple-500',
+              'bg-green-500/10 text-green-500',
             )}
             whileHover={{ scale: 1.05 }}
           >
@@ -54,7 +54,7 @@ export default function SyncTab() {
                 {isSyncEnabled ? 'Activé' : 'Désactivé'}
               </div>
               {isUpdating && (
-                <div className="flex items-center gap-1 text-xs text-purple-500">
+                <div className="flex items-center gap-1 text-xs text-green-500">
                   <div className="i-ph:arrows-clockwise w-3 h-3 animate-spin" />
                   <span>Synchronisation en cours...</span>
                 </div>
@@ -98,7 +98,7 @@ export default function SyncTab() {
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <div className="i-ph:files text-purple-500" />
+            <div className="i-ph:files text-green-500" />
             <div className="text-sm text-bolt-elements-textSecondary">Total fichiers</div>
           </div>
           <div className="text-2xl font-semibold text-bolt-elements-textPrimary">{syncStatus.totalFiles || 0}</div>
@@ -109,14 +109,14 @@ export default function SyncTab() {
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <div className="i-ph:database text-purple-500" />
+            <div className="i-ph:database text-green-500" />
             <div className="text-sm text-bolt-elements-textSecondary">Taille totale</div>
           </div>
           <div className="text-2xl font-semibold text-bolt-elements-textPrimary">{syncStatus.totalSize || '0 B'}</div>
         </motion.div>
         <div className="bg-bolt-elements-background-depth-2 p-4 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
-            <div className="i-ph:arrows-clockwise text-purple-500" />
+            <div className="i-ph:arrows-clockwise text-green-500" />
             <div className="text-sm text-bolt-elements-textSecondary">Synchronisation automatique</div>
           </div>
           <div className="flex items-center gap-2">
@@ -130,7 +130,7 @@ export default function SyncTab() {
         </div>
         <div className="bg-bolt-elements-background-depth-2 p-4 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
-            <div className="i-ph:floppy-disk text-purple-500" />
+            <div className="i-ph:floppy-disk text-green-500" />
             <div className="text-sm text-bolt-elements-textSecondary">Synchroniser au sauvegarde</div>
           </div>
           <div className="flex items-center gap-2">
