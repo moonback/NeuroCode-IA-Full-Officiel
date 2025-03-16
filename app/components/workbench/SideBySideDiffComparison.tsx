@@ -295,7 +295,7 @@ export const SideBySideDiffComparison = memo(({
         <div className="flex h-full">
           {/* Left panel (before) */}
           <div className="w-1/2 overflow-auto border-r border-bolt-elements-borderColor">
-            <div className="sticky top-0 z-10 bg-bolt-elements-background-depth-1 p-2 text-sm font-medium border-b border-bolt-elements-borderColor">
+            <div className="sticky top-0 z-10 text-white bg-bolt-elements-background-depth-1 p-2 text-sm font-medium border-b border-bolt-elements-borderColor">
               Version originale
             </div>
             <div className="overflow-x-auto">
@@ -309,7 +309,7 @@ export const SideBySideDiffComparison = memo(({
           
           {/* Right panel (after) */}
           <div className="w-1/2 overflow-auto">
-            <div className="sticky top-0 z-10 bg-bolt-elements-background-depth-1 p-2 text-sm font-medium border-b border-bolt-elements-borderColor">
+            <div className="sticky  text-white  top-0 z-10 bg-bolt-elements-background-depth-1 p-2 text-sm font-medium border-b border-bolt-elements-borderColor">
               Version modifiée
             </div>
             <div className="overflow-x-auto">
