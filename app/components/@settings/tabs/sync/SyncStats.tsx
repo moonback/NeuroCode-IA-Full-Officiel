@@ -186,7 +186,7 @@ export default function SyncStats() {
                   'bg-bolt-elements-background-depth-2',
                   'border border-bolt-elements-borderColor',
                   'text-bolt-elements-textPrimary placeholder:text-bolt-elements-textTertiary',
-                  'focus:outline-none focus:ring-2 focus:ring-purple-500/20',
+                  'focus:outline-none focus:ring-2 focus:ring-green-500/20',
                 )}
               />
             </div>
@@ -228,7 +228,7 @@ export default function SyncStats() {
             {getFilteredHistory().map(({ projectName, entries }) => (
               <div key={projectName} className="space-y-2">
                 <div className="flex items-center gap-2 p-2 bg-bolt-elements-background-depth-2 rounded-lg">
-                  <div className="i-ph:folder-simple w-4 h-4 text-purple-500" />
+                  <div className="i-ph:folder-simple w-4 h-4 text-green-500" />
                   <h4 className="text-sm font-medium text-bolt-elements-textPrimary">{projectName}</h4>
                   <span className="text-xs text-bolt-elements-textSecondary">
                     ({entries.length} sauvegarde{entries.length > 1 ? 's' : ''})
