@@ -63,7 +63,7 @@ export default function StatsCard({ icon, label, value, trend, isLoading = false
         <>
           <div className="flex items-center justify-between mb-3">
             <motion.div
-              className={classNames(icon, 'w-5 h-5 text-purple-500')}
+              className={classNames(icon, 'w-5 h-5 text-green-500')}
               initial={{ rotate: -10 }}
               animate={{ rotate: 0 }}
               transition={{ type: 'spring', stiffness: 200 }}
@@ -108,7 +108,7 @@ export default function StatsCard({ icon, label, value, trend, isLoading = false
                     ? 'bg-green-500'
                     : trend.direction === 'down'
                       ? 'bg-red-500'
-                      : 'bg-purple-500',
+                      : 'bg-green-500',
                 )}
                 initial={{ width: '0%' }}
                 animate={{ width: `${trend.progress}%` }}
