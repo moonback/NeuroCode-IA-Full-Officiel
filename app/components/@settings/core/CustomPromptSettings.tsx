@@ -11,7 +11,6 @@ import { motion } from 'framer-motion';
 import { Input } from '~/components/ui/Input';
 import { Card } from '~/components/ui/Card';
 import { useCharacterCount } from '~/lib/hooks/useCharacterCount';
-import DOMPurify from 'dompurify';
 
 interface Variable {
   name: string;
@@ -33,15 +32,7 @@ const FORBIDDEN_PATTERNS = [
   /eval\(/i, // eval function
   /document\./i, // Document object access
   /window\./i, // Window object access
-  /<script.*?>.*?<\/script>/is, // Script tags
-  /['";\\-]/, // Caractères spéciaux SQL
-  /UNION\s+SELECT/i, // Injection SQL UNION
-  /INSERT\s+INTO/i, // Injection SQL INSERT
-  /&lt;|&gt;|&amp;|&quot;|&#x?[0-9a-f]+;/i, // Encodage HTML
-  /expression\(/i, // CSS expressions
-  /data:/i, // Data URIs
-  /;|\||&|\$\(|`/, // Caractères spéciaux shell
-  /rm\s+-rf|wget|curl|nc|sh\s+/i // Commandes dangereuses
+  /<script.*?>.*?<\/script>/is // Script tags
 ];
 
 const TOAST_CONFIG: ToastConfig = {
@@ -107,15 +98,7 @@ export const CustomPromptSettings = ({ open, onClose }: CustomPromptSettingsProp
     }
 
     try {
-      const sanitizedPrompt = DOMPurify.sanitize(prompt, {
-        ALLOWED_TAGS: [], // Ne permet aucun tag HTML
-        ALLOWED_ATTR: [], // Ne permet aucun attribut
-        FORBID_TAGS: ['style', 'script', 'iframe', 'frame', 'object', 'embed'],
-        FORBID_ATTR: ['style', 'onerror', 'onload', 'onclick'],
-        KEEP_CONTENT: true // Conserve le texte mais supprime les balises
-      });
-      
-      const cleanedPrompt = sanitizedPrompt.replace(/\\"/g, '"').trim();
+      const cleanedPrompt = prompt.replace(/\\"/g, '"').trim();
       promptStore.set(cleanedPrompt);
       toast(MESSAGES.SAVE_SUCCESS, TOAST_CONFIG);
       setIsModified(false);
