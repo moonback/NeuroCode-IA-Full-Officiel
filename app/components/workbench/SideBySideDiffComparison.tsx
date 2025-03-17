@@ -16,8 +16,6 @@ interface SideBySideDiffComparisonProps {
   lightTheme: string;
   darkTheme: string;
   unifiedBlocks: DiffBlock[];
-  ignoreWhitespace: boolean;
-  syntaxHighlighting: boolean;
 }
 
 const lineNumberStyles =
@@ -44,9 +42,7 @@ export const SideBySideDiffComparison = memo(({
   language, 
   lightTheme, 
   darkTheme,
-  unifiedBlocks,
-  ignoreWhitespace,
-  syntaxHighlighting
+  unifiedBlocks
 }: SideBySideDiffComparisonProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [highlighter, setHighlighter] = useState<any>(null);
@@ -149,14 +145,8 @@ export const SideBySideDiffComparison = memo(({
     const bgColor = diffLineStyles[block.type];
     
     const renderContent = () => {
-      if (block.type === 'unchanged' || !block.charChanges || !syntaxHighlighting) {
-        const highlightedCode = highlighter && syntaxHighlighting
-          ? highlighter
-              .codeToHtml(block.content, { lang: language, theme: theme === 'dark' ? 'github-dark' : 'github-light' })
-              .replace(/<\/?pre[^>]*>/g, '')
-              .replace(/<\/?code[^>]*>/g, '')
-          : block.content;
-        return <span dangerouslySetInnerHTML={{ __html: highlightedCode }} />;
+      if (block.type === 'unchanged' || !block.charChanges) {
+        return <span>{block.content}</span>;
       }
 
       return (
@@ -164,17 +154,7 @@ export const SideBySideDiffComparison = memo(({
           {block.charChanges.map((change, index) => {
             const changeClass = changeColorStyles[change.type];
 
-            const highlightedCode = highlighter && syntaxHighlighting
-              ? highlighter
-                  .codeToHtml(change.value, {
-                    lang: language,
-                    theme: theme === 'dark' ? 'github-dark' : 'github-light',
-                  })
-                  .replace(/<\/?pre[^>]*>/g, '')
-                  .replace(/<\/?code[^>]*>/g, '')
-              : change.value;
-
-            return <span key={index} className={changeClass} dangerouslySetInnerHTML={{ __html: highlightedCode }} />;
+            return <span key={index} className={changeClass}>{change.value}</span>;
           })}
         </>
       );
