@@ -691,10 +691,10 @@ const InlineDiffComparison = memo(
           <DiffModeSelector
             currentMode={comparisonMode}
             onModeChange={setComparisonMode}
-            ignoreWhitespace={ignoreWhitespace}
-            onIgnoreWhitespaceChange={setIgnoreWhitespace}
-            syntaxHighlighting={syntaxHighlighting}
-            onSyntaxHighlightingChange={setSyntaxHighlighting}
+            // ignoreWhitespace={ignoreWhitespace}
+            // onIgnoreWhitespaceChange={setIgnoreWhitespace}
+            // syntaxHighlighting={syntaxHighlighting}
+            // onSyntaxHighlightingChange={setSyntaxHighlighting}
           />
           
           {comparisonMode !== 'sideBySide' && (
@@ -728,8 +728,8 @@ const InlineDiffComparison = memo(
                   lightTheme={lightTheme}
                   darkTheme={darkTheme}
                   unifiedBlocks={unifiedBlocks}
-                  ignoreWhitespace={ignoreWhitespace}
-                  syntaxHighlighting={syntaxHighlighting}
+                  // ignoreWhitespace={ignoreWhitespace}
+                  // syntaxHighlighting={syntaxHighlighting}
                 />
               ) : (
                 <div className={diffPanelStyles}>
