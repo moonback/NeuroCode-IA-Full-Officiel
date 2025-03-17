@@ -82,10 +82,31 @@ const QuickActions = ({ onAction, chatStarted }: { onAction: (action: string) =>
   if (!chatStarted) return null;
 
   const actions = [
-    { label: 'Continue', icon: 'i-ph:arrow-right', command: 'Continue' },
-    { label: 'CSS', icon: 'i-ph:paint-brush', command: 'Perfectionne le CSS pour une meilleure présentation' },
-    // { label: 'Reformule', icon: 'i-ph:arrows-clockwise', command: 'Reformule la dernière réponse pour plus de clarté' },
-    // { label: 'Corrige', icon: 'i-ph:warning', command: 'Corrige et perfectionne les erreurs dans le message' },
+    { 
+      label: 'Continue', 
+      icon: 'i-ph:arrow-right', 
+      command: 'Continue with the current conversation'
+    },
+    { 
+      label: 'CSS', 
+      icon: 'i-ph:paint-brush', 
+      command: 'Optimize and enhance the CSS code for better visual presentation and responsiveness' 
+    },
+    { 
+      label: 'Refactor', 
+      icon: 'i-ph:arrows-clockwise', 
+      command: 'Refactor and improve the code structure for better maintainability and performance'
+    },
+    { 
+      label: 'Debug', 
+      icon: 'i-ph:bug', 
+      command: 'Help identify and fix potential issues or bugs in the code'
+    },
+    {
+      label: 'Explain', 
+      icon: 'i-ph:book-open',
+      command: 'Provide a detailed explanation of how the code works'
+    }
   ];
 
   return (
