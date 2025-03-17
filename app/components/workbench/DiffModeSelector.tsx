@@ -1,24 +1,16 @@
 import { memo, useState } from 'react';
 import { classNames } from '~/utils/classNames';
 
-export type DiffComparisonMode = 'inline' | 'sideBySide' | 'ignoreSpaces' | 'syntaxHighlight';
+export type DiffComparisonMode = 'inline' | 'sideBySide';
 
 interface DiffModeSelectorProps {
   currentMode: DiffComparisonMode;
   onModeChange: (mode: DiffComparisonMode) => void;
-  ignoreWhitespace: boolean;
-  onIgnoreWhitespaceChange: (ignore: boolean) => void;
-  syntaxHighlighting: boolean;
-  onSyntaxHighlightingChange: (highlight: boolean) => void;
 }
 
 export const DiffModeSelector = memo(({ 
   currentMode, 
-  onModeChange,
-  ignoreWhitespace,
-  onIgnoreWhitespaceChange,
-  syntaxHighlighting,
-  onSyntaxHighlightingChange
+  onModeChange
 }: DiffModeSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -36,10 +28,7 @@ export const DiffModeSelector = memo(({
         return 'i-ph:list-bullets';
       case 'sideBySide':
         return 'i-ph:columns';
-      case 'ignoreSpaces':
-        return 'i-ph:selection-background';
-      case 'syntaxHighlight':
-        return 'i-ph:paint-brush';
+
       default:
         return 'i-ph:list-bullets';
     }
@@ -51,10 +40,7 @@ export const DiffModeSelector = memo(({
         return 'Ligne par ligne';
       case 'sideBySide':
         return 'Côte à côte';
-      case 'ignoreSpaces':
-        return 'Ignorer espaces';
-      case 'syntaxHighlight':
-        return 'Diff syntaxique';
+
       default:
         return 'Ligne par ligne';
     }
@@ -107,39 +93,7 @@ export const DiffModeSelector = memo(({
               {currentMode === 'sideBySide' && <div className="i-ph:check ml-auto" />}
             </button>
 
-            <div className="border-t border-bolt-elements-borderColor my-2"></div>
-            
-            <div className="text-xs font-medium text-bolt-elements-textTertiary px-2 py-1">
-              Options
-            </div>
-            
-            <button
-              onClick={() => onIgnoreWhitespaceChange(!ignoreWhitespace)}
-              className={classNames(
-                'w-full px-2 py-1.5 text-sm text-left rounded-md flex items-center gap-2 transition-colors',
-                ignoreWhitespace
-                  ? 'bg-green-500/20 text-green-500'
-                  : 'text-bolt-elements-textSecondary bg-bolt-elements-background-depth-1 hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
-              )}
-            >
-              <div className="i-ph:selection-background" />
-              Ignorer espaces
-              {ignoreWhitespace && <div className="i-ph:check ml-auto" />}
-            </button>
-            
-            <button
-              onClick={() => onSyntaxHighlightingChange(!syntaxHighlighting)}
-              className={classNames(
-                'w-full px-2 py-1.5 text-sm text-left rounded-md flex items-center gap-2 transition-colors',
-                syntaxHighlighting
-                  ? 'bg-green-500/20 text-green-500'
-                  : 'text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary'
-              )}
-            >
-              <div className="i-ph:paint-brush" />
-              Diff syntaxique
-              {syntaxHighlighting && <div className="i-ph:check ml-auto" />}
-            </button>
+
           </div>
         </div>
       )}
