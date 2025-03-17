@@ -151,8 +151,11 @@ export const Messages = React.forwardRef<HTMLDivElement, MessagesProps>((props: 
           })
         : null}
       {isStreaming && (
-        <div className="flex justify-center w-full mt-4">
-          <div className="i-svg-spinners:3-dots-fade text-4xl text-bolt-elements-textPrimary animate-fade-in" />
+        <div className="flex justify-center items-center w-full mt-4 min-h-[40px]">
+          <div className="relative">
+            <div className="i-svg-spinners:3-dots-fade text-4xl text-green-500 animate-pulse animate-fade-in" />
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent to-bolt-elements-background/20" />
+          </div>
         </div>
       )}
     </div>
