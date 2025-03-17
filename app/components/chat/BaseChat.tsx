@@ -83,9 +83,9 @@ const QuickActions = ({ onAction, chatStarted }: { onAction: (action: string) =>
 
   const actions = [
     { label: 'Continue', icon: 'i-ph:arrow-right', command: 'Continue' },
-    { label: 'CSS', icon: 'i-ph:arrow-clockwise', command: 'Perfectionne le CSS pour une meilleure présentation' },
-    { label: 'Reformule', icon: 'i-ph:arrows-clockwise', command: 'Reformule la dernière réponse pour plus de clarté' },
-    { label: 'Corrige', icon: 'i-ph:warning', command: 'Corrige et perfectionne les erreurs dans le message' },
+    { label: 'CSS', icon: 'i-ph:paint-brush', command: 'Perfectionne le CSS pour une meilleure présentation' },
+    // { label: 'Reformule', icon: 'i-ph:arrows-clockwise', command: 'Reformule la dernière réponse pour plus de clarté' },
+    // { label: 'Corrige', icon: 'i-ph:warning', command: 'Corrige et perfectionne les erreurs dans le message' },
   ];
 
   return (
