@@ -551,14 +551,14 @@ export const Menu = () => {
                     <span>{x.label}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {x.id === 'optimized' && (
-                      <span className="text-xs text-green-500">(Optimisé)</span>
+                    {x.id === 'smallModel' && (
+                      <span className="text-xs px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-500">(Petit LLM)</span>
                     )}
                     {x.id === 'default' && (
-                      <span className="text-xs text-green-500">(Officiel)</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-500">(Officiel)</span>
                     )}
                     {x.id === 'test' && (
-                      <span className="text-xs text-green-500">(UI/UX)</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-500">(UI/UX)</span>
                     )}
                     {promptId === x.id && (
                       <div className="i-ph:check w-4 h-4 text-green-500" />
