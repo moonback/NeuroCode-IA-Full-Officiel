@@ -1,4 +1,4 @@
-import type { Message } from 'ai';
+import type { Message, ToolInvocation } from 'ai';
 import React, { Fragment } from 'react';
 import { classNames } from '~/utils/classNames';
 import { AssistantMessage } from './AssistantMessage';
@@ -108,6 +108,15 @@ export const Messages = React.forwardRef<HTMLDivElement, MessagesProps>((props: 
             const isFirst = index === 0;
             const isLast = index === messages.length - 1;
             const isHidden = annotations?.includes('hidden');
+            const toolInvocations: ToolInvocation[] = [];
+
+              if (message.parts) {
+                message.parts.forEach((part) => {
+                  if (part.type === 'tool-invocation') {
+                    toolInvocations.push(part.toolInvocation);
+                  }
+                });
+              }
 
             if (isHidden) {
               return <Fragment key={index} />;
@@ -135,6 +144,7 @@ export const Messages = React.forwardRef<HTMLDivElement, MessagesProps>((props: 
                     <AssistantMessage
                       content={content}
                       annotations={message.annotations}
+                      toolInvocations={toolInvocations}
                       isLast={isLast}
                       isStreaming={isStreaming}
                       onSuggestionClick={onSuggestionClick}

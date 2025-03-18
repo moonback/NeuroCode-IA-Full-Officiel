@@ -8,6 +8,7 @@ import { LLMManager } from '~/lib/modules/llm/manager';
 import type { ModelInfo } from '~/lib/modules/llm/types';
 import { getApiKeysFromCookie, getProviderSettingsFromCookie } from '~/lib/api/cookies';
 import { createScopedLogger } from '~/utils/logger';
+import { MCPManager } from '~/lib/modules/mcp/manager';
 
 export async function action(args: ActionFunctionArgs) {
   return llmCallAction(args);
@@ -37,22 +38,25 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
 
   // validate 'model' and 'provider' fields
   if (!model || typeof model !== 'string') {
-    throw new Response('Modèle invalide ou manquant', {
+    throw new Response('Invalid or missing model', {
       status: 400,
-      statusText: 'Requête invalide',
+      statusText: 'Bad Request',
     });
   }
 
   if (!providerName || typeof providerName !== 'string') {
-    throw new Response('Fournisseur invalide ou manquant', {
+    throw new Response('Invalid or missing provider', {
       status: 400,
-      statusText: 'Requête invalide',
+      statusText: 'Bad Request',
     });
   }
 
   const cookieHeader = request.headers.get('Cookie');
   const apiKeys = getApiKeysFromCookie(cookieHeader);
   const providerSettings = getProviderSettingsFromCookie(cookieHeader);
+
+  const mcpManager = await MCPManager.getInstance(context);
+  const mcpTools = mcpManager.tools;
 
   if (streamOutput) {
     try {
@@ -69,6 +73,7 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
         env: context.cloudflare?.env as any,
         apiKeys,
         providerSettings,
+        tools: mcpTools,
       });
 
       return new Response(result.textStream, {
@@ -81,15 +86,15 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       console.log(error);
 
       if (error instanceof Error && error.message?.includes('API key')) {
-        throw new Response('Clé API invalide ou manquante', {
+        throw new Response('Invalid or missing API key', {
           status: 401,
-          statusText: 'Non autorisé',
+          statusText: 'Unauthorized',
         });
       }
 
       throw new Response(null, {
         status: 500,
-        statusText: 'Erreur interne du serveur',
+        statusText: 'Internal Server Error',
       });
     }
   } else {
@@ -98,7 +103,7 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       const modelDetails = models.find((m: ModelInfo) => m.name === model);
 
       if (!modelDetails) {
-        throw new Error('Modèle non trouvé');
+        throw new Error('Model not found');
       }
 
       const dynamicMaxTokens = modelDetails && modelDetails.maxTokenAllowed ? modelDetails.maxTokenAllowed : MAX_TOKENS;
@@ -106,10 +111,10 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       const providerInfo = PROVIDER_LIST.find((p) => p.name === provider.name);
 
       if (!providerInfo) {
-        throw new Error('Fournisseur non trouvé');
+        throw new Error('Provider not found');
       }
 
-      logger.info(`Génération de la réponse Fournisseur: ${provider.name}, Modèle: ${modelDetails.name}`);
+      logger.info(`Generating response Provider: ${provider.name}, Model: ${modelDetails.name}`);
 
       const result = await generateText({
         system,
@@ -126,9 +131,11 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
           providerSettings,
         }),
         maxTokens: dynamicMaxTokens,
-        toolChoice: 'none',
+        maxSteps: 100,
+        toolChoice: 'auto',
+        tools: mcpTools,
       });
-        logger.info(`Réponse générée`);
+      logger.info(`Generated response`);
 
       return new Response(JSON.stringify(result), {
         status: 200,
@@ -140,15 +147,15 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       console.log(error);
 
       if (error instanceof Error && error.message?.includes('API key')) {
-        throw new Response('Clé API invalide ou manquante', {
+        throw new Response('Invalid or missing API key', {
           status: 401,
-          statusText: 'Non autorisé',
+          statusText: 'Unauthorized',
         });
       }
 
       throw new Response(null, {
         status: 500,
-        statusText: 'Erreur interne du serveur',
+        statusText: 'Internal Server Error',
       });
     }
   }
