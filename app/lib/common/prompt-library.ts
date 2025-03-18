@@ -1,6 +1,7 @@
 import { getSystemPrompt } from '~/lib/common/prompts/prompts';
 import { getSystemPrompt as optimized } from '~/lib/common/prompts/optimized';
 import { getSystemPrompt as testOptimized } from '~/lib/common/prompts/test-prompt';
+import smallModel from './prompts/small-model';
 
 import { WORK_DIR, MODIFICATIONS_TAG_NAME } from '~/utils/constants';
 import { allowedHTMLElements } from '~/utils/markdown';
@@ -36,6 +37,11 @@ export class PromptLibrary {
       label: 'NeuroCode UI/UX',
       description: 'Prompt pour la conception d\'interfaces utilisateur',
       get: (options) => testOptimized(options.cwd, options.customPrompt),
+    },
+    smallModel: {
+      label: 'Small Model Prompt',
+      description: 'Compact prompt for small LLMs (7B or less) to help with code generation',
+      get: (options) => smallModel(options),
     },
     
     
