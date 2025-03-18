@@ -26,12 +26,14 @@ async function getModelList(options: {
 const logger = createScopedLogger('api.llmcall');
 
 async function llmCallAction({ context, request }: ActionFunctionArgs) {
-  const { system, message, model, provider, streamOutput } = await request.json<{
+  const { system, message, model, provider, streamOutput, retryAttempts = 3, retryDelay = 1000 } = await request.json<{
     system: string;
     message: string;
     model: string;
     provider: ProviderInfo;
     streamOutput?: boolean;
+    retryAttempts?: number;
+    retryDelay?: number;
   }>();
 
   const { name: providerName } = provider;
@@ -61,6 +63,8 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
   if (streamOutput) {
     try {
       const result = await streamText({
+        retryAttempts,
+        retryDelay,
         options: {
           system,
         },
@@ -116,7 +120,12 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
 
       logger.info(`Generating response Provider: ${provider.name}, Model: ${modelDetails.name}`);
 
-      const result = await generateText({
+      let lastError: Error | null = null;
+      let result;
+
+      for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+        try {
+          result = await generateText({
         system,
         messages: [
           {
@@ -135,7 +144,22 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
         toolChoice: 'auto',
         tools: mcpTools,
       });
-      logger.info(`Generated response`);
+          logger.info(`Generated response`);
+          break;
+        } catch (error) {
+          lastError = error as Error;
+          if (attempt === retryAttempts) {
+            logger.error(`Failed after ${retryAttempts} attempts:`, error);
+            throw error;
+          }
+          logger.warn(`Attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        }
+      }
+
+      if (!result) {
+        throw lastError || new Error('LLM call failed for unknown reason');
+      }
 
       return new Response(JSON.stringify(result), {
         status: 200,

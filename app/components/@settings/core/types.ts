@@ -18,7 +18,8 @@ export type TabType =
   | 'task-manager'
   | 'tab-management'
   | 'sync'
-  | 'custom-prompt';
+  | 'custom-prompt'
+  | 'mcp';
 
 export type WindowType = 'user' | 'developer';
 
@@ -85,6 +86,7 @@ export const TAB_LABELS: Record<TabType, string> = {
   'tab-management': 'Tab Management',
   sync: 'Sync',
   'custom-prompt': 'Custom Prompt',
+  'mcp': 'MCP Configuration',
 };
 
 export const categoryLabels: Record<SettingCategory, string> = {

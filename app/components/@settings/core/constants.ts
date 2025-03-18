@@ -17,6 +17,7 @@ export const TAB_ICONS: Record<TabType, string> = {
   'tab-management': 'i-ph:squares-four-fill',
   sync: 'i-ph:arrows-clockwise-fill',
   'custom-prompt': 'i-ph:pencil-fill',
+  'mcp': 'i-ph:wrench-fill',
 };
 
 export const TAB_LABELS: Record<TabType, string> = {
@@ -36,6 +37,7 @@ export const TAB_LABELS: Record<TabType, string> = {
   'tab-management': 'Gestion des onglets',
   sync: 'Synchronisation de fichiers',
   'custom-prompt': 'Instructions personnalisées',
+  'mcp': 'Configuration MCP',
 };
 
 export const TAB_DESCRIPTIONS: Record<TabType, string> = {
@@ -55,6 +57,7 @@ export const TAB_DESCRIPTIONS: Record<TabType, string> = {
   'tab-management': 'Configurez les onglets visibles et leur ordre',
   sync: 'Configurez les paramètres de synchronisation et consultez l\'état de la synchronisation',
   'custom-prompt': 'Configurez les instructions système personnalisées',
+  'mcp': 'Configurez et gérez les outils MCP disponibles',
 };
 
 export const DEFAULT_TAB_CONFIG = [
@@ -67,6 +70,7 @@ export const DEFAULT_TAB_CONFIG = [
   { id: 'notifications', visible: true, window: 'user' as const, order: 5 },
   { id: 'event-logs', visible: true, window: 'user' as const, order: 6 },
   { id: 'custom-prompt', visible: true, window: 'user' as const, order: 7 },
+  { id: 'mcp', visible: true, window: 'user' as const, order: 8 },
 
   // User Window Tabs (In dropdown, initially hidden)
   // { id: 'profile', visible: false, window: 'user' as const, order: 7 },

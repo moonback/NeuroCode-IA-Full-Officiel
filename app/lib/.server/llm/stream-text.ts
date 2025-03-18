@@ -29,7 +29,11 @@ export async function streamText(props: {
   summary?: string;
   messageSliceId?: number;
   tools?: Record<string, any>;
+  retryAttempts?: number;
+  retryDelay?: number;
 }) {
+  const retryAttempts = props.retryAttempts ?? 3;
+  const retryDelay = props.retryDelay ?? 1000;
   const {
     messages,
     env: serverEnv,
@@ -141,9 +145,10 @@ ${props.summary}
 
   logger.info(`Sending llm call to ${provider.name} with model ${modelDetails.name}`);
 
-  // console.log(systemPrompt,processedMessages);
-
-  return await _streamText({
+  let lastError: Error | null = null;
+  for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+    try {
+      return await _streamText({
     model: provider.getModelInstance({
       model: modelDetails.name,
       serverEnv,
@@ -157,4 +162,16 @@ ${props.summary}
     tools,
     ...options,
   });
+    } catch (error) {
+      lastError = error as Error;
+      if (attempt === retryAttempts) {
+        logger.error(`Failed after ${retryAttempts} attempts:`, error);
+        throw error;
+      }
+      logger.warn(`Attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
+
+  throw lastError || new Error('Stream text failed for unknown reason');
 }
