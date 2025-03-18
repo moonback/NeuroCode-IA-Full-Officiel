@@ -243,11 +243,11 @@ export const ModelSelector = ({
 
   // Mettre à jour les styles pour une meilleure présentation
   const dropdownStyles = {
-    container: 'rounded-xl shadow-lg border border-gray-200/80 dark:border-gray-700 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80',
-    item: 'px-4 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors duration-200',
-    selectedItem: 'bg-green-50/50 dark:bg-green-900/20',
-    search: 'bg-gray-50/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm',
-    favorite: 'text-yellow-400 hover:text-yellow-500 dark:hover:text-yellow-300'
+    container: 'rounded-lg shadow-lg border border-bolt-elements-borderColor backdrop-blur-sm bg-bolt-elements-background-depth-2 animate-in fade-in-80 zoom-in-95',
+    item: 'px-4 py-3 hover:bg-bolt-elements-background-depth-3 transition-colors duration-200 cursor-pointer',
+    selectedItem: 'bg-green-50/30 dark:bg-green-900/20 border-l-2 border-green-500',
+    search: 'bg-bolt-elements-background-depth-1 border border-bolt-elements-borderColor backdrop-blur-sm',
+    favorite: 'text-yellow-400 hover:text-yellow-500 dark:hover:text-yellow-300 transition-colors duration-200'
   };
 
   if (providerList.length === 0) {
@@ -290,7 +290,7 @@ export const ModelSelector = ({
               </span>
               <span
                 className={classNames(
-                  'i-ph:caret-down transition-transform duration-200 text-gray-400 dark:text-gray-500',
+                  'i-ph:caret-down transition-transform duration-300 text-bolt-elements-textTertiary',
                   isProviderDropdownOpen ? 'rotate-180' : undefined
                 )}
               />
@@ -317,7 +317,7 @@ export const ModelSelector = ({
                     className={classNames(
                       'w-full pl-10 pr-4 py-2 rounded-lg text-sm',
                       dropdownStyles.search,
-                      'text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500',
+                      'text-bolt-elements-textPrimary placeholder:text-bolt-elements-textTertiary',
                       'focus:outline-none focus:ring-2 focus:ring-green-500',
                       'transition-all duration-200 ease-in-out'
                     )}
@@ -326,12 +326,12 @@ export const ModelSelector = ({
                     aria-label="Rechercher un fournisseur"
                   />
                   <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                    <span className="i-ph:magnifying-glass text-gray-400 dark:text-gray-500 text-lg" />
+                    <span className="i-ph:magnifying-glass text-bolt-elements-textTertiary text-lg" />
                   </div>
                 </div>
               </div>
 
-              <div className="max-h-60 overflow-y-auto sm:scrollbar-none">
+              <div className="max-h-60 overflow-y-auto custom-scrollbar">
                 {filteredProviders.length === 0 ? (
                   <div className="px-4 py-3 text-sm text-gray-400 dark:text-white">Aucun fournisseur trouvé</div>
                 ) : (
@@ -374,12 +374,12 @@ export const ModelSelector = ({
         <div className="relative flex-1 lg:max-w-[70%]" ref={modelDropdownRef}>
           <div
             className={classNames(
-              'w-full p-3 rounded-xl border',
-              'bg-white/80 dark:bg-gray-900/80 text-gray-900 dark:text-gray-100 backdrop-blur-sm',
+              'w-full p-3 rounded-lg border',
+              'bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary backdrop-blur-sm',
               'focus-within:outline-none focus-within:ring-2 focus-within:ring-green-500',
               'transition-all duration-200 ease-in-out',
-              'hover:border-gray-300/50 dark:hover:border-gray-600/50',
-              isModelDropdownOpen ? 'ring-2 ring-green-500' : undefined,
+              'hover:border-bolt-elements-borderColorHover',
+              isProviderDropdownOpen ? 'ring-2 ring-green-500 border-green-500/50' : undefined,
               disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
             )}
             onClick={() => !disabled && toggleDropdown('model')}
@@ -433,7 +433,7 @@ export const ModelSelector = ({
                     aria-label="Rechercher un modèle"
                   />
                   <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                    <span className="i-ph:magnifying-glass text-gray-400 dark:text-gray-500 text-lg" />
+                    <span className="i-ph:magnifying-glass text-bolt-elements-textTertiary text-lg" />
                   </div>
                 </div>
                 
@@ -465,7 +465,7 @@ export const ModelSelector = ({
                       className={classNames(
                         'px-3 py-2.5 text-sm cursor-pointer group',
                         'bg-bolt-elements-background-depth-2',
-                        'border border-bolt-elements-borderColor',
+                        'border border-transparent',
                         'text-bolt-elements-textPrimary',
                         'transition-all duration-200 ease-in-out',
                         'hover:border-bolt-elements-borderColorHover',
@@ -490,9 +490,10 @@ export const ModelSelector = ({
                           }}
                           className={classNames(
                             'p-1 rounded-md',
-                            'bg-bolt-elements-background-depth-2',
+                            'bg-bolt-elements-background-depth-3',
                             'border border-bolt-elements-borderColor',
-                            favorites[modelOption.name] ? 'text-yellow-400' : 'text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 focus:opacity-100'
+                            'transition-all duration-200',
+                            favorites[modelOption.name] ? 'text-yellow-400' : 'text-bolt-elements-textTertiary opacity-0 group-hover:opacity-100 focus:opacity-100'
                           )}
                           aria-label={favorites[modelOption.name] ? "Retirer des favoris" : "Ajouter aux favoris"}
                         >
