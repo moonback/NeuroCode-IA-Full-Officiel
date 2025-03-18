@@ -781,13 +781,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                             </Tooltip.Content>
                           </Tooltip.Portal>
                         </Tooltip.Root>
-                        <IconButton
-                      title="Afficher/Masquer les prompts d'exemple"
-                      className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
-                      onClick={() => setIsExamplePromptsVisible(!isExamplePromptsVisible)}
-                    >
-                      <div className={`i-ph:caret-${isExamplePromptsVisible ? 'down' : 'right'} text-xl`} />
-                    </IconButton>
+                        
                         <IconButton
                           title="Améliorer le prompt"
                           disabled={input.length === 0 || enhancingPrompt}
@@ -865,7 +859,13 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
               <div className="flex flex-col justify-center mt-8 gap-6">
                 <div className="flex justify-center gap-2">
                   <div className="flex items-center gap-2">
-                    
+                  <IconButton
+                      title="Afficher/Masquer les prompts d'exemple"
+                      className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
+                      onClick={() => setIsExamplePromptsVisible(!isExamplePromptsVisible)}
+                    >
+                      <div className={`i-ph:caret-${isExamplePromptsVisible ? 'down' : 'right'} text-xl`} />
+                    </IconButton>
                   </div>
                 </div>
                 {isExamplePromptsVisible && (
