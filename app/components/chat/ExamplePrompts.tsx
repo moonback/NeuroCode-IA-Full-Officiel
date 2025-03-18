@@ -320,18 +320,18 @@ export function ExamplePrompts({ sendMessage }: { sendMessage?: (event: React.UI
                 <span>Catégorie</span>
               </button>
               
-              <button
-                type="submit"
-                className="
+            <button
+              type="submit"
+              className="
                   px-5 py-3 rounded-lg
                   bg-green-500 hover:bg-green-600
                   text-white font-medium
-                  transition-colors duration-200
+                transition-colors duration-200
                   shadow-md
-                "
-              >
-                {editingPromptId ? 'Modifier' : 'Enregistrer'}
-              </button>
+              "
+            >
+              {editingPromptId ? 'Modifier' : 'Enregistrer'}
+            </button>
             </div>
             
             {showAddCategory && (
@@ -481,11 +481,11 @@ export function ExamplePrompts({ sendMessage }: { sendMessage?: (event: React.UI
           >
             {paginatedPrompts.length > 0 ? (
               paginatedPrompts.map((prompt) => (
-                <div key={prompt.id} className="relative group">
-                  <button
-                    onClick={(event) => {
-                      sendMessage?.(event, prompt.text);
-                    }}
+              <div key={prompt.id} className="relative group">
+                <button
+                  onClick={(event) => {
+                    sendMessage?.(event, prompt.text);
+                  }}
                     className="
                       border border-bolt-elements-borderColor rounded-full 
                       bg-gray-50 hover:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-900 
@@ -499,51 +499,79 @@ export function ExamplePrompts({ sendMessage }: { sendMessage?: (event: React.UI
                         {prompt.category}
                       </span>
                     )}
-                  </button>
-                  {savedPrompts.some(p => p.id === prompt.id) && (
-                    <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => handleEditPrompt(prompt.id)}
-                        className="
+                </button>
+                {savedPrompts.some(p => p.id === prompt.id) && (
+                  <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => handleEditPrompt(prompt.id)}
+                      className="
                           p-1.5 rounded-full 
-                          bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3
-                          text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary
-                          transition-colors duration-200
-                          shadow-sm
-                        "
-                        aria-label="Modifier"
-                      >
+                        bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3
+                        text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary
+                        transition-colors duration-200
+                        shadow-sm
+                      "
+                      aria-label="Modifier"
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleDeletePrompt(prompt.id)}
-                        className="
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDeletePrompt(prompt.id)}
+                      className="
                           p-1.5 rounded-full 
                           bg-bolt-elements-background-depth-2 hover:bg-red-500
                           text-bolt-elements-textSecondary hover:text-white
-                          transition-colors duration-200
-                          shadow-sm
-                        "
-                        aria-label="Supprimer"
-                      >
+                        transition-colors duration-200
+                        shadow-sm
+                      "
+                      aria-label="Supprimer"
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </div>
               ))
             ) : (
-              <div className="text-center py-8 text-bolt-elements-textSecondary">
-                <p>Aucun prompt dans cette catégorie</p>
+              <div className="text-center py-5 px-4 bg-bolt-elements-background-depth-1 rounded-lg border border-bolt-elements-borderColor shadow-sm mx-auto">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-6 w-6 text-green-500"
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                    />
+                  </svg>
+                  <p className="text-bolt-elements-textSecondary text-sm font-medium">
+                    {activeCategory 
+                      ? `Aucun prompt dans "${activeCategory}"` 
+                      : "Aucun prompt disponible"}
+                  </p>
+                </div>
                 <button
                   onClick={toggleCreatePrompt}
-                  className="mt-2 text-green-500 hover:text-green-600 transition-colors"
+                  className="
+                    inline-flex items-center gap-1.5 px-3 py-1.5 
+                    text-xs font-medium text-white
+                    bg-green-500 hover:bg-green-600
+                    rounded-md shadow-sm transition-colors duration-200
+                  "
                 >
-                  Créer un nouveau prompt
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Créer un prompt</span>
                 </button>
               </div>
             )}
