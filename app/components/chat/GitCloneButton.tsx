@@ -84,13 +84,16 @@ export default function GitCloneButton({ importChat, className }: GitCloneButton
 
   const handleClone = async (repoUrl: string) => {
     if (!ready) {
+      toast.info('Git n\'est pas encore prêt');
       return;
     }
 
     setLoading(true);
+    toast.info(`Clonage du dépôt ${repoUrl}...`);
 
     try {
       const { workdir, data } = await gitClone(repoUrl);
+      toast.success('Référentiel cloné avec succès !');
 
       if (importChat) {
         const filePaths = Object.keys(data).filter((filePath) => !ig.ignores(filePath));
@@ -155,7 +158,7 @@ export default function GitCloneButton({ importChat, className }: GitCloneButton
 
         const filesMessage: Message = {
           role: 'assistant',
-          content: `Dépôt Git cloné avec succès : ${repoUrl}\nEmplacement local : ${workdir}\n\nStatut : Opération terminée
+          content: `✅ Dépôt Git cloné avec succès: ${repoUrl}\n📁 Emplacement local: ${workdir}\n\n📊 Statistiques:\n- Fichiers importés: ${fileContents.length}\n- Fichiers ignorés: ${skippedFiles.length}\n\nStatut : Opération terminée
 ${
   skippedFiles.length > 0
     ? `\nFichiers ignorés (${skippedFiles.length}):
