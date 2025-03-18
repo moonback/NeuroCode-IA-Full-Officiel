@@ -188,6 +188,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     const profile = useStore(profileStore);
     const modelSettingsRef = useRef<HTMLDivElement>(null);
     const { contextOptimizationEnabled } = useSettings();
+    const [isExamplePromptsVisible, setIsExamplePromptsVisible] = useState(false);
 
     useEffect(() => {
       if (data) {
@@ -780,7 +781,13 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                             </Tooltip.Content>
                           </Tooltip.Portal>
                         </Tooltip.Root>
-                        
+                        <IconButton
+                      title="Afficher/Masquer les prompts d'exemple"
+                      className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
+                      onClick={() => setIsExamplePromptsVisible(!isExamplePromptsVisible)}
+                    >
+                      <div className={`i-ph:caret-${isExamplePromptsVisible ? 'down' : 'right'} text-xl`} />
+                    </IconButton>
                         <IconButton
                           title="Améliorer le prompt"
                           disabled={input.length === 0 || enhancingPrompt}
@@ -846,8 +853,10 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                       >
                         <div className="i-ph:x-circle bg-red-500/10 text-lg text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary bg-red-500/50 transition-colors duration-200" />
                       </IconButton>
+                      
                       )}
                     </div>
+                    
                   </div>
                 </div>
               </div>
@@ -856,12 +865,15 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
               <div className="flex flex-col justify-center mt-8 gap-6">
                 <div className="flex justify-center gap-2">
                   <div className="flex items-center gap-2">
+                    
                   </div>
                 </div>
-                <ExamplePrompts 
-                  sendMessage={sendMessage}
-                  // className="bg-gray-900/50 p-6 rounded-xl border border-gray-800/50"
-                />
+                {isExamplePromptsVisible && (
+                  <ExamplePrompts 
+                    sendMessage={sendMessage}
+                    // className="bg-gray-900/50 p-6 rounded-xl border border-gray-800/50"
+                  />
+                )}
               </div>
             )}
           </div>
