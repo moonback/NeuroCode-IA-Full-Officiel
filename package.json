@@ -26,8 +26,8 @@
     "typegen": "wrangler types",
     "preview": "pnpm run build && pnpm run start",
     "prepare": "husky",
-    "clean": "node scripts/clean.js"
-  },
+"clean": "node scripts/clean.js",
+    "update-llms-docs": "node scripts/update-llms-docs.js"  },
   "engines": {
     "node": ">=18.18.0"
   },

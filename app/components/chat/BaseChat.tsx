@@ -65,7 +65,7 @@ interface BaseChatProps {
   handleStop?: () => void;
   sendMessage?: (event: React.UIEvent, messageInput?: string) => void;
   handleInputChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  enhancePrompt?: () => void;
+  enhancePrompt?: (input?: string) => void;
   importChat?: (description: string, messages: Message[]) => Promise<void>;
   exportChat?: () => void;
   uploadedFiles?: File[];
@@ -787,7 +787,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           disabled={input.length === 0 || enhancingPrompt}
                           className={classNames('transition-all', enhancingPrompt ? 'opacity-100' : '')}
                           onClick={() => {
-                            enhancePrompt?.();
+                            enhancePrompt?.(input);
+
                             toast('Prompt amélioré!');
                           }}
                         >

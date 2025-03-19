@@ -266,13 +266,13 @@ export const ChatImpl = memo(
       });
     }, [messages, isLoading, parseMessages]);
 
-    const scrollTextArea = () => {
-      const textarea = textareaRef.current;
+    // const scrollTextArea = () => {
+    //   const textarea = textareaRef.current;
 
-      if (textarea) {
-        textarea.scrollTop = textarea.scrollHeight;
-      }
-    };
+    //   if (textarea) {
+    //     textarea.scrollTop = textarea.scrollHeight;
+    //   }
+    // };
 
     const abort = () => {
       stop();
@@ -700,17 +700,8 @@ const contentWithFilesInfo = textFilesInfo ? `${textFilesInfo}\n\n${messageConte
             content: parsedMessages[i] || '',
           };
         })}
-        enhancePrompt={() => {
-          enhancePrompt(
-            input,
-            (input) => {
-              setInput(input);
-              scrollTextArea();
-            },
-            model,
-            provider,
-            apiKeys,
-          );
+        enhancePrompt={(_inputText) => {
+          enhancePrompt(input || '', setInput, model, provider, apiKeys, messages);
         }}
         uploadedFiles={uploadedFiles}
         setUploadedFiles={setUploadedFiles}

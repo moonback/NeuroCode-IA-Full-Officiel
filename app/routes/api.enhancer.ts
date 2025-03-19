@@ -4,6 +4,7 @@ import { stripIndents } from '~/utils/stripIndent';
 import type { ProviderInfo } from '~/types/model';
 import { getApiKeysFromCookie, getProviderSettingsFromCookie } from '~/lib/api/cookies';
 import { createScopedLogger } from '~/utils/logger';
+import { autoEnhancePrompt, enhancePromptFromHistory } from '~/lib/common/llms-docs';
 
 export async function action(args: ActionFunctionArgs) {
   return enhancerAction(args);
@@ -12,11 +13,12 @@ export async function action(args: ActionFunctionArgs) {
 const logger = createScopedLogger('api.enhancher');
 
 async function enhancerAction({ context, request }: ActionFunctionArgs) {
-  const { message, model, provider } = await request.json<{
+  const { message, model, provider, chatHistory } = await request.json<{
     message: string;
     model: string;
     provider: ProviderInfo;
     apiKeys?: Record<string, string>;
+    chatHistory?: Array<{ content: string }>;
   }>();
 
   const { name: providerName } = provider;
@@ -39,6 +41,14 @@ async function enhancerAction({ context, request }: ActionFunctionArgs) {
   const cookieHeader = request.headers.get('Cookie');
   const apiKeys = getApiKeysFromCookie(cookieHeader);
   const providerSettings = getProviderSettingsFromCookie(cookieHeader);
+
+  /*
+   * Check if the message mentions any libraries we have documentation for
+   * If chat history is provided, also check if previous messages mentioned libraries
+   */
+  const enhancedMessage = chatHistory?.length
+    ? enhancePromptFromHistory(message, chatHistory)
+    : autoEnhancePrompt(message);
 
   try {
     const result = await streamText({
@@ -72,7 +82,7 @@ async function enhancerAction({ context, request }: ActionFunctionArgs) {
             Do not include any explanations, metadata, or wrapper tags.
 
             <original_prompt>
-              ${message}
+              ${enhancedMessage}
             </original_prompt>
           `,
         },
@@ -110,46 +120,15 @@ async function enhancerAction({ context, request }: ActionFunctionArgs) {
       }
     })();
 
-    const returnStream = new ReadableStream({
-      async start(controller) {
-        try {
-          const reader = result.textStream.getReader();
-          const encoder = new TextEncoder();
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            
-            if (done) {
-              controller.close();
-              break;
-            }
-            
-            const chunk: any = value;
-            
-            if (typeof chunk === 'string') {
-              controller.enqueue(encoder.encode(chunk));
-            } else if (chunk && typeof chunk === 'object' && 'byteLength' in chunk) {
-              controller.enqueue(chunk);
-            } else if (chunk) {
-              controller.enqueue(encoder.encode(String(chunk)));
-            }
-          }
-        } catch (error) {
-          logger.error('Enhanced stream error:', error);
-          controller.error(error);
-        }
-      }
-    });
-
-    return new Response(returnStream, {
+    // Return the text stream directly since it's already text data
+    return new Response(result.textStream, {
       status: 200,
       headers: {
         'Content-Type': 'text/event-stream',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
         'Cache-Control': 'no-cache',
       },
     });
-
   } catch (error: unknown) {
     console.log(error);
 
