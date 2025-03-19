@@ -1,5 +1,4 @@
 
-```markdown
 # NeuroCode - Plateforme de Développement Web Assistée par IA
 
 [![Version](https://img.shields.io/badge/version-1.0.0-important)]()
