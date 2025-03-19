@@ -1,0 +1,76 @@
+# React Query API
+
+React Query is a powerful library for fetching, caching, synchronizing and updating server state in React applications. It provides a declarative API to manage complex data-fetching scenarios.
+
+## Key Features
+
+- **Automatic Background Updates:** Keeps your data fresh with configurable stale times and refetching.
+- **Caching & Deduplication:** Built-in caching with automatic request deduplication.
+- **Error Handling:** Robust error handling with automatic retries.
+- **Pagination & Infinite Scroll:** First-class support for paginated and infinite-loading data.
+- **Prefetching:** Preload data before it's needed for instant rendering.
+
+## Installation
+
+```bash
+npm install @tanstack/react-query
+```
+
+## Basic Usage
+
+```typescript
+import { useQuery, useMutation, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+// Create a client
+const queryClient = new QueryClient()
+
+// Wrap your app with the provider
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+    </QueryClientProvider>
+  )
+}
+
+// Use in components
+function TodoList() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodos
+  })
+
+  if (isLoading) return 'Loading...'
+  return <div>{data.map(todo => <Todo key={todo.id} {...todo} />)}</div>
+}
+
+// Mutations
+function AddTodo() {
+  const mutation = useMutation({
+    mutationFn: newTodo => {
+      return axios.post('/todos', newTodo)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todos'] })
+    }
+  })
+}
+```
+
+## Best Practices
+
+1. **Query Keys:** Use array syntax for query keys to enable automatic background updates.
+2. **Stale Time:** Configure staleTime based on your data's volatility.
+3. **Prefetching:** Use prefetchQuery for anticipated data needs.
+4. **Error Boundaries:** Implement error boundaries for graceful error handling.
+5. **Optimistic Updates:** Use optimistic updates for better UX.
+
+## Advanced Features
+
+- **Infinite Queries:** Handle infinite-loading scenarios.
+- **Parallel Queries:** Fetch multiple queries in parallel.
+- **Dependent Queries:** Chain queries based on previous results.
+- **Suspense Mode:** Integration with React Suspense.
+- **Window Focus Refetching:** Automatic refetch on window focus.
+
+For more information, visit: https://tanstack.com/query/latest

@@ -7,6 +7,7 @@
 
 import fireproofDocs from './fireproof.txt';
 import openrouterDocs from './openrouter.txt';
+import reactQueryDocs from './react-query.txt';
 
 interface LlmsDoc {
   id: string;
@@ -28,7 +29,11 @@ export const availableDocuments: LlmsDoc[] = [
     name: 'OpenRouter API',
     content: openrouterDocs,
   },
-
+  {
+    id: 'react-query',
+    name: 'React Query',
+    content: reactQueryDocs,
+  },
   // Add more docs here as they are added
 ];
 

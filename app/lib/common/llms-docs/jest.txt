@@ -1,0 +1,67 @@
+# Jest Documentation
+
+Jest is a delightful JavaScript Testing Framework with a focus on simplicity. It works with projects using: TypeScript, Node, React, Angular, Vue and more.
+
+## Core Features
+
+- **Zero Config:** Works out of the box for most JavaScript projects
+- **Snapshots:** Capture large objects to simplify testing
+- **Isolated:** Tests run in parallel in their own processes
+- **Code Coverage:** Built-in code coverage reporting
+
+## Installation
+
+```bash
+npm install --save-dev jest @types/jest
+```
+
+## Basic Usage
+
+```typescript
+// sum.ts
+export function sum(a: number, b: number): number {
+  return a + b
+}
+
+// sum.test.ts
+import { sum } from './sum'
+
+describe('sum function', () => {
+  test('adds 1 + 2 to equal 3', () => {
+    expect(sum(1, 2)).toBe(3)
+  })
+
+  test('handles negative numbers', () => {
+    expect(sum(-1, -2)).toBe(-3)
+  })
+})
+
+// React component test
+import { render, screen, fireEvent } from '@testing-library/react'
+import Counter from './Counter'
+
+test('counter increments when button is clicked', () => {
+  render(<Counter />)
+  const button = screen.getByText('+')
+  fireEvent.click(button)
+  expect(screen.getByText('1')).toBeInTheDocument()
+})
+```
+
+## Best Practices
+
+1. **Test Structure:** Use describe blocks to group related tests
+2. **Naming:** Write clear test descriptions that explain expected behavior
+3. **Isolation:** Each test should be independent and self-contained
+4. **Mocking:** Use mocks and spies judiciously
+5. **Coverage:** Aim for meaningful test coverage
+
+## Advanced Features
+
+- **Mock Functions:** Simulate complex behaviors
+- **Timer Mocks:** Control time in tests
+- **DOM Testing:** Full DOM manipulation API
+- **Async Testing:** Handle asynchronous code
+- **Custom Matchers:** Extend Jest's assertion library
+
+For more information, visit: https://jestjs.io

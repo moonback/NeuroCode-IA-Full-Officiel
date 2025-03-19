@@ -1,0 +1,81 @@
+# Redux Documentation
+
+Redux is a predictable state container for JavaScript applications. It helps you write applications that behave consistently, run in different environments, and are easy to test.
+
+## Core Concepts
+
+- **Store:** Holds the state of your application
+- **Actions:** Plain objects describing what happened
+- **Reducers:** Pure functions that specify how state changes
+- **Dispatch:** The way to send actions to update the store
+
+## Installation
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+## Basic Usage
+
+```typescript
+import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { Provider, useSelector, useDispatch } from 'react-redux'
+
+// Create a slice
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    increment: state => { state.value += 1 },
+    decrement: state => { state.value -= 1 }
+  }
+})
+
+// Create store
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer
+  }
+})
+
+// Use in components
+function Counter() {
+  const count = useSelector(state => state.counter.value)
+  const dispatch = useDispatch()
+
+  return (
+    <div>
+      <button onClick={() => dispatch(counterSlice.actions.increment())}>+</button>
+      <span>{count}</span>
+      <button onClick={() => dispatch(counterSlice.actions.decrement())}>-</button>
+    </div>
+  )
+}
+
+// Wrap app with provider
+function App() {
+  return (
+    <Provider store={store}>
+      <Counter />
+    </Provider>
+  )
+}
+```
+
+## Best Practices
+
+1. **Use Redux Toolkit:** It's the official, opinionated way to write Redux logic
+2. **Normalize State Shape:** Keep related data flat and referenced by ID
+3. **Minimize State Duplication:** Avoid storing derived data
+4. **Use Selectors:** Create reusable functions for reading state
+5. **Immutable Updates:** Always update state immutably
+
+## Advanced Features
+
+- **Middleware:** Extend Redux with custom functionality
+- **Thunks:** Handle async logic and side effects
+- **RTK Query:** Built-in data fetching and caching
+- **DevTools:** Debug state changes with Redux DevTools
+- **Persistence:** Save and rehydrate state
+
+For more information, visit: https://redux.js.org

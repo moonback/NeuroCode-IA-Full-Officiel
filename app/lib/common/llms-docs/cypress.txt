@@ -1,0 +1,153 @@
+# Cypress Documentation
+
+Cypress is a next generation front end testing tool built for the modern web. It enables you to write all types of tests: end-to-end, component, integration, and unit tests.
+
+## Installation
+
+```bash
+npm install cypress --save-dev
+```
+
+## Core Features
+
+- **Real-Time Reloads:** Tests reload automatically as you make changes
+- **Time Travel:** Debug with snapshots of each test step
+- **Automatic Waiting:** No need for artificial timeouts
+- **Network Traffic Control:** Stub and test edge cases
+- **Screenshots and Videos:** Automatic capture on test failure
+
+## Basic Usage
+
+```typescript
+// cypress/e2e/todo.cy.ts
+describe('Todo App', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000')
+  })
+
+  it('should add new todo items', () => {
+    cy.get('[data-testid=todo-input]')
+      .type('Learn Cypress{enter}')
+
+    cy.get('[data-testid=todo-list]')
+      .should('contain', 'Learn Cypress')
+  })
+
+  it('should toggle todo completion', () => {
+    // Add a todo
+    cy.get('[data-testid=todo-input]')
+      .type('Test todo{enter}')
+
+    // Toggle completion
+    cy.get('[data-testid=todo-item]')
+      .first()
+      .find('[data-testid=todo-checkbox]')
+      .click()
+
+    // Verify it's completed
+    cy.get('[data-testid=todo-item]')
+      .first()
+      .should('have.class', 'completed')
+  })
+
+  it('should delete todo items', () => {
+    // Add a todo
+    cy.get('[data-testid=todo-input]')
+      .type('Delete me{enter}')
+
+    // Delete the todo
+    cy.get('[data-testid=todo-item]')
+      .first()
+      .find('[data-testid=delete-button]')
+      .click()
+
+    // Verify it's gone
+    cy.get('[data-testid=todo-list]')
+      .should('not.contain', 'Delete me')
+  })
+})
+
+// Component Test Example
+import TodoItem from './TodoItem'
+
+describe('TodoItem Component', () => {
+  it('renders and handles interactions', () => {
+    const todo = {
+      id: 1,
+      text: 'Test Todo',
+      completed: false
+    }
+
+    cy.mount(<TodoItem todo={todo} />)
+
+    cy.get('[data-testid=todo-text]')
+      .should('contain', 'Test Todo')
+
+    cy.get('[data-testid=todo-checkbox]')
+      .click()
+      .should('be.checked')
+  })
+})
+```
+
+## Best Practices
+
+1. **Test Structure:**
+   - Use meaningful test descriptions
+   - Group related tests with describe blocks
+   - Keep tests independent
+
+2. **Selectors:**
+   - Use data-testid attributes for test stability
+   - Avoid brittle selectors like classes or tags
+   - Create custom commands for common operations
+
+3. **Assertions:**
+   - Write explicit assertions
+   - Chain assertions when needed
+   - Use appropriate timeout values
+
+4. **Test Data:**
+   - Reset state between tests
+   - Use fixtures for test data
+   - Mock network requests when appropriate
+
+## Advanced Features
+
+### Custom Commands
+
+```typescript
+// cypress/support/commands.ts
+Cypress.Commands.add('login', (email: string, password: string) => {
+  cy.get('[data-testid=email-input]').type(email)
+  cy.get('[data-testid=password-input]').type(password)
+  cy.get('[data-testid=login-button]').click()
+})
+
+// Usage in test
+cy.login('user@example.com', 'password123')
+```
+
+### Network Stubbing
+
+```typescript
+cy.intercept('GET', '/api/todos', {
+  statusCode: 200,
+  body: [
+    { id: 1, text: 'Mocked Todo', completed: false }
+  ]
+}).as('getTodos')
+
+cy.visit('/todos')
+cy.wait('@getTodos')
+```
+
+### Visual Testing
+
+```typescript
+cy.get('[data-testid=todo-list]')
+  .should('be.visible')
+  .matchImageSnapshot('todo-list')
+```
+
+For more information, visit: https://docs.cypress.io

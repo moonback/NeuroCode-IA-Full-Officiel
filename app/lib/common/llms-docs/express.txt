@@ -1,0 +1,68 @@
+# Express.js Documentation
+
+Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications.
+
+## Core Features
+
+- **Routing:** URL handling and HTTP method routing
+- **Middleware:** Modular request processing pipeline
+- **Static Files:** Serve static content easily
+- **Template Engines:** Dynamic HTML generation
+
+## Installation
+
+```bash
+npm install express
+```
+
+## Basic Usage
+
+```typescript
+import express from 'express'
+
+const app = express()
+const port = 3000
+
+// Middleware
+app.use(express.json())
+
+// Routes
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.post('/api/items', (req, res) => {
+  const newItem = req.body
+  // Handle item creation
+  res.status(201).json(newItem)
+})
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+})
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`)
+})
+```
+
+## Best Practices
+
+1. **Use Middleware:** Leverage middleware for common functionality
+2. **Structure Routes:** Organize routes in separate modules
+3. **Handle Errors:** Implement proper error handling
+4. **Validate Input:** Sanitize and validate all user input
+5. **Use Environment Variables:** Configure via environment
+
+## Advanced Features
+
+- **Router:** Modular route handling
+- **CORS:** Cross-origin resource sharing
+- **Security:** Various security middleware
+- **File Upload:** Handle file uploads
+- **Database Integration:** Connect to various databases
+
+For more information, visit: https://expressjs.com
