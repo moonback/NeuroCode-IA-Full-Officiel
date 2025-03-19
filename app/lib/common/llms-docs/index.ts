@@ -6,6 +6,7 @@
  */
 
 import axiosDocs from './axios.txt';
+import astroDocs from './astro.txt';
 import cypressDocs from './cypress.txt';
 import expressDocs from './express.txt';
 import fastifyDocs from './fastify.txt';
@@ -44,6 +45,11 @@ interface LlmsDoc {
  * Available llms.txt documentation files
  */
 export const availableDocuments: LlmsDoc[] = [
+  {
+    id: 'astro',
+    name: 'Astro Framework',
+    content: astroDocs,
+  },
   {
     id: 'axios',
     name: 'Axios HTTP Client',

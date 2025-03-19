@@ -1,0 +1,128 @@
+# Astro Framework
+
+Astro est un framework web moderne qui permet de créer des sites web rapides avec moins de JavaScript côté client.
+
+## Installation
+
+```bash
+npm create astro@latest
+```
+
+## Caractéristiques Principales
+
+- **Performance par défaut** - Rendu côté serveur et zéro JavaScript par défaut
+- **Îles d'interactivité** - Chargement sélectif du JavaScript uniquement où nécessaire
+- **Support multi-framework** - React, Vue, Svelte, etc. dans le même projet
+- **SEO optimisé** - Rendu côté serveur pour un excellent référencement
+
+## Structure de Base
+
+```astro
+---
+// Component Script (exécuté côté serveur)
+const title = "Ma Page Astro";
+---
+
+<!-- Template Component -->
+<html lang="fr">
+  <head>
+    <title>{title}</title>
+  </head>
+  <body>
+    <h1>Bienvenue sur {title}</h1>
+  </body>
+</html>
+```
+
+## Composants
+
+```astro
+---
+// MonComposant.astro
+interface Props {
+  title: string;
+  items: string[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<div>
+  <h2>{title}</h2>
+  <ul>
+    {items.map(item => <li>{item}</li>)}
+  </ul>
+</div>
+```
+
+## Intégration avec d'autres Frameworks
+
+```astro
+---
+import MonComposantReact from '../components/MonComposantReact';
+import MonComposantVue from '../components/MonComposantVue.vue';
+---
+
+<div>
+  <MonComposantReact client:load />
+  <MonComposantVue client:visible />
+</div>
+```
+
+## Routage
+
+Astro utilise un routage basé sur les fichiers :
+
+```
+src/pages/
+  index.astro     -> /
+  about.astro     -> /about
+  blog/
+    index.astro   -> /blog
+    [slug].astro  -> /blog/:slug
+```
+
+## Data Fetching
+
+```astro
+---
+const response = await fetch('https://api.example.com/data');
+const data = await response.json();
+---
+
+<div>
+  {data.map(item => <p>{item.title}</p>)}
+</div>
+```
+
+## Styles
+
+```astro
+---
+// Styles scoped par défaut
+---
+
+<style>
+  h1 { color: red; }
+  
+  /* Styles globaux */
+  :global(body) {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+```
+
+## TypeScript
+
+Astro inclut le support TypeScript par défaut :
+
+```typescript
+interface BlogPost {
+  title: string;
+  pubDate: Date;
+  description: string;
+}
+
+const posts: BlogPost[] = await getCollection('blog');
+```
