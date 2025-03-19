@@ -1,0 +1,95 @@
+# Vitest API
+
+Vitest est un framework de test unitaire moderne conçu pour être compatible avec Vite. Il offre une expérience de test native ESM avec une configuration zéro.
+
+## Installation
+
+```bash
+npm install -D vitest
+```
+
+## Configuration de base
+
+```js
+// vite.config.ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    // options de configuration
+  }
+})
+```
+
+## API Principale
+
+### Test et Suite
+
+```js
+describe('suite name', () => {
+  test('test name', () => {
+    // test body
+  })
+})
+
+// Alias
+it('test name', () => {})
+suite('suite name', () => {})
+```
+
+### Assertions
+
+```js
+expect(value).toBe(expected)
+expect(value).toEqual(expected)
+expect(value).toBeTruthy()
+expect(value).toBeFalsy()
+expect(value).toContain(item)
+expect(value).toThrow(error)
+```
+
+### Hooks
+
+```js
+beforeAll(() => {})
+beforeEach(() => {})
+afterEach(() => {})
+afterAll(() => {})
+```
+
+### Tests asynchrones
+
+```js
+test('async test', async () => {
+  const result = await someAsyncFunction()
+  expect(result).toBe('expected')
+})
+```
+
+### Mocks et Spies
+
+```js
+import { vi } from 'vitest'
+
+const fn = vi.fn()
+const spy = vi.spyOn(object, 'method')
+vi.mock('./module')
+```
+
+## Fonctionnalités clés
+
+- **Watch Mode**: Rechargement automatique des tests lors des modifications
+- **Snapshot Testing**: Support des tests de snapshot
+- **Code Coverage**: Intégration avec c8 pour la couverture de code
+- **TypeScript**: Support natif de TypeScript sans configuration
+- **Source Maps**: Support des source maps pour un meilleur débogage
+
+## Bonnes pratiques
+
+1. Utilisez `describe` pour grouper les tests logiquement
+2. Nommez vos tests de manière descriptive
+3. Isolez les tests avec `beforeEach` et `afterEach`
+4. Utilisez `vi.mock()` pour les dépendances externes
+5. Évitez les tests fragiles qui dépendent de l'état global
+
+Pour plus d'informations, consultez la [documentation officielle de Vitest](https://vitest.dev/).

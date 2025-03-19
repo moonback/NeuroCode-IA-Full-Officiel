@@ -1,0 +1,170 @@
+# React Router DOM Documentation
+
+React Router DOM est une bibliothèque de routage pour React qui permet de créer des applications web avec navigation dynamique.
+
+## Installation
+
+```bash
+npm install react-router-dom
+```
+
+## Composants Principaux
+
+### BrowserRouter
+Enveloppe l'application pour activer le routage :
+
+```jsx
+import { BrowserRouter } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  );
+}
+```
+
+### Routes et Route
+Définit la structure de routage :
+
+```jsx
+import { Routes, Route } from 'react-router-dom';
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/users/:id" element={<UserProfile />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+```
+
+### Link et NavLink
+Navigation entre les pages :
+
+```jsx
+import { Link, NavLink } from 'react-router-dom';
+
+function Navigation() {
+  return (
+    <nav>
+      <Link to="/">Accueil</Link>
+      <NavLink 
+        to="/about"
+        className={({ isActive }) => isActive ? 'active' : ''}
+      >
+        À propos
+      </NavLink>
+    </nav>
+  );
+}
+```
+
+## Hooks
+
+### useNavigate
+Navigation programmatique :
+
+```jsx
+import { useNavigate } from 'react-router-dom';
+
+function LoginButton() {
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    await login();
+    navigate('/dashboard');
+  };
+
+  return <button onClick={handleLogin}>Connexion</button>;
+}
+```
+
+### useParams
+Accès aux paramètres d'URL :
+
+```jsx
+import { useParams } from 'react-router-dom';
+
+function UserProfile() {
+  const { id } = useParams();
+  return <div>Profil de l'utilisateur {id}</div>;
+}
+```
+
+### useLocation
+Accès aux informations de l'URL actuelle :
+
+```jsx
+import { useLocation } from 'react-router-dom';
+
+function Analytics() {
+  const location = useLocation();
+  return <div>Page courante : {location.pathname}</div>;
+}
+```
+
+## Fonctionnalités Avancées
+
+### Routes Imbriquées
+
+```jsx
+function App() {
+  return (
+    <Routes>
+      <Route path="/dashboard" element={<Dashboard />}>
+        <Route path="profile" element={<Profile />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+### Protection des Routes
+
+```jsx
+import { Navigate } from 'react-router-dom';
+
+function PrivateRoute({ children }) {
+  const isAuthenticated = useAuth();
+
+  return isAuthenticated ? children : <Navigate to="/login" />;
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/dashboard" 
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        } 
+      />
+    </Routes>
+  );
+}
+```
+
+### Gestion de l'Historique
+
+```jsx
+import { useNavigate } from 'react-router-dom';
+
+function BackButton() {
+  const navigate = useNavigate();
+
+  return (
+    <button onClick={() => navigate(-1)}>
+      Retour
+    </button>
+  );
+}
+```
+
+Pour plus d'informations, visitez : https://reactrouter.com/

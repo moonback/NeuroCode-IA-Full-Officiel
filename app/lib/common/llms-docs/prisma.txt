@@ -1,0 +1,165 @@
+# Prisma Documentation
+
+Prisma is a next-generation ORM that helps developers build faster and make fewer errors with an intuitive data model, automated migrations, type-safety and auto-completion.
+
+## Installation
+
+```bash
+npm install prisma --save-dev
+npm install @prisma/client
+```
+
+## Core Features
+
+- **Intuitive Data Model:** Simple and powerful schema definition
+- **Type Safety:** Full TypeScript support with generated types
+- **Auto-completion:** IntelliSense support in VS Code
+- **Migrations:** Automated database migrations
+- **Prisma Studio:** GUI to view and edit data
+
+## Basic Usage
+
+```typescript
+// schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// src/user.service.ts
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+// Create a new user
+async function createUser(email: string, name: string) {
+  const user = await prisma.user.create({
+    data: {
+      email,
+      name,
+    },
+  })
+  return user
+}
+
+// Get user with posts
+async function getUserWithPosts(userId: number) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      posts: true,
+    },
+  })
+  return user
+}
+
+// Update user
+async function updateUser(userId: number, data: { name?: string; email?: string }) {
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data,
+  })
+  return user
+}
+
+// Delete user
+async function deleteUser(userId: number) {
+  await prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  })
+}
+```
+
+## Best Practices
+
+1. **Connection Management:**
+   - Use a single PrismaClient instance
+   - Implement connection pooling for production
+
+2. **Schema Design:**
+   - Use meaningful model and field names
+   - Implement proper relations between models
+   - Add appropriate indexes for performance
+
+3. **Error Handling:**
+   - Implement proper error handling for Prisma operations
+   - Use transactions for related operations
+
+4. **Migrations:**
+   - Review migration files before applying
+   - Test migrations in development environment
+   - Backup database before production migrations
+
+## Advanced Features
+
+### Transactions
+
+```typescript
+const [user, post] = await prisma.$transaction([
+  prisma.user.create({
+    data: {
+      email: 'user@example.com',
+      name: 'John Doe',
+    },
+  }),
+  prisma.post.create({
+    data: {
+      title: 'My First Post',
+      authorId: 1,
+    },
+  }),
+])
+```
+
+### Middleware
+
+```typescript
+prisma.$use(async (params, next) => {
+  const before = Date.now()
+  const result = await next(params)
+  const after = Date.now()
+  console.log(`Query ${params.model}.${params.action} took ${after - before}ms`)
+  return result
+})
+```
+
+### Raw Database Access
+
+```typescript
+const result = await prisma.$queryRaw`
+  SELECT * FROM User 
+  WHERE email = ${email}
+`
+```
+
+For more information, visit: https://www.prisma.io/docs

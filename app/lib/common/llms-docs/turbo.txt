@@ -1,0 +1,104 @@
+# Turborepo Documentation
+
+Turborepo est un système de build intelligent pour les monorepos JavaScript/TypeScript qui optimise les builds et la gestion des dépendances.
+
+## Installation
+
+```bash
+npm install turbo --save-dev
+```
+
+## Configuration de Base
+
+```json
+// turbo.json
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "inputs": ["src/**/*.tsx", "test/**/*.tsx"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
+```
+
+## Caractéristiques Principales
+
+### Workspaces
+
+```json
+// package.json
+{
+  "workspaces": ["packages/*", "apps/*"]
+}
+```
+
+### Cache Intelligent
+
+- Cache local et distant
+- Détection automatique des dépendances
+- Réutilisation des builds précédents
+
+### Pipelines
+
+```typescript
+// Configuration des tâches
+{
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],  // Dépend du build des dépendances
+      "outputs": ["dist/**"]    // Fichiers à mettre en cache
+    }
+  }
+}
+```
+
+### Filtrage des Tâches
+
+```bash
+# Exécuter build uniquement pour les packages modifiés
+turbo run build --filter=[HEAD^1]
+
+# Exécuter pour un workspace spécifique
+turbo run build --filter=web...
+```
+
+### Optimisation des Builds
+
+- Exécution parallèle des tâches
+- Prune des workspaces inutilisés
+- Mode watch pour le développement
+
+### Remote Caching
+
+```bash
+# Configuration du cache distant
+turbo login
+turbo link
+
+# Utilisation du cache distant
+turbo run build --remote-only
+```
+
+### Scripts Communs
+
+```json
+// package.json
+{
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint"
+  }
+}
+```

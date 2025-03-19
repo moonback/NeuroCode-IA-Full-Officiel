@@ -1,0 +1,132 @@
+# Mongoose API Documentation
+
+Mongoose est une bibliothèque de modélisation d'objets MongoDB pour Node.js qui gère la validation, le casting et la logique métier des données.
+
+## Installation
+
+```bash
+npm install mongoose
+```
+
+## Connexion à MongoDB
+
+```javascript
+mongoose.connect('mongodb://localhost/my_database');
+```
+
+## Schémas et Modèles
+
+### Définition d'un Schéma
+
+```javascript
+const userSchema = new Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  age: { type: Number, min: 0 },
+  createdAt: { type: Date, default: Date.now }
+});
+```
+
+### Création d'un Modèle
+
+```javascript
+const User = mongoose.model('User', userSchema);
+```
+
+## Opérations CRUD
+
+### Création
+
+```javascript
+// Création d'un document
+const user = new User({ name: 'John', email: 'john@example.com' });
+await user.save();
+
+// Alternative avec create
+await User.create({ name: 'John', email: 'john@example.com' });
+```
+
+### Lecture
+
+```javascript
+// Trouver tous les documents
+const users = await User.find();
+
+// Trouver avec des critères
+const user = await User.findOne({ email: 'john@example.com' });
+
+// Trouver par ID
+const user = await User.findById(id);
+```
+
+### Mise à jour
+
+```javascript
+// Mettre à jour un document
+await User.updateOne({ _id: id }, { $set: { name: 'John Doe' } });
+
+// Trouver et mettre à jour
+const user = await User.findByIdAndUpdate(id, { name: 'John Doe' }, { new: true });
+```
+
+### Suppression
+
+```javascript
+// Supprimer un document
+await User.deleteOne({ _id: id });
+
+// Trouver et supprimer
+const user = await User.findByIdAndDelete(id);
+```
+
+## Validation
+
+```javascript
+const userSchema = new Schema({
+  email: {
+    type: String,
+    required: [true, 'Email est requis'],
+    validate: {
+      validator: function(v) {
+        return /\S+@\S+\.\S+/.test(v);
+      },
+      message: props => `${props.value} n'est pas un email valide!`
+    }
+  }
+});
+```
+
+## Population (Relations)
+
+```javascript
+const postSchema = new Schema({
+  title: String,
+  author: { type: Schema.Types.ObjectId, ref: 'User' }
+});
+
+// Population lors d'une requête
+const post = await Post.findById(id).populate('author');
+```
+
+## Middleware (Hooks)
+
+```javascript
+userSchema.pre('save', function(next) {
+  // Faire quelque chose avant la sauvegarde
+  next();
+});
+
+userSchema.post('save', function(doc) {
+  // Faire quelque chose après la sauvegarde
+});
+```
+
+## Bonnes Pratiques
+
+- Utilisez les schémas pour valider vos données
+- Implémentez des middleware pour la logique métier
+- Gérez les erreurs avec try/catch
+- Utilisez les index pour optimiser les performances
+- Évitez les requêtes imbriquées profondes
+
+Pour plus d'informations, consultez la [documentation officielle de Mongoose](https://mongoosejs.com/docs/guide.html)

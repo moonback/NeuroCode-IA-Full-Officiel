@@ -1,0 +1,138 @@
+# Redux Toolkit Documentation
+
+Redux Toolkit is the official, opinionated, batteries-included toolset for efficient Redux development. It includes utilities to simplify common use cases like store setup, creating reducers, immutable update logic, and more.
+
+## Installation
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+## Core Features
+
+- **createSlice:** Generate reducers and actions automatically
+- **configureStore:** Simplified store setup with good defaults
+- **createAsyncThunk:** Handle async logic easily
+- **RTK Query:** Built-in data fetching and caching
+
+## Basic Usage
+
+```typescript
+// store/counterSlice.ts
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+interface CounterState {
+  value: number
+}
+
+const initialState: CounterState = {
+  value: 0
+}
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState,
+  reducers: {
+    increment: (state) => {
+      state.value += 1
+    },
+    decrement: (state) => {
+      state.value -= 1
+    },
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.value += action.payload
+    }
+  }
+})
+
+export const { increment, decrement, incrementByAmount } = counterSlice.actions
+export default counterSlice.reducer
+
+// store/store.ts
+import { configureStore } from '@reduxjs/toolkit'
+import counterReducer from './counterSlice'
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer
+  }
+})
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
+
+// App.tsx
+import { Provider } from 'react-redux'
+import { store } from './store/store'
+
+function App() {
+  return (
+    <Provider store={store}>
+      <Counter />
+    </Provider>
+  )
+}
+
+// Counter.tsx
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from './store/store'
+import { increment, decrement } from './store/counterSlice'
+
+function Counter() {
+  const count = useSelector((state: RootState) => state.counter.value)
+  const dispatch = useDispatch()
+
+  return (
+    <div>
+      <button onClick={() => dispatch(decrement())}>-</button>
+      <span>{count}</span>
+      <button onClick={() => dispatch(increment())}>+</button>
+    </div>
+  )
+}
+```
+
+## Best Practices
+
+1. **Use createSlice:** Always prefer createSlice over writing reducers manually
+2. **Immutable Updates:** Let Redux Toolkit handle immutability with its built-in Immer integration
+3. **TypeScript Integration:** Leverage TypeScript for better type safety and developer experience
+4. **Normalized State:** Use createEntityAdapter for collections of items
+5. **RTK Query:** Consider using RTK Query for data fetching instead of writing custom thunks
+
+## Advanced Features
+
+### RTK Query Example
+
+```typescript
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+
+interface Post {
+  id: number
+  title: string
+  body: string
+}
+
+export const api = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://api.example.com' }),
+  endpoints: (builder) => ({
+    getPosts: builder.query<Post[], void>({
+      query: () => 'posts'
+    }),
+    getPostById: builder.query<Post, number>({
+      query: (id) => `posts/${id}`
+    }),
+    addPost: builder.mutation<Post, Partial<Post>>({
+      query: (body) => ({
+        url: 'posts',
+        method: 'POST',
+        body
+      })
+    })
+  })
+})
+
+export const { useGetPostsQuery, useGetPostByIdQuery, useAddPostMutation } = api
+```
+
+For more information, visit: https://redux-toolkit.js.org

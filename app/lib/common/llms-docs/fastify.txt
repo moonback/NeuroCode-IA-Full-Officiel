@@ -1,0 +1,174 @@
+# Fastify
+
+Fastify est un framework web rapide et à faible overhead pour Node.js, conçu pour offrir la meilleure expérience développeur avec un minimum de overhead.
+
+## Installation
+
+```bash
+npm install fastify
+```
+
+## Caractéristiques Principales
+
+- **Haute Performance** - l'un des frameworks web les plus rapides
+- **Extensible** via plugins
+- **Validation de Schéma** intégrée
+- **Logging** prêt à l'emploi
+- **Developer Friendly**
+
+## Configuration de Base
+
+```javascript
+const fastify = require('fastify')({ 
+  logger: true,
+  trustProxy: true
+});
+
+// Démarrage du serveur
+fastify.listen({ port: 3000 }, (err) => {
+  if (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+});
+```
+
+## Routes
+
+```javascript
+// Route GET simple
+fastify.get('/', async (request, reply) => {
+  return { hello: 'world' };
+});
+
+// Route avec paramètres et validation
+fastify.post('/user', {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['username', 'email'],
+      properties: {
+        username: { type: 'string' },
+        email: { type: 'string', format: 'email' }
+      }
+    }
+  },
+  handler: async (request, reply) => {
+    const { username, email } = request.body;
+    return { status: 'created', username, email };
+  }
+});
+```
+
+## Plugins
+
+```javascript
+// Définition d'un plugin
+async function myPlugin(fastify, options) {
+  fastify.decorate('utility', () => {
+    return 'utility function';
+  });
+
+  fastify.get('/plugin-route', async (request, reply) => {
+    return { plugin: 'works!' };
+  });
+}
+
+// Enregistrement du plugin
+fastify.register(myPlugin);
+```
+
+## Hooks
+
+```javascript
+// Hook avant chaque requête
+fastify.addHook('onRequest', async (request, reply) => {
+  // Vérification d'authentification
+  if (!request.headers.authorization) {
+    throw new Error('Missing token');
+  }
+});
+
+// Hook après chaque réponse
+fastify.addHook('onResponse', async (request, reply) => {
+  // Logging ou métriques
+  console.log(`${request.method} ${request.url} - ${reply.statusCode}`);
+});
+```
+
+## Validation et Sérialisation
+
+```javascript
+const schema = {
+  body: {
+    type: 'object',
+    required: ['name'],
+    properties: {
+      name: { type: 'string' },
+      age: { type: 'integer' }
+    }
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        name: { type: 'string' }
+      }
+    }
+  }
+};
+
+fastify.post('/validate', { schema }, async (request) => {
+  return { id: '123', name: request.body.name };
+});
+```
+
+## Gestion des Erreurs
+
+```javascript
+// Gestionnaire d'erreur personnalisé
+fastify.setErrorHandler((error, request, reply) => {
+  if (error.validation) {
+    reply.status(400).send({
+      error: 'Validation Failed',
+      messages: error.validation
+    });
+    return;
+  }
+  reply.status(500).send({ error: 'Internal Server Error' });
+});
+```
+
+## TypeScript
+
+```typescript
+import fastify, { FastifyInstance, RouteShorthandOptions } from 'fastify';
+
+interface IQuerystring {
+  name: string;
+}
+
+interface IHeaders {
+  'h-Custom': string;
+}
+
+const server: FastifyInstance = fastify({
+  logger: true
+});
+
+const opts: RouteShorthandOptions = {
+  schema: {
+    querystring: {
+      name: { type: 'string' }
+    },
+    headers: {
+      type: 'object',
+      properties: {
+        'h-Custom': { type: 'string' }
+      },
+      required: ['h-Custom']
+    }
+  }
+};
+```

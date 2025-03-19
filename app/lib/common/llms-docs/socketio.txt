@@ -1,0 +1,111 @@
+# Socket.IO
+
+Socket.IO est une bibliothèque JavaScript qui permet une communication bidirectionnelle en temps réel basée sur les événements entre les clients web et les serveurs.
+
+## Installation
+
+```bash
+npm install socket.io    # Pour le serveur
+npm install socket.io-client    # Pour le client
+```
+
+## Caractéristiques Principales
+
+- **Communication bidirectionnelle en temps réel**
+- **Fiabilité** - fonctionne même en présence de proxies et pare-feu
+- **Auto-reconnexion automatique**
+- **Support des rooms et namespaces**
+- **Détection de déconnexion**
+- **Support binaire**
+- **Multiplexage**
+
+## Exemples d'Utilisation
+
+### Côté Serveur
+```javascript
+const io = require('socket.io')(server);
+
+io.on('connection', (socket) => {
+  console.log('Un client est connecté');
+
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client déconnecté');
+  });
+});
+```
+
+### Côté Client
+```javascript
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
+
+socket.on('connect', () => {
+  console.log('Connecté au serveur');
+});
+
+socket.emit('chat message', 'Hello!');
+
+socket.on('chat message', (msg) => {
+  console.log('Message reçu:', msg);
+});
+```
+
+## Meilleures Pratiques
+
+- Utilisez des événements personnalisés pour une meilleure organisation
+- Implémentez une gestion d'erreur robuste
+- Utilisez des rooms pour optimiser les communications
+- Évitez d'émettre des événements trop fréquemment
+- Gérez correctement les reconnexions
+
+## Gestion des Rooms
+
+```javascript
+// Côté serveur
+io.on('connection', (socket) => {
+  socket.join('room1');
+  
+  io.to('room1').emit('message', 'Message pour room1');
+});
+
+// Côté client
+socket.on('message', (msg) => {
+  console.log('Message reçu dans room1:', msg);
+});
+```
+
+## Middleware
+
+```javascript
+io.use((socket, next) => {
+  if (socket.handshake.auth.token) {
+    // Authentification personnalisée
+    next();
+  } else {
+    next(new Error('Authentication error'));
+  }
+});
+```
+
+## TypeScript Support
+
+Socket.IO inclut des types TypeScript natifs:
+
+```typescript
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: Buffer) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+}
+
+interface ClientToServerEvents {
+  hello: () => void;
+}
+
+const io = new Server<ClientToServerEvents, ServerToClientEvents>();
+```

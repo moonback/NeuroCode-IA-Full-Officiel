@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { Message } from 'ai';
 import type { ProviderInfo } from '~/types/model';
 import { createScopedLogger } from '~/utils/logger';
 
@@ -19,6 +20,7 @@ export function usePromptEnhancer() {
     model: string,
     provider: ProviderInfo,
     apiKeys?: Record<string, string>,
+    chatHistory?: Message[],
   ) => {
     setEnhancingPrompt(true);
     setPromptEnhanced(false);
@@ -31,6 +33,14 @@ export function usePromptEnhancer() {
 
     if (apiKeys) {
       requestBody.apiKeys = apiKeys;
+    }
+
+    // Include chat history for library detection if available
+    if (chatHistory && chatHistory.length > 0) {
+      // Convert the Message[] to simpler format with just content
+      requestBody.chatHistory = chatHistory.map((msg) => ({
+        content: typeof msg.content === 'string' ? msg.content : '',
+      }));
     }
 
     const response = await fetch('/api/enhancer', {

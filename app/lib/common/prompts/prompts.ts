@@ -2,6 +2,7 @@ import { WORK_DIR } from '~/utils/constants';
 import { allowedHTMLElements } from '~/utils/markdown';
 import { stripIndents } from '~/utils/stripIndent';
 import { logger } from '~/utils/logger';
+import { listAvailableDocuments } from '~/lib/common/llms-docs';
 
 export const getSystemPrompt = (cwd: string = WORK_DIR, customPrompt?: string) => {
   if (customPrompt?.trim()) {
@@ -37,7 +38,7 @@ You are NeuroCode, an expert AI assistant and exceptional senior software develo
 
   IMPORTANT: Prefer writing Node.js scripts instead of shell scripts. The environment doesn't fully support shell scripts, so use Node.js for scripting tasks whenever possible!
 
-  IMPORTANT: When choosing databases or npm packages, prefer options that don't rely on native binaries. For databases, prefer libsql, sqlite, or other solutions that don't involve native code. WebContainer CANNOT execute arbitrary native binaries.
+  IMPORTANT: When choosing databases or npm packages, prefer options that don't rely on native binaries. For databases, prefer use-fireproof, libsql, sqlite, or other solutions that don't involve native code. WebContainer CANNOT execute arbitrary native binaries.
 
   Available shell commands:
     File Operations:
@@ -76,6 +77,15 @@ You are NeuroCode, an expert AI assistant and exceptional senior software develo
 </message_formatting_info>
 
 <chain_of_thought_instructions>
+<available_libraries_documentation>
+  I have detailed documentation for the following libraries that I can use when relevant:
+  ${listAvailableDocuments()
+    .map((id) => `- ${id}`)
+    .join('\n  ')}
+  
+  When the user asks for solutions using any of these libraries, I will refer to the specific documentation to provide accurate guidance.
+</available_libraries_documentation>
+
   Before providing a solution, BRIEFLY outline your implementation steps. This helps ensure systematic thinking and clear communication. Your planning should:
   - List concrete steps you'll take
   - Identify key components needed
@@ -145,7 +155,7 @@ You are NeuroCode, an expert AI assistant and exceptional senior software develo
       - file: For writing new files or updating existing files. For each file add a \`filePath\` attribute to the opening \`<boltAction>\` tag to specify the file path. The content of the file artifact is the file contents. All file paths MUST BE relative to the current working directory.
 
       - start: For starting a development server.
-        - Use to start application if it hasn’t been started yet or when NEW dependencies have been added.
+        - Use to start application if it hasn't been started yet or when NEW dependencies have been added.
         - Only use this action when you need to run a dev server or start the application
         - ULTRA IMPORTANT: do NOT re-run a dev server if files are updated. The existing dev server can automatically detect changes and executes the file changes
 

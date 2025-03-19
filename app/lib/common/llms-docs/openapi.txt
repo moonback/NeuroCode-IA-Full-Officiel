@@ -1,0 +1,147 @@
+# OpenAPI (Swagger) Documentation
+
+OpenAPI (anciennement Swagger) est une spécification pour décrire les APIs RESTful. Elle permet de documenter, tester et générer du code pour vos APIs.
+
+## Structure de Base
+
+```yaml
+openapi: 3.0.0
+info:
+  title: Mon API
+  version: 1.0.0
+  description: Description de mon API
+
+servers:
+  - url: http://api.example.com/v1
+    description: Serveur de production
+
+paths:
+  /users:
+    get:
+      summary: Liste des utilisateurs
+      responses:
+        '200':
+          description: Liste récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Créer un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+```
+
+## Composants Réutilisables
+
+### Schémas
+
+```yaml
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+```
+
+## Sécurité
+
+```yaml
+security:
+  - bearerAuth: []
+  - apiKey: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+```
+
+## Intégration avec Express.js
+
+```javascript
+import express from 'express'
+import swaggerUi from 'swagger-ui-express'
+import YAML from 'yamljs'
+
+const app = express()
+const swaggerDocument = YAML.load('./openapi.yaml')
+
+// Interface Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+
+// Validation des requêtes
+import { validateRequest } from 'openapi-validator-middleware'
+
+app.post('/users', validateRequest, (req, res) => {
+  // Les données sont déjà validées selon le schéma OpenAPI
+  const user = req.body
+  // Traitement...
+})
+```
+
+## Bonnes Pratiques
+
+1. **Organisation**:
+   - Séparer les définitions en fichiers multiples
+   - Utiliser des références ($ref) pour la réutilisation
+   - Maintenir une structure cohérente
+
+2. **Documentation**:
+   - Fournir des descriptions claires
+   - Inclure des exemples
+   - Documenter les codes d'erreur
+
+3. **Validation**:
+   - Définir des schémas précis
+   - Utiliser les formats appropriés
+   - Implémenter des validations personnalisées
+
+## Outils
+
+- **Swagger UI**: Interface web pour tester l'API
+- **Swagger Editor**: Éditeur en ligne avec prévisualisation
+- **OpenAPI Generator**: Génération de code client/serveur
+
+## Ressources
+
+- Documentation officielle: https://swagger.io/docs/
+- Swagger Editor: https://editor.swagger.io/
+- OpenAPI Initiative: https://www.openapis.org/

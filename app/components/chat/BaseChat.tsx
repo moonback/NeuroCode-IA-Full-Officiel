@@ -65,7 +65,7 @@ interface BaseChatProps {
   handleStop?: () => void;
   sendMessage?: (event: React.UIEvent, messageInput?: string) => void;
   handleInputChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  enhancePrompt?: () => void;
+  enhancePrompt?: (input?: string) => void;
   importChat?: (description: string, messages: Message[]) => Promise<void>;
   exportChat?: () => void;
   uploadedFiles?: File[];
@@ -787,7 +787,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           disabled={input.length === 0 || enhancingPrompt}
                           className={classNames('transition-all', enhancingPrompt ? 'opacity-100' : '')}
                           onClick={() => {
-                            enhancePrompt?.();
+                            enhancePrompt?.(input);
+
                             toast('Prompt amélioré!');
                           }}
                         >
@@ -826,13 +827,18 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           <div className={`i-ph:caret-${isModelSettingsCollapsed ? 'right' : 'down'} text-lg`} />
                           {isModelSettingsCollapsed ? <span className="text-xs">{model}</span> : <span />}
                         </IconButton>
-                        <IconButton
-                      title="Afficher/Masquer les prompts d'exemple"
-                      className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
-                      onClick={() => setIsExamplePromptsVisible(!isExamplePromptsVisible)}
-                    >
-                      <div className={`i-ph:caret-${isExamplePromptsVisible ? 'down' : 'right'} text-xl`} />
-                    </IconButton>
+                        {!chatStarted && (
+                          <IconButton
+                            title="Afficher/Masquer les prompts d'exemple" 
+                            className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
+                            onClick={() => setIsExamplePromptsVisible(!isExamplePromptsVisible)}
+                          >
+                            <div 
+                              className={`${isExamplePromptsVisible ? 'i-ph:caret-up' : 'i-ph:caret-down'} text-xl hover:scale-110 transition-transform`}
+                              title={isExamplePromptsVisible ? "Hide example prompts" : "Show example prompts"}
+                            />
+                          </IconButton>
+                        )}
                       </div>
                       {input.length > 3 ? (
                         <div className="text-xs text-bolt-elements-textTertiary">

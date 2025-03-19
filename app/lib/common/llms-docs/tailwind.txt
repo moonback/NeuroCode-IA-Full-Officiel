@@ -1,0 +1,82 @@
+# Tailwind CSS Documentation
+
+Tailwind CSS est un framework CSS utility-first qui permet de construire rapidement des interfaces modernes et personnalisables.
+
+## Installation
+
+Installer Tailwind CSS via npm :
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+## Configuration
+
+Configurer vos chemins de template dans `tailwind.config.js` :
+
+```js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+## Utilisation
+
+Ajouter les directives Tailwind à votre CSS :
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+## Classes Utilitaires Principales
+
+- **Layout**: flex, grid, container
+- **Spacing**: p-{size}, m-{size}
+- **Sizing**: w-{size}, h-{size}
+- **Typography**: text-{size}, font-{weight}
+- **Colors**: text-{color}, bg-{color}
+- **Flexbox**: justify-{position}, items-{position}
+- **Grid**: grid-cols-{number}, gap-{size}
+- **Responsive**: sm:, md:, lg:, xl:, 2xl:
+
+## Meilleures Pratiques
+
+1. **Mobile First**: Commencer par le mobile puis ajouter des variantes responsives
+2. **Composants**: Extraire les motifs répétitifs avec @apply
+3. **Dark Mode**: Utiliser dark: pour le thème sombre
+4. **État**: Utiliser hover:, focus:, active: pour les interactions
+
+## Plugins Recommandés
+
+- @tailwindcss/forms
+- @tailwindcss/typography
+- @tailwindcss/aspect-ratio
+
+## Optimisation
+
+Purger les classes inutilisées en production :
+
+```js
+// tailwind.config.js
+module.exports = {
+  purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+  // ...
+}
+```
+
+## Ressources
+
+- Documentation officielle: https://tailwindcss.com/docs
+- Composants: https://tailwindui.com/
+- Playground: https://play.tailwindcss.com/

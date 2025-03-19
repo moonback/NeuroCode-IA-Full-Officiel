@@ -4,6 +4,7 @@ import { DEFAULT_MODEL, DEFAULT_PROVIDER, PROVIDER_LIST } from '~/utils/constant
 import { extractCurrentContext, extractPropertiesFromMessage, simplifyBoltActions } from './utils';
 import { createScopedLogger } from '~/utils/logger';
 import { LLMManager } from '~/lib/modules/llm/manager';
+import { detectLibraryInHistory, getDocumentById } from '~/lib/common/llms-docs';
 
 const logger = createScopedLogger('create-summary');
 
@@ -98,6 +99,16 @@ ${summary.summary}`;
       ? (message.content.find((item) => item.type === 'text')?.text as string) || ''
       : message.content;
 
+  // Detect libraries used in the conversation
+  const detectedLibraries = detectLibraryInHistory(slicedMessages);
+  const libraryDocs = detectedLibraries
+    .map(libId => {
+      const doc = getDocumentById(libId);
+      return doc ? `${doc.name} Documentation:\n${doc.content.substring(0, 500)}...` : '';
+    })
+    .filter(Boolean)
+    .join('\n\n');
+
   // select files from the list of code file from the project that might be useful for the current request from the user
   const resp = await generateText({
     system: `
@@ -111,6 +122,9 @@ Please use only the following format to generate the summary:
 - **Tech Stack**: {languages}, {frameworks}, {key_dependencies}
 - **Critical Environment**: {critical_env_details}
 - **Essential Requirements**: {detailed_user_requirements}
+
+# Library Documentation Context
+${libraryDocs ? `Relevant library documentation:\n${libraryDocs}` : 'No specific library documentation detected.'}
 
 # Conversation Context
 - **Last Topic**: {main_discussion_point}
