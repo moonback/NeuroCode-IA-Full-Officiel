@@ -40,6 +40,7 @@ import LocalProvidersTab from '~/components/@settings/tabs/providers/local/Local
 import TaskManagerTab from '~/components/@settings/tabs/task-manager/TaskManagerTab';
 import SyncTab from '~/components/@settings/tabs/sync/SyncTab';
 import { CustomPromptSettings } from './CustomPromptSettings';
+import MCPTab from '~/components/@settings/tabs/mcp/MCPTab';
 
 
 interface ControlPanelProps {
@@ -85,10 +86,11 @@ const TAB_DESCRIPTIONS: Record<TabType, string> = {
   'tab-management': 'Configurez les onglets visibles et leur ordre',
   sync: 'Synchronisez vos données et paramètres',
   'custom-prompt': 'Configurez les instructions système personnalisées',
+  mcp: 'Configurez les paramètres MCP',
 };
 
 // Beta status for experimental features
-const BETA_TABS = new Set<TabType>(['task-manager', 'custom-prompt', 'service-status', 'update', 'local-providers']);
+const BETA_TABS = new Set<TabType>(['task-manager', 'custom-prompt', 'service-status', 'update', 'local-providers', 'mcp']);
 
 const BetaLabel = () => (
   <motion.div

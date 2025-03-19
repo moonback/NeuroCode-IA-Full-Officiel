@@ -12,6 +12,8 @@ import { WORK_DIR } from '~/utils/constants';
 import { createSummary } from '~/lib/.server/llm/create-summary';
 import { extractPropertiesFromMessage } from '~/lib/.server/llm/utils';
 import { getSystemPrompt } from '~/lib/common/prompts/test-prompt';
+import { MCPManager } from '~/lib/modules/mcp/manager';
+
 const CLAUDE_CACHE_TOKENS_MULTIPLIER = {
   WRITE: 1.25,
   READ: 0.1,
@@ -59,7 +61,8 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
   const providerSettings: Record<string, IProviderSetting> = JSON.parse(
     parseCookies(cookieHeader || '').providers || '{}',
   );
-
+  const mcpManager = await MCPManager.getInstance(context);
+  const mcpTools = mcpManager.tools;
   const stream = new SwitchableStream();
 
   const cumulativeUsage = {
@@ -206,7 +209,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
 
         // Stream the text
         const options: StreamingOptions = {
-          toolChoice: 'none',
+          toolChoice: 'auto',
           
           onFinish: async ({ text: content, finishReason, usage, experimental_providerMetadata }) => {            logger.debug('usage', JSON.stringify(usage));
             const cacheUsage = experimental_providerMetadata?.anthropic;
@@ -314,8 +317,10 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
               contextOptimization,
               contextFiles: filteredFiles,
               summary,
-              isPromptCachingEnabled,
+              // isPromptCachingEnabled,
               messageSliceId,
+              tools: mcpTools,
+
             });
 
             result.mergeIntoDataStream(dataStream);
@@ -362,6 +367,8 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           contextFiles: filteredFiles,
           summary,
           messageSliceId,
+          tools: mcpTools,
+
         });
 
         (async () => {

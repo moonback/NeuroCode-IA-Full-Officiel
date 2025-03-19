@@ -16,7 +16,11 @@ export async function createSummary(props: {
   promptId?: string;
   contextOptimization?: boolean;
   onFinish?: (resp: GenerateTextResult<Record<string, CoreTool<any, any>>, never>) => void;
+  retryAttempts?: number;
+  retryDelay?: number;
 }) {
+  const retryAttempts = props.retryAttempts ?? 3;
+  const retryDelay = props.retryDelay ?? 1000;
   const { messages, env: serverEnv, apiKeys, providerSettings, onFinish } = props;
   let currentModel = DEFAULT_MODEL;
   let currentProvider = DEFAULT_PROVIDER.name;
@@ -55,7 +59,7 @@ export async function createSummary(props: {
     ];
 
     if (!modelsList.length) {
-      throw new Error(`Aucun modèle trouvé pour le fournisseur ${provider.name}`);
+      throw new Error(`No models found for provider ${provider.name}`);
     }
 
     modelDetails = modelsList.find((m) => m.name === currentModel);
@@ -63,7 +67,7 @@ export async function createSummary(props: {
     if (!modelDetails) {
       // Fallback to first model
       logger.warn(
-        `MODÈLE [${currentModel}] introuvable chez le fournisseur [${provider.name}]. Utilisation du premier modèle disponible : ${modelsList[0].name}`,
+        `MODEL [${currentModel}] not found in provider [${provider.name}]. Falling back to first model. ${modelsList[0].name}`,
       );
       modelDetails = modelsList[0];
     }
@@ -76,7 +80,8 @@ export async function createSummary(props: {
 
   if (summary && summary.type === 'chatSummary') {
     chatId = summary.chatId;
-    summaryText = `The chat summary contains the previous history of the conversation and should be used as context to respond to the user in a coherent manner.        
+    summaryText = `Below is the Chat Summary till now, this is chat summary before the conversation provided by the user
+you should also use this as historical message while providing the response to the user.
 ${summary.summary}`;
 
     if (chatId) {
@@ -92,7 +97,7 @@ ${summary.summary}`;
     }
   }
 
-  logger.debug('Messages découpés :', slicedMessages.length);
+  logger.debug('Sliced Messages:', slicedMessages.length);
 
   const extractTextContent = (message: Message) =>
     Array.isArray(message.content)
@@ -110,18 +115,22 @@ ${summary.summary}`;
     .join('\n\n');
 
   // select files from the list of code file from the project that might be useful for the current request from the user
-  const resp = await generateText({
+  let lastError: Error | null = null;
+  let resp;
+  
+  for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+    try {
+      resp = await generateText({
     system: `
-        You are a confirmed software engineer. You are working on a project, summarize the work done so far and provide a complete chat summary. All answers must be in English.
+        You are a software engineer. You are working on a project. you need to summarize the work till now and provide a summary of the chat till now.
 
-Please use only the following format to generate the summary:
+        Please only use the following format to generate the summary:
 ---
 # Project Overview
-- **Project Name**: {project_name} - {brief_description}
+- **Project**: {project_name} - {brief_description}
 - **Current Phase**: {phase}
 - **Tech Stack**: {languages}, {frameworks}, {key_dependencies}
-- **Critical Environment**: {critical_env_details}
-- **Essential Requirements**: {detailed_user_requirements}
+- **Environment**: {critical_env_details}
 
 # Library Documentation Context
 ${libraryDocs ? `Relevant library documentation:\n${libraryDocs}` : 'No specific library documentation detected.'}
@@ -134,14 +143,14 @@ ${libraryDocs ? `Relevant library documentation:\n${libraryDocs}` : 'No specific
   - Preferences: {coding_style_preferences}
   - Communication: {preferred_explanation_style}
 
-# Current State
-## Current Status
+# Implementation Status
+## Current State
 - **Active Feature**: {feature_in_development}
 - **Progress**: {what_works_and_what_doesn't}
 - **Blockers**: {current_challenges}
 
 ## Code Evolution
-- **Latest Changes**: {latest_modifications}
+- **Recent Changes**: {latest_modifications}
 - **Working Patterns**: {successful_approaches}
 - **Failed Approaches**: {attempted_solutions_that_failed}
 
@@ -160,28 +169,24 @@ ${libraryDocs ? `Relevant library documentation:\n${libraryDocs}` : 'No specific
 - **Immediate**: {next_steps}
 - **Open Questions**: {unresolved_issues}
 
-# Plan actuel
-- {list of todo to address current request}
-
 ---
 Note:
 4. Keep entries concise and focused on information needed for continuity
 
 
 ---
-        
+
         RULES:
         * Only provide the whole summary of the chat till now.
         * Do not provide any new information.
         * DO not need to think too much just start writing imidiately
         * do not write any thing other that the summary with with the provided structure
-        * break the requirements into smaller parts and do not miss any crucial details capture all of them
         `,
     prompt: `
 
 Here is the previous summary of the chat:
 <old_summary>
-${summaryText} 
+${summaryText}
 </old_summary>
 
 Below is the chat after that:
@@ -204,6 +209,21 @@ Please provide a summary of the chat till now including the hitorical summary of
       providerSettings,
     }),
   });
+      break;
+    } catch (error) {
+      lastError = error as Error;
+      if (attempt === retryAttempts) {
+        logger.error(`Failed after ${retryAttempts} attempts:`, error);
+        throw error;
+      }
+      logger.warn(`Attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
+
+  if (!resp) {
+    throw lastError || new Error('Summary generation failed for unknown reason');
+  }
 
   const response = resp.text;
 

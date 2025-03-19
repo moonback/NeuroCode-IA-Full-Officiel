@@ -1,6 +1,5 @@
 import { convertToCoreMessages, streamText as _streamText, type Message } from 'ai';
 import { MAX_TOKENS, type FileMap } from './constants';
-import fs from 'fs';
 import { getSystemPrompt } from '~/lib/common/prompts/prompts';
 import { DEFAULT_MODEL, DEFAULT_PROVIDER, MODIFICATIONS_TAG_NAME, PROVIDER_LIST, WORK_DIR } from '~/utils/constants';
 import type { IProviderSetting } from '~/types/model';
@@ -8,7 +7,7 @@ import { PromptLibrary } from '~/lib/common/prompt-library';
 import { allowedHTMLElements } from '~/utils/markdown';
 import { LLMManager } from '~/lib/modules/llm/manager';
 import { createScopedLogger } from '~/utils/logger';
-import { createFilesContext, extractPropertiesFromMessage, simplifyBundledArtifacts } from './utils';
+import { createFilesContext, extractPropertiesFromMessage } from './utils';
 import { getFilePaths } from './select-context';
 
 export type Messages = Message[];
@@ -16,20 +15,7 @@ export type Messages = Message[];
 export type StreamingOptions = Omit<Parameters<typeof _streamText>[0], 'model'>;
 
 const logger = createScopedLogger('stream-text');
-const CACHE_CONTROL_METADATA = {
-  experimental_providerMetadata: {
-    anthropic: { cacheControl: { type: 'ephemeral' } },
-  },
-};
 
-function persistMessages(messages: Message[]) {
-  try {
-    const messagesFilePath = 'messages.json';
-    fs.writeFileSync(messagesFilePath, JSON.stringify(messages, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Error writing messages to file:', error);
-  }
-}
 export async function streamText(props: {
   messages: Omit<Message, 'id'>[];
   env?: Env;
@@ -39,11 +25,15 @@ export async function streamText(props: {
   providerSettings?: Record<string, IProviderSetting>;
   promptId?: string;
   contextOptimization?: boolean;
-  isPromptCachingEnabled?: boolean;
   contextFiles?: FileMap;
   summary?: string;
   messageSliceId?: number;
+  tools?: Record<string, any>;
+  retryAttempts?: number;
+  retryDelay?: number;
 }) {
+  const retryAttempts = props.retryAttempts ?? 3;
+  const retryDelay = props.retryDelay ?? 1000;
   const {
     messages,
     env: serverEnv,
@@ -55,29 +45,21 @@ export async function streamText(props: {
     contextOptimization,
     contextFiles,
     summary,
-    isPromptCachingEnabled,
+    tools,
   } = props;
   let currentModel = DEFAULT_MODEL;
   let currentProvider = DEFAULT_PROVIDER.name;
-  
-  let processedMessages = messages.map((message, idx) => {
-      if (message.role === 'user') {
+  let processedMessages = messages.map((message) => {
+    if (message.role === 'user') {
       const { model, provider, content } = extractPropertiesFromMessage(message);
       currentModel = model;
       currentProvider = provider;
 
-      const putCacheControl = isPromptCachingEnabled && idx >= messages?.length - 4;
-
-      return {
-        ...message,
-        content,
-        ...(putCacheControl && CACHE_CONTROL_METADATA),
-      };
-        } else if (message.role == 'assistant') {
+      return { ...message, content };
+    } else if (message.role == 'assistant') {
       let content = message.content;
       content = content.replace(/<div class=\\"__boltThought__\\">.*?<\/div>/s, '');
       content = content.replace(/<think>.*?<\/think>/s, '');
-      content = simplifyBundledArtifacts(content);
 
       return { ...message, content };
     }
@@ -116,7 +98,7 @@ export async function streamText(props: {
 
   const dynamicMaxTokens = modelDetails && modelDetails.maxTokenAllowed ? modelDetails.maxTokenAllowed : MAX_TOKENS;
 
-  const systemPrompt =
+  let systemPrompt =
     PromptLibrary.getPropmtFromLibrary(promptId || 'default', {
       cwd: WORK_DIR,
       allowedHtmlElements: allowedHTMLElements,
@@ -127,7 +109,7 @@ export async function streamText(props: {
     const codeContext = createFilesContext(contextFiles, true);
     const filePaths = getFilePaths(files);
 
-    let additionalMessage = `
+    systemPrompt = `${systemPrompt}
 Below are all the files present in the project:
 ---
 ${filePaths.join('\n')}
@@ -141,8 +123,8 @@ ${codeContext}
 `;
 
     if (summary) {
-      additionalMessage = `${additionalMessage}
-below is the chat history till now
+      systemPrompt = `${systemPrompt}
+      below is the chat history till now
 CHAT SUMMARY:
 ---
 ${props.summary}
@@ -158,57 +140,16 @@ ${props.summary}
           processedMessages = [lastMessage];
         }
       }
-
-      if (processedMessages[0].role === 'assistant') {
-        const preUserMessage: Omit<Message, 'id'> = {
-          role: 'user',
-          content: additionalMessage,
-        };
-        processedMessages = [preUserMessage, ...processedMessages];
-      } else {
-        const preUserMessage: Omit<Message, 'id'> = {
-          role: 'user',
-          content: additionalMessage,
-        };
-        const preAssistantMessage: Omit<Message, 'id'> = {
-          role: 'assistant',
-          content: 'Merci pour la fourniture du contexte, je suis maintenant prêt à vous aider avec votre demande.',
-        };
-        processedMessages = [preUserMessage, preAssistantMessage, ...processedMessages];
-      }
     }
   }
 
-  logger.info(`Envoi d'un appel llm à ${provider.name} avec le modèle ${modelDetails.name}`);
+  logger.info(`Sending llm call to ${provider.name} with model ${modelDetails.name}`);
 
-  if (isPromptCachingEnabled) {
-    const messages = [
-      {
-        role: 'system',
-        content: systemPrompt,
-        experimental_providerMetadata: {
-          anthropic: { cacheControl: { type: 'ephemeral' } },
-        },
-      },
-      ...processedMessages,
-    ] as Message[];
-
-    persistMessages(messages);
-
-    return _streamText({
-      model: provider.getModelInstance({
-        model: modelDetails.name,
-        serverEnv,
-        apiKeys,
-        providerSettings,
-      }),
-      maxTokens: dynamicMaxTokens,
-      messages,
-      ...options,
-    });
-  }
-  return _streamText({
-        model: provider.getModelInstance({
+  let lastError: Error | null = null;
+  for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+    try {
+      return await _streamText({
+    model: provider.getModelInstance({
       model: modelDetails.name,
       serverEnv,
       apiKeys,
@@ -216,7 +157,21 @@ ${props.summary}
     }),
     system: systemPrompt,
     maxTokens: dynamicMaxTokens,
+    maxSteps: 100,
     messages: convertToCoreMessages(processedMessages as any),
+    tools,
     ...options,
   });
+    } catch (error) {
+      lastError = error as Error;
+      if (attempt === retryAttempts) {
+        logger.error(`Failed after ${retryAttempts} attempts:`, error);
+        throw error;
+      }
+      logger.warn(`Attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
+
+  throw lastError || new Error('Stream text failed for unknown reason');
 }

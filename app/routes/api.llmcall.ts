@@ -8,6 +8,7 @@ import { LLMManager } from '~/lib/modules/llm/manager';
 import type { ModelInfo } from '~/lib/modules/llm/types';
 import { getApiKeysFromCookie, getProviderSettingsFromCookie } from '~/lib/api/cookies';
 import { createScopedLogger } from '~/utils/logger';
+import { MCPManager } from '~/lib/modules/mcp/manager';
 
 export async function action(args: ActionFunctionArgs) {
   return llmCallAction(args);
@@ -25,28 +26,30 @@ async function getModelList(options: {
 const logger = createScopedLogger('api.llmcall');
 
 async function llmCallAction({ context, request }: ActionFunctionArgs) {
-  const { system, message, model, provider, streamOutput } = await request.json<{
+  const { system, message, model, provider, streamOutput, retryAttempts = 3, retryDelay = 1000 } = await request.json<{
     system: string;
     message: string;
     model: string;
     provider: ProviderInfo;
     streamOutput?: boolean;
+    retryAttempts?: number;
+    retryDelay?: number;
   }>();
 
   const { name: providerName } = provider;
 
   // validate 'model' and 'provider' fields
   if (!model || typeof model !== 'string') {
-    throw new Response('Modèle invalide ou manquant', {
+    throw new Response('Invalid or missing model', {
       status: 400,
-      statusText: 'Requête invalide',
+      statusText: 'Bad Request',
     });
   }
 
   if (!providerName || typeof providerName !== 'string') {
-    throw new Response('Fournisseur invalide ou manquant', {
+    throw new Response('Invalid or missing provider', {
       status: 400,
-      statusText: 'Requête invalide',
+      statusText: 'Bad Request',
     });
   }
 
@@ -54,9 +57,14 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
   const apiKeys = getApiKeysFromCookie(cookieHeader);
   const providerSettings = getProviderSettingsFromCookie(cookieHeader);
 
+  const mcpManager = await MCPManager.getInstance(context);
+  const mcpTools = mcpManager.tools;
+
   if (streamOutput) {
     try {
       const result = await streamText({
+        retryAttempts,
+        retryDelay,
         options: {
           system,
         },
@@ -69,6 +77,7 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
         env: context.cloudflare?.env as any,
         apiKeys,
         providerSettings,
+        tools: mcpTools,
       });
 
       return new Response(result.textStream, {
@@ -81,15 +90,15 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       console.log(error);
 
       if (error instanceof Error && error.message?.includes('API key')) {
-        throw new Response('Clé API invalide ou manquante', {
+        throw new Response('Invalid or missing API key', {
           status: 401,
-          statusText: 'Non autorisé',
+          statusText: 'Unauthorized',
         });
       }
 
       throw new Response(null, {
         status: 500,
-        statusText: 'Erreur interne du serveur',
+        statusText: 'Internal Server Error',
       });
     }
   } else {
@@ -98,7 +107,7 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       const modelDetails = models.find((m: ModelInfo) => m.name === model);
 
       if (!modelDetails) {
-        throw new Error('Modèle non trouvé');
+        throw new Error('Model not found');
       }
 
       const dynamicMaxTokens = modelDetails && modelDetails.maxTokenAllowed ? modelDetails.maxTokenAllowed : MAX_TOKENS;
@@ -106,12 +115,17 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       const providerInfo = PROVIDER_LIST.find((p) => p.name === provider.name);
 
       if (!providerInfo) {
-        throw new Error('Fournisseur non trouvé');
+        throw new Error('Provider not found');
       }
 
-      logger.info(`Génération de la réponse Fournisseur: ${provider.name}, Modèle: ${modelDetails.name}`);
+      logger.info(`Generating response Provider: ${provider.name}, Model: ${modelDetails.name}`);
 
-      const result = await generateText({
+      let lastError: Error | null = null;
+      let result;
+
+      for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+        try {
+          result = await generateText({
         system,
         messages: [
           {
@@ -126,9 +140,26 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
           providerSettings,
         }),
         maxTokens: dynamicMaxTokens,
-        toolChoice: 'none',
+        maxSteps: 100,
+        toolChoice: 'auto',
+        tools: mcpTools,
       });
-        logger.info(`Réponse générée`);
+          logger.info(`Generated response`);
+          break;
+        } catch (error) {
+          lastError = error as Error;
+          if (attempt === retryAttempts) {
+            logger.error(`Failed after ${retryAttempts} attempts:`, error);
+            throw error;
+          }
+          logger.warn(`Attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        }
+      }
+
+      if (!result) {
+        throw lastError || new Error('LLM call failed for unknown reason');
+      }
 
       return new Response(JSON.stringify(result), {
         status: 200,
@@ -140,15 +171,15 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
       console.log(error);
 
       if (error instanceof Error && error.message?.includes('API key')) {
-        throw new Response('Clé API invalide ou manquante', {
+        throw new Response('Invalid or missing API key', {
           status: 401,
-          statusText: 'Non autorisé',
+          statusText: 'Unauthorized',
         });
       }
 
       throw new Response(null, {
         status: 500,
-        statusText: 'Erreur interne du serveur',
+        statusText: 'Internal Server Error',
       });
     }
   }
