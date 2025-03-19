@@ -1,0 +1,103 @@
+# Next.js Documentation
+
+Next.js est un framework React qui permet de créer des applications web performantes avec le rendu côté serveur (SSR) et la génération de sites statiques (SSG).
+
+## Installation
+
+Créer un nouveau projet Next.js :
+
+```bash
+npx create-next-app@latest mon-projet
+cd mon-projet
+```
+
+## Structure du Projet
+
+```
+mon-projet/
+  ├── pages/          # Routes de l'application
+  ├── public/         # Fichiers statiques
+  ├── styles/         # Fichiers CSS
+  ├── components/     # Composants React
+  └── package.json    # Dépendances
+```
+
+## Fonctionnalités Principales
+
+### Routage basé sur le système de fichiers
+
+```jsx
+// pages/index.js - Route: /
+export default function Home() {
+  return <h1>Accueil</h1>
+}
+
+// pages/blog/[slug].js - Route: /blog/:slug
+export default function Post({ slug }) {
+  return <h1>Article: {slug}</h1>
+}
+```
+
+### Data Fetching
+
+```jsx
+// getStaticProps - SSG
+export async function getStaticProps() {
+  const data = await fetchData()
+  return { props: { data } }
+}
+
+// getServerSideProps - SSR
+export async function getServerSideProps() {
+  const data = await fetchData()
+  return { props: { data } }
+}
+```
+
+### API Routes
+
+```jsx
+// pages/api/users.js
+export default function handler(req, res) {
+  res.status(200).json({ users: ['John', 'Jane'] })
+}
+```
+
+## Optimisations
+
+- **Images**: Utiliser le composant `next/image`
+- **Scripts**: Utiliser le composant `next/script`
+- **Fonts**: Utiliser `next/font`
+
+## Déploiement
+
+```bash
+# Build pour production
+npm run build
+
+# Démarrer en production
+npm start
+```
+
+## Meilleures Pratiques
+
+1. **Performance**:
+   - Utiliser les composants Image et Script optimisés
+   - Implémenter le chargement progressif
+   - Optimiser les bundles avec le code splitting
+
+2. **SEO**:
+   - Utiliser le composant Head pour les métadonnées
+   - Implémenter les balises Open Graph
+   - Générer un sitemap.xml
+
+3. **Architecture**:
+   - Organiser les composants par fonctionnalité
+   - Utiliser les layouts partagés
+   - Implémenter une gestion d'état appropriée
+
+## Ressources
+
+- Documentation officielle: https://nextjs.org/docs
+- Exemples: https://github.com/vercel/next.js/tree/canary/examples
+- Learn Next.js: https://nextjs.org/learn
