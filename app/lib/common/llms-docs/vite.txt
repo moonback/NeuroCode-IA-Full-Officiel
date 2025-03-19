@@ -1,0 +1,150 @@
+# Vite Documentation
+
+Vite est un outil de build moderne qui offre une expérience de développement plus rapide et plus légère pour les projets web modernes.
+
+## Installation
+
+```bash
+# Création d'un nouveau projet
+npm create vite@latest my-project
+cd my-project
+
+# Installation des dépendances
+npm install
+```
+
+## Caractéristiques Principales
+
+- **Démarrage Instantané:** Pas de bundling en développement, utilisation des modules ES natifs
+- **Hot Module Replacement (HMR):** Rechargement ultra-rapide des modules modifiés
+- **Support TypeScript Natif:** Configuration automatique pour TypeScript
+- **Optimisation de Production:** Bundling automatique avec Rollup pour la production
+- **Support des Plugins:** Écosystème riche de plugins
+
+## Configuration de Base
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000
+  },
+  build: {
+    outDir: 'dist',
+    minify: 'terser'
+  }
+})
+```
+
+## Utilisation avec Différents Frameworks
+
+### React
+
+```bash
+npm create vite@latest my-react-app -- --template react-ts
+```
+
+```typescript
+// src/App.tsx
+import { useState } from 'react'
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div>
+      <h1>Vite + React</h1>
+      <button onClick={() => setCount(count + 1)}>
+        Count: {count}
+      </button>
+    </div>
+  )
+}
+
+export default App
+```
+
+### Vue
+
+```bash
+npm create vite@latest my-vue-app -- --template vue-ts
+```
+
+```vue
+<!-- src/App.vue -->
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const count = ref(0)
+</script>
+
+<template>
+  <h1>Vite + Vue</h1>
+  <button @click="count++">
+    Count: {{ count }}
+  </button>
+</template>
+```
+
+## Optimisations de Production
+
+- **Tree Shaking:** Élimination automatique du code mort
+- **Splitting de Code:** Division automatique des chunks
+- **Pré-bundling des Dépendances:** Optimisation des performances
+
+## Fonctionnalités Avancées
+
+### Environnement Variables
+
+```typescript
+// .env
+VITE_API_URL=https://api.example.com
+
+// Usage dans le code
+const apiUrl = import.meta.env.VITE_API_URL
+```
+
+### Alias de Chemins
+
+```typescript
+// vite.config.ts
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': '/src',
+      '@components': '/src/components'
+    }
+  }
+})
+```
+
+### Mode SSR
+
+```typescript
+// vite.config.ts
+export default defineConfig({
+  ssr: {
+    target: 'node',
+    format: 'cjs'
+  }
+})
+```
+
+## Commandes CLI
+
+```bash
+# Démarrer le serveur de développement
+npm run dev
+
+# Build pour la production
+npm run build
+
+# Prévisualiser le build
+npm run preview
+```
+
+Pour plus d'informations, visitez: https://vitejs.dev
