@@ -94,6 +94,201 @@ Le projet est structuré en plusieurs répertoires :
     *   `entry.client.tsx`: Point d'entrée côté client.
     *   `entry.server.tsx`: Point d'entrée côté serveur.
 
+
+**Fonctionnalités de NeuroCode (de la plus complexe à la plus simple)**
+
+| Fonctionnalité                                      | Description                                                                                                                                                                                                                                                           | Fichiers clés                                                                                                                                                  |
+| :------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Intégration LLM et Fournisseurs d'IA               | Gestion de multiples fournisseurs d'IA (OpenAI, Anthropic, Google, etc.), locaux (Ollama, LM Studio) et cloud. Appels API, sélection de modèles, configuration des paramètres (température, max_tokens, etc.).                                                             | `lib/modules/llm/*`, `components/@settings/tabs/providers/*`, `routes/api.llmcall.ts`, `routes/api.models.ts`, `components/chat/ModelSelector.tsx`              |
+| Synchronisation de Fichiers (Sync) et historique     | Synchronisation bidirectionnelle des fichiers du projet avec un dossier local. Historique des synchronisations, gestion des conflits, statistiques (fichiers synchronisés, taille, durée).                                                                              | `components/sync/*`, `lib/stores/workbench.ts`, `lib/persistence/*`, `types/sync.ts`,  `components/@settings/tabs/sync/*`, `components/sidebar/date-binning.ts`      |
+| Workbench (Environnement de Développement Intégré) | Gestion de l'arborescence des fichiers, éditeur de code (CodeMirror), aperçu des différences (DiffView), terminal intégré (XTerm.js), gestion des onglets, déploiement (GitHub, Netlify).                                                                                 | `components/workbench/*`, `components/editor/*`, `components/git/*`, `components/modals/*`, `lib/stores/files.ts`, `lib/stores/editor.ts`, `lib/stores/terminal.ts`, `lib/stores/previews.ts`, `lib/webcontainer/*`|
+| Gestion des Paramètres (ControlPanel)           | Interface utilisateur pour configurer les préférences de l'application, gérer les notifications, les fonctionnalités, les données, les fournisseurs d'IA, les connexions, le débogage, etc.  Gestion des onglets dynamiques et de la visibilité.                         | `components/@settings/*`, `lib/stores/settings.ts`, `lib/hooks/useSettings.ts`, `components/ui/Tabs.tsx`, `components/@settings/core/ControlPanel.tsx`           |
+| Chat et Messagerie                                   | Composants d'interface utilisateur pour l'interaction avec les LLM (messages utilisateur/assistant, saisie de texte, boutons d'envoi, etc.).  Gestion des prompts système personnalisés, importation/exportation de chats.                                          | `components/chat/*`, `lib/stores/chat.ts`, `lib/common/prompts/*`, `components/chat/chatExportAndImport/*`, `lib/stores/promptStore.ts`                          |
+| Composants UI                                       | Composants d'interface utilisateur réutilisables (boutons, entrées, dialogues, etc.) et thèmes.                                                                                                                                                                | `components/ui/*`, `styles/*`, `utils/classNames.ts`, `utils/cn.ts`, `components/ui/theme/StyleGuide.tsx`, `lib/stores/theme.ts`                             |
+| Hooks et Utilitaires                                | Fonctions utilitaires et hooks réutilisables (clipboard, localStorage, gestion des raccourcis, etc.).                                                                                                                                                            | `hooks/*`, `lib/utils/*`, `lib/crypto.ts`, `lib/fetch.ts`, `utils/buffer.ts`, `utils/easings.ts`, `utils/path.ts`                                            |
+|API Routes | Fourniture de points de terminaison d'API pour la communication avec des LLMs, récupération d'informations système et exécution d'actions spécifiques à la plateform|`routes/api.*.ts`|
+
+**Détails des Fonctionnalités (avec exemples de code)**
+
+1.  **Intégration LLM et Fournisseurs d'IA:**
+
+    *   **`lib/modules/llm/base-provider.ts`**:  Classe abstraite de base pour tous les fournisseurs d'IA. Définit l'interface commune et les méthodes comme `checkApiEndpoint`.
+
+        ```typescript
+        export abstract class BaseProviderChecker {
+          protected config: ProviderConfig;
+
+          constructor(config: ProviderConfig) {
+            this.config = config;
+          }
+
+          protected async checkApiEndpoint(...) { ... }
+
+          abstract checkStatus(): Promise<StatusCheckResult>;
+        }
+        ```
+
+    *   **`lib/modules/llm/manager.ts`**:  Le `LLMManager` gère l'enregistrement, la récupération et la configuration des différents fournisseurs. Il charge dynamiquement les fournisseurs à partir du répertoire `providers`.  Il maintient également une liste des modèles disponibles.
+    *   **`lib/modules/llm/providers/*`**:  Implémentations concrètes des fournisseurs d'IA (OpenAI, Anthropic, Google, etc.). Chaque fournisseur étend `BaseProvider` et implémente les méthodes spécifiques pour interagir avec l'API du fournisseur. Ex: `openai.ts`, `anthropic.ts`, `google.ts`.
+    *   **`routes/api.llmcall.ts`**:  Point de terminaison de l'API pour les appels LLM.  Gère la communication avec les fournisseurs et le streaming des réponses.
+    *   **`routes/api.models.ts`**: Point de terminaison pour récuperer les models disponibles
+
+2.  **Synchronisation de Fichiers (Sync):**
+
+    *   **`components/sync/SyncSidebar.tsx`**:  Interface utilisateur pour la configuration de la synchronisation (sélection du dossier, activation/désactivation, paramètres).
+    *   **`components/sync/SyncStats.tsx`**:  Affiche les statistiques de synchronisation (fichiers synchronisés, taille, durée, historique).
+    *   **`components/sync/SyncStatusIndicator.tsx`**:  Indicateur visuel de l'état de la synchronisation.
+    *   **`lib/stores/workbench.ts`**:  Logique de synchronisation dans le `workbenchStore`. Gère l'état de la synchronisation, l'historique, etc.  Inclut des méthodes comme `syncFiles()`, `toggleProjectSync()`.
+    *   **`lib/persistence/sync-folder.ts`**: Gère la sauvegarde et la restauration du handle du dossier de synchronisation dans IndexedDB.
+    *   **`components/sidebar/date-binning.ts`: composants pour l'organisation et l'affichage de l'historique de synchronisation.**
+    *  `components/@settings/tabs/sync/*` : plusieurs composants pour la gestion du paramétrage de la synchronisation.
+
+        Exemple de code (`workbenchStore`):
+
+        ```typescript
+        async syncFiles(): Promise<void> {
+          // ... logique de synchronisation ...
+        }
+
+        toggleProjectSync(enabled: boolean) {
+          // ... activer/désactiver la synchronisation ...
+        }
+        ```
+
+3.  **Workbench:**
+
+    *   **`components/workbench/Workbench.client.tsx`**:  Composant principal de l'environnement de développement.  Gère la disposition (panneaux, onglets), l'intégration des autres composants (éditeur, terminal, aperçu), et la logique d'interaction globale.
+    *   **`components/editor/codemirror/*`**:  Intégration de l'éditeur CodeMirror pour l'édition de code, avec prise en charge de la coloration syntaxique, de l'indentation, etc. (`CodeMirrorEditor.tsx`). Gestion du contenu binaire (`BinaryContent.tsx`).
+    *   **`components/git/GitUrlImport.client.tsx`**:  Permet d'importer un projet depuis un dépôt Git.
+    *   **`components/modals/NetlifyModal.client.tsx`**: Gère le déploiement via une fenetre modal.
+    *   **`components/workbench/terminal/*`**:  Intégration du terminal (XTerm.js).
+    *   **`components/workbench/DiffView.tsx`**: Composant pour afficher les différences de code (comparaison avant/après).  Utilise la bibliothèque `diff`.
+        *   **`DiffModeSelector.tsx`**: permet de choisir le mode d'affichage des différences.
+    * **`components/workbench/EditorPanel.tsx`**: Gère l'affichage de l'éditeur de code, de l'arborescence de fichiers et du terminal.
+    * **`components/workbench/FileBreadcrumb.tsx`**: Affiche un fil d'Ariane pour la navigation dans l'arborescence de fichiers.
+    * **`components/workbench/FileTree.tsx`**: Affiche l'arborescence des fichiers du projet.
+    *  **`components/workbench/InstructionsModal.tsx`**: Une fenêtre modale pour afficher/saisir des instructions.
+    *   **`lib/stores/files.ts`**: Gère l'état des fichiers du projet (contenu, type, etc.).
+    *   **`lib/stores/editor.ts`**: Gère l'état de l'éditeur (fichier sélectionné, contenu, position du curseur).
+    *   **`lib/stores/terminal.ts`**: Gère l'état du terminal.
+    *   **`lib/stores/previews.ts`**: Gère l'état des aperçus (preview).
+    *   **`lib/webcontainer/*`**: Intégration de WebContainer (environnement d'exécution Node.js dans le navigateur).
+
+4.  **Gestion des Paramètres (ControlPanel):**
+
+    *   **`components/@settings/core/ControlPanel.tsx`**:  Le composant principal du panneau de contrôle.  Gère l'ouverture/fermeture, la navigation entre les onglets, et l'affichage des composants de paramètres spécifiques.
+    *   **`components/@settings/tabs/*`**:  Composants individuels pour chaque onglet de paramètres (ex: `SettingsTab.tsx`, `NotificationsTab.tsx`, `FeaturesTab.tsx`, etc.).
+    *   **`components/@settings/core/types.ts`**:  Types et interfaces pour la configuration des paramètres.
+    *   **`components/@settings/core/constants.ts`**:  Constantes pour les libellés, descriptions, et configurations par défaut des onglets.
+    *   **`lib/stores/settings.ts`**:  Gère l'état global des paramètres de l'application (thème, langue, notifications, etc.).  Persistance dans `localStorage`.
+    *   **`lib/hooks/useSettings.ts`**:  Hook personnalisé pour accéder et modifier facilement les paramètres.
+    *   **`components/ui/Tabs.tsx`**:  Composant réutilisable pour la gestion des onglets.
+    * `components/@settings/shared/components`: Contient `DraggableTabList.tsx`, `TabManagement.tsx`, `TabTile.tsx` pour la gestion des onglets et leur organisation.
+    * `components/@settings/utils`: contient des fichiers comme `tab-helpers.ts` et `animations.ts`
+
+        Exemple de code (fichier `constants.ts`):
+
+        ```typescript
+        export const TAB_LABELS: Record<TabType, string> = {
+          settings: 'Paramètres',
+          notifications: 'Notifications',
+          // ... autres onglets ...
+        };
+
+        export const DEFAULT_TAB_CONFIG = [
+          // ... configuration par défaut des onglets ...
+        ];
+        ```
+
+5.  **Chat et Messagerie:**
+
+    *   **`components/chat/Chat.client.tsx`**:  Composant principal de l'interface de chat.  Intègre `BaseChat`, `Messages`, `SendButton`, etc.
+    *   **`components/chat/BaseChat.tsx`**:  Gère la logique de base du chat (envoi de messages, gestion de l'entrée, etc.).
+    *   **`components/chat/Messages.client.tsx`**:  Affiche la liste des messages (utilisateur et assistant).
+    *   **`components/chat/UserMessage.tsx`**:  Composant pour afficher un message utilisateur.
+    *   **`components/chat/AssistantMessage.tsx`**:  Composant pour afficher un message de l'assistant, incluant le rendu Markdown et la gestion des artefacts.
+    *   **`components/chat/Markdown.tsx`**:  Composant pour le rendu du Markdown, avec gestion de la coloration syntaxique (via `shiki`).
+    *   **`lib/stores/chat.ts`**:  Gère l'état du chat (si le chat est visible, s'il a démarré, etc.).
+    *    **`components/chat/chatExportAndImport/*`**: Composants pour gérer l'export et l'import des chats.
+        *   **`components/chat/ExamplePrompts.tsx`**: Affiche des exemples de prompts.
+        *   **`components/chat/SpeechRecognition.tsx`**: Gère la reconnaissance vocale.
+        *   **`components/chat/ThoughtBox.tsx`**: Affiche une zone de pensée.
+        *   **`lib/stores/promptStore.ts`**: Gère les instructions systèmes personnalisées.
+
+        Exemple de code (fichier `Chat.client.tsx`):
+
+        ```typescript
+        import { useChat } from 'ai/react';
+
+        // ...
+
+        const { messages, input, handleInputChange, handleSubmit } = useChat({
+          api: '/api/chat', // Point de terminaison de l'API pour le chat
+          // ... autres options ...
+        });
+
+        // ... rendu de l'interface utilisateur ...
+        ```
+
+6.  **Composants UI:**
+
+    *   **`components/ui/*`**:  Dossier contenant les composants d'interface utilisateur réutilisables (boutons, entrées, dialogues, etc.).
+        *   **`Button.tsx`**:  Composant bouton générique.
+        *   **`Input.tsx`**:  Composant champ de saisie générique.
+        *   **`Dialog.tsx`**:  Composant pour les boîtes de dialogue.
+        *   **`Tabs.tsx`**:  Composant pour la navigation par onglets.
+        *   ... et d'autres composants UI.
+    *   **`styles/*`**:  Fichiers de style globaux, variables CSS, animations.
+    *   **`utils/classNames.ts`**:  Utilitaire pour combiner des classes CSS conditionnellement (utilise `clsx` et `tailwind-merge`).
+    * `components/ui/BackgroundRays`: Gère les effets visuels de rayons en arrière-plan.
+    *   **`lib/stores/theme.ts`**:  Gère le thème de l'application (clair/sombre).
+
+        Exemple de code (fichier `Button.tsx`):
+
+        ```typescript
+        import { cva } from 'class-variance-authority';
+
+        const buttonVariants = cva(
+          'inline-flex items-center justify-center ...',
+          {
+            variants: {
+              variant: {
+                default: 'bg-blue-500 text-white',
+                secondary: 'bg-gray-200 text-gray-900',
+              },
+              size: {
+                default: 'h-10 px-4 py-2',
+                sm: 'h-9 px-3',
+              },
+            },
+            defaultVariants: {
+              variant: 'default',
+              size: 'default',
+            },
+          },
+        );
+
+        export function Button({ className, variant, size, ...props }: ButtonProps) {
+          return <button className={classNames(buttonVariants({ variant, size }), className)} {...props} />;
+        }
+        ```
+
+7.  **Hooks et Utilitaires:**
+
+    *   **`hooks/*`**:  Hooks React personnalisés pour des fonctionnalités spécifiques (ex: `useClipboard.ts`, `useLocalStorage.ts`).
+    *   **`lib/utils/*`**:  Fonctions utilitaires diverses (ex: `formatSize.ts`, `getLanguageFromExtension.ts`).
+    *   **`lib/crypto.ts`**: Fonctions de cryptage (si présentes, non fournies dans le code source).
+    *   **`lib/fetch.ts`**: Utilitaires pour les requêtes réseau (probablement une abstraction autour de `fetch`).
+    *   `utils/debounce.ts`, `utils/stacktrace.ts`, `utils/unreachable.ts`:  Fonctions utilitaires diverses.
+
+        Exemple de code (fichier `useLocalStorage.ts`):
+
+        ```typescript
+        export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
+          // ... implémentation du hook ...
+        }
+        ```
+
 ## Installation et Exécution
 
 1.  **Prérequis**:
