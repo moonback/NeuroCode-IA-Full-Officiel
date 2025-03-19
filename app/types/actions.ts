@@ -33,6 +33,11 @@ export interface ActionAlert {
   content: string;
   source?: 'terminal' | 'preview';
   severity?: 'warning' | 'error' | 'critical';
+  documentation?: {
+    title: string;
+    url: string;
+    description?: string;
+  }[];
 }
 
 export interface FileHistory {
