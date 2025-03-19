@@ -1,0 +1,132 @@
+# Webpack API Documentation
+
+Webpack est un module bundler pour JavaScript qui transforme, bundle ou package des ressources web et dépendances.
+
+## Installation
+
+```bash
+npm install webpack webpack-cli --save-dev
+```
+
+## Configuration de Base
+
+```javascript
+// webpack.config.js
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js'
+  },
+  mode: 'development' // ou 'production'
+};
+```
+
+## Loaders
+
+Les loaders permettent de transformer des fichiers d'un type en modules valides.
+
+### Babel Loader
+
+```javascript
+module: {
+  rules: [
+    {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env']
+        }
+      }
+    }
+  ]
+}
+```
+
+### Style Loaders
+
+```javascript
+{
+  test: /\.css$/,
+  use: ['style-loader', 'css-loader']
+}
+```
+
+### File Loader
+
+```javascript
+{
+  test: /\.(png|svg|jpg|gif)$/,
+  use: ['file-loader']
+}
+```
+
+## Plugins
+
+Les plugins permettent d'effectuer des tâches plus larges comme l'optimisation des bundles.
+
+### HtmlWebpackPlugin
+
+```javascript
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+plugins: [
+  new HtmlWebpackPlugin({
+    template: './src/index.html'
+  })
+]
+```
+
+### MiniCssExtractPlugin
+
+```javascript
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+plugins: [
+  new MiniCssExtractPlugin({
+    filename: '[name].css'
+  })
+]
+```
+
+## Optimisation pour la Production
+
+```javascript
+const TerserPlugin = require('terser-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+
+module.exports = {
+  mode: 'production',
+  optimization: {
+    minimizer: [
+      new TerserPlugin(),
+      new CssMinimizerPlugin()
+    ],
+    splitChunks: {
+      chunks: 'all'
+    }
+  }
+};
+```
+
+## Dev Server
+
+```javascript
+devServer: {
+  contentBase: './dist',
+  hot: true,
+  port: 3000
+}
+```
+
+## Bonnes Pratiques
+
+- Utilisez des chunks pour le code splitting
+- Implémentez le tree shaking
+- Optimisez les images et autres assets
+- Utilisez le mode production pour le build final
+- Configurez le source mapping approprié
+
+Pour plus d'informations, consultez la [documentation officielle de Webpack](https://webpack.js.org/concepts/)

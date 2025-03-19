@@ -21,7 +21,9 @@ import socketioDocs from './socketio.txt';
 import tailwindDocs from './tailwind.txt';
 import viteDocs from './vite.txt';
 import vitestDocs from './vitest.txt';
+import webpackDocs from './webpack.txt';
 import zustandDocs from './zustand.txt';
+import mongooseDocs from './mongoose.txt';
 
 interface LlmsDoc {
   id: string;
@@ -37,6 +39,16 @@ export const availableDocuments: LlmsDoc[] = [
     id: 'axios',
     name: 'Axios HTTP Client',
     content: axiosDocs,
+  },
+  {
+    id: 'mongoose',
+    name: 'Mongoose ODM',
+    content: mongooseDocs,
+  },
+  {
+    id: 'webpack',
+    name: 'Webpack Bundler',
+    content: webpackDocs,
   },
   {
     id: 'socketio',
