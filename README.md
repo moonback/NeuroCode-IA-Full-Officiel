@@ -1,240 +1,318 @@
-# NeuroCode - AI-Powered Web Development Platform
 
-[![Version](https://img.shields.io/badge/version-1.0.0-important)](https://github.com/moonback/NeuroCode-IA-Full-Officiel/releases)
+## Exigences (pour exécuter le projet)
+
+* Node.js (v18+)
+* pnpm
+
+## Installation (pour exécuter le projet)
+
+1.  **Clonez le dépôt:**
+
+    ```bash
+    git clone https://github.com/moonback/NeuroCode-IA-Full-Officiel.git
+    ```
+2.  **Installation des dépendances:**
+
+    ```bash
+     cd NeuroCode-IA-Full-Officiel
+     pnpm install
+    ```
+3.  **Exécuter le projet :**
+
+    ```bash
+     pnpm run dev
+    ```
+    `pnpm run dev` ouvre l'application dans votre navigateur. L'interface utilisateur s'affiche à la racine (`/`), tandis que l'éditeur et les autres outils sont accessibles via l'URL `/chat/:id`, où `:id` est un identifiant unique.
+4.  **Visitez** [http://localhost:3000](http://localhost:3000/)
+
+## Contributions
+
+Les contributions à NeuroCode sont les bienvenues!  Veuillez consulter le fichier `CONTRIBUTING.md` (à créer) pour plus de détails.  Les Pull Requests seront examinées avec attention.  Assurez-vous que vos modifications sont bien testées et respectent les conventions de codage du projet.
+
+## Licence
+
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+---
+
+**Note:** This project is under active development.  Features and structure are subject to change.
+---
+## A faire
+Ajouter au readme, une section FAQ avec les questions suivantes et leurs réponses :
+**Q: Comment puis-je contribuer au projet ?**
+
+**R:** Nous apprécions les contributions de la communauté! Veuillez consulter notre fichier `CONTRIBUTING.md` pour connaître les directives. En résumé :
+   1. Fork le dépôt.
+   2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`).
+   3. Faites vos modifications et assurez-vous que les tests passent (`pnpm test`).
+   4. Commitez vos changements (`git commit -m 'Ajout de la fonctionnalité incroyable'`).
+   5. Poussez vers la branche (`git push origin feature/AmazingFeature`).
+   6. Ouvrez une Pull Request.
+
+**Q: Puis-je utiliser ce projet à des fins commerciales ?**
+
+**R:** Oui, NeuroCode est sous licence MIT, ce qui signifie que vous pouvez l'utiliser, le modifier et le distribuer à des fins commerciales.  Cependant, nous vous demandons d'inclure une attribution à NeuroCode.
+
+**Q: Comment puis-je signaler un bug ou demander une fonctionnalité ?**
+
+**R:** Vous pouvez signaler les bugs et demander des fonctionnalités en ouvrant une "issue" sur notre dépôt GitHub : [https://github.com/moonback/NeuroCode-IA-Full-Officiel/issues](https://github.com/moonback/NeuroCode-IA-Full-Officiel/issues).
+Soyez aussi précis que possible dans votre description.
+
+**Q: Comment configurer mon environnement de développement ?**
+
+**R:**  Assurez-vous d'avoir installé Node.js (version 18 ou supérieure) et pnpm.  Clonez le dépôt, exécutez `pnpm install` pour installer les dépendances, puis `pnpm dev` pour démarrer le serveur de développement.  L'application sera accessible à l'adresse `http://localhost:3000`.
+
+**Q: Comment puis-je personnaliser l'invite (prompt) de l'IA ?**
+
+**R:** Vous pouvez personnaliser l'invite de l'IA en allant dans les paramètres, puis l'onglet "Instructions personnalisées".  Entrez votre invite personnalisé dans la zone de texte et enregistrez.
+
+**Q: Comment activer/désactiver la synchronisation des fichiers?**
+
+**R:** Vous pouvez activer ou désactiver la synchronisation des fichiers dans l'onglet "Synchronisation de fichiers" des paramètres.  Vous devez d'abord sélectionner un dossier de synchronisation.
+
+**Q: Où puis-je trouver la documentation des modèles de langage (LLMs) supportés ?**
+
+**R:** Vous pouvez trouver la documentation des LLMs supportés dans `app/lib/common/llms-docs`.  Chaque fichier texte correspond à un modèle ou à une bibliothèque spécifique (par exemple, `openai.txt`, `anthropic.txt`, `nextjs.txt`, etc.). Vous pouvez également accéder à cette documentation via l'API en utilisant le point de terminaison `/api/library-docs`.
+
+**Q: Comment puis-je contribuer à la documentation des LLMs ?**
+
+**R:** Si vous souhaitez améliorer la documentation des LLMs, vous pouvez modifier les fichiers texte correspondants dans `app/lib/common/llms-docs` et soumettre une Pull Request.  Assurez-vous que vos modifications sont claires, concises et précises.
+
+**Q: Comment accéder à la version de l'application ?**
+
+**R:** La version de l'application est disponible via une requête à `/api/system/app-info`. La réponse inclut la version, le nom de l'application, la description, la licence, et d'autres informations utiles.  Ces informations sont également affichées dans l'onglet "Débogage" des paramètres.
+
+**Q: L'application prend-elle en charge d'autres langues que le français ?**
+
+**R:** Oui, l'application prend en charge plusieurs langues, y compris l'anglais, l'espagnol, le français, l'allemand, l'italien, le portugais, le russe, le chinois, le japonais et le coréen. Vous pouvez changer la langue de l'application dans l'onglet "Paramètres".
+
+**Q: Où puis-je trouver la documentation de l'API ?**
+
+**R:** Une documentation OpenAPI (Swagger) n'est pas *directement* intégrée dans ce projet, mais est une excellente suggestion d'amélioration. La structure du code et le nommage des routes (par exemple, `routes/api.chat.ts`, `routes/api.models.$provider.ts`) fournissent une bonne indication des endpoints disponibles. Le code est bien commenté, ce qui facilite la compréhension.
+
+**Q: Comment signaler un problème de sécurité ?**
+
+**R:** Si vous trouvez un problème de sécurité, veuillez NE PAS l'ouvrir publiquement. Envoyez plutôt un e-mail directement aux mainteneurs du projet (remplacer par une adresse email valide) en décrivant le problème et les étapes pour le reproduire.
+
+**Q: Comment puis-je exporter ou importer mon historique de chat ?**
+
+**R:** Vous pouvez exporter l'historique de votre chat au format JSON en utilisant le bouton "Exporter les conversations" dans l'onglet "Gestion des données" des paramètres.  Pour importer un historique, utilisez le bouton "Importer les paramètres" dans le même onglet.
+
+**Q: Comment puis-je personnaliser les paramètres de synchronisation des fichiers ?**
+
+**R:** Vous pouvez personnaliser les paramètres de synchronisation des fichiers, tels que l'activation/désactivation de la synchronisation automatique, l'intervalle de synchronisation et la synchronisation à la sauvegarde, dans l'onglet "Synchronisation de fichiers" des paramètres.
+
+**Q: Comment fonctionne l'optimisation du contexte ?**
+
+**R:** L'optimisation du contexte est une fonctionnalité expérimentale qui vise à améliorer la pertinence et la précision des réponses de l'IA en analysant et en sélectionnant intelligemment le contexte le plus pertinent à partir de l'historique des conversations et des fichiers du projet. Il peut inclure la sélection de fichiers sources pertinents, la génération de résumés de conversation et d'autres techniques pour limiter le nombre de tokens.
+
+--- END OF FILE README.md ---
+
+Voici une version améliorée et mise à jour du `README.md`, en intégrant les informations de la base de code fournie :
+
+```markdown
+# NeuroCode - Plateforme de Développement Web Assistée par IA
+
+[![Version](https://img.shields.io/badge/version-1.0.0-important)]()
 [![License](https://img.shields.io/badge/license-MIT-success)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/moonback/NeuroCode-IA-Full-Officiel/build.yml?branch=main)](https://github.com/moonback/NeuroCode-IA-Full-Officiel/actions)
-[![Downloads](https://img.shields.io/github/downloads/moonback/NeuroCode-IA-Full-Officiel/total?color=blue)](https://github.com/moonback/NeuroCode-IA-Full-Officiel/releases)
-[![Stars](https://img.shields.io/github/stars/moonback/NeuroCode-IA-Full-Officiel?style=social)](https://github.com/moonback/NeuroCode-IA-Full-Officiel)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fneurocode.app)](https://neurocode.app)
-[![Documentation](https://img.shields.io/badge/docs-neurocode.app-informational)](https://docs.neurocode.app)
 
-# NeuroCode
-![NeuroCode Architecture](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface-2.png?raw=true)
-![NeuroCode Interface](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface.png?raw=true)
-![NeuroCode Architecture](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface-3.png?raw=true)
-![NeuroCode Architecture](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface-4.png?raw=true)
-
-
-NeuroCode est une plateforme de développement full-stack de nouvelle génération qui intègre l'intelligence artificielle pour accélérer et optimiser le processus de développement web. Ce README fournit un aperçu du projet, de sa structure, et de ses composants principaux.
+NeuroCode est une plateforme de développement web full-stack de nouvelle génération, propulsée par l'IA, conçue pour accélérer et optimiser le processus de développement. Elle s'exécute entièrement dans le navigateur grâce à [WebContainers](https://webcontainers.io/), offrant une expérience de développement intégrée et performante, sans nécessiter d'installation locale complexe.
 
 ## Aperçu du Projet
 
-NeuroCode est conçu pour fonctionner dans un environnement de navigateur, utilisant WebContainers pour l'exécution du code Node.js. Il offre une expérience de développement intégrée, combinant un éditeur de code (basé sur CodeMirror), un terminal, une prévisualisation en direct, et des fonctionnalités de gestion de projet.  L'IA est au cœur du projet, offrant une assistance à la fois pour l'écriture de prompts, la suggestion de code, et l'automatisation de tâches.
+NeuroCode combine un éditeur de code, un terminal, une prévisualisation en direct, une gestion de projet, et une interface de chat avec des modèles de langage (LLM).  L'IA assiste l'utilisateur dans la rédaction de code, la génération de prompts, l'explication de code, et l'automatisation de tâches.
+
+## Démonstrations
+
+Voici quelques captures d'écran de l'interface de NeuroCode :
+
+![NeuroCode Interface 1](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface-2.png?raw=true)
+![NeuroCode Interface 2](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface.png?raw=true)
+![NeuroCode Interface 3](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface-3.png?raw=true)
+![NeuroCode Interface 4](https://github.com/moonback/NeuroCode-IA-Full-Officiel/raw/main/public/neurocode-interface-4.png?raw=true)
+
+## Fonctionnalités Principales
+
+*   **Éditeur de Code Intégré (CodeMirror 6)**: Coloration syntaxique, auto-complétion, indentation, thèmes multiples, et intégration avec les LLM pour la suggestion de code.  Supporte de nombreux langages, dont JavaScript, TypeScript, HTML, CSS, Python, et plus.
+*   **Terminal Intégré (xterm.js)**: Exécution de commandes shell directement dans le navigateur. Permet d'installer des dépendances (via npm), d'exécuter des scripts, et de lancer des serveurs de développement.
+*   **Prévisualisation en Direct**:  Mises à jour en temps réel des modifications du code dans un iframe.  Modes "Responsive" et "Device" (simulation de différents appareils).
+*   **Gestion de Projet**: Arborescence de fichiers, création, suppression, renommage, et édition de fichiers.
+*   **Intégration Git**: Clonage de dépôts GitHub (authentifié et non authentifié) directement dans l'environnement WebContainer. Affichage des différences (diffs) avant et après les modifications.
+*   **Interface de Chat avec IA**: Interaction avec des LLM (OpenAI, Anthropic, Google, Mistral, etc.) pour l'assistance au développement.  L'interface prend en charge le streaming des réponses.
+*   **Génération de Code**: Création de code à partir de descriptions en langage naturel.
+*   **Explication de Code**: Génération d'explications pour des blocs de code sélectionnés.
+*   **Amélioration de Prompts**: Optimisation des prompts pour de meilleures interactions avec les LLM.
+*   **Optimisation du Contexte (BETA)**: Analyse intelligente du contexte (historique du chat, fichiers du projet) pour améliorer la pertinence des réponses de l'IA.
+*   **Gestion des Paramètres**: Panneau de paramètres complet pour la configuration des préférences de l'utilisateur, des fournisseurs de LLM, des notifications, des fonctionnalités bêta, etc.
+*   **Synchronisation de Fichiers (Expérimental)**: Synchronisation des fichiers du projet avec un dossier local.
+*   **Gestion des Tâches (BETA)**: Suivi des ressources système (CPU, mémoire, réseau).
+*   **Support Multi-langues**: Interface utilisateur traduisible (actuellement en anglais et français, avec des options pour d'autres langues).
+*   **Mode Sombre/Clair**: Thèmes d'interface personnalisables.
+*   **Notifications**: Notifications en temps réel pour les mises à jour, les erreurs et les alertes.
+*    **Importation/Exportation**: Possibilité d'importer et d'exporter l'historique des chats au format JSON.
+*   **Déploiement Netlify**: Intégration avec Netlify pour un déploiement facile.
+*   **Bibliothèque de Prompts**: Sélection de prompts système prédéfinis.
+* **Instructions Personnalisées**: Définition d'instructions personnalisées pour guider l'assistant.
+* **Barre latérale masquable**: pour une interface plus épurée
+* **Raccourcis clavier**: pour les actions courantes
+
+## Technologies Utilisées
+
+*   **Framework principal**: [Remix](https://remix.run/)
+*   **Interface utilisateur**: [React](https://react.dev/)
+*   **Éditeur de code**: [CodeMirror 6](https://codemirror.net/6/)
+*   **Terminal**: [xterm.js](https://xtermjs.org/)
+*   **WebContainers**: [@webcontainer/api](https://www.npmjs.com/package/@webcontainer/api)
+*   **Git**: [isomorphic-git](https://isomorphic-git.org/)
+*   **Gestion de l'état**: [nanostores](https://github.com/nanostores/nanostores)
+*   **Persistance**: [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API), [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), [js-cookie](https://www.npmjs.com/package/js-cookie)
+*   **Styling**: [SCSS](https://sass-lang.com/), [Tailwind CSS](https://tailwindcss.com/)
+*   **Animations**: [Framer Motion](https://www.framer.com/motion/)
+*   **UI components**:  [@radix-ui](https://www.radix-ui.com/)
+*   **Diff**: [diff](https://www.npmjs.com/package/diff)
+*   **PDF**: [pdfjs-dist](https://www.npmjs.com/package/pdfjs-dist)
+*   **Tests**: [Vitest](https://vitest.dev/)
+*   **Autres**: node-fetch, classnames, lodash, react-toastify, etc.
 
 ## Structure du Projet
 
-Le projet est structuré en plusieurs répertoires principaux, chacun ayant un rôle spécifique:
+Le projet est structuré en plusieurs répertoires :
 
-- **`app`**: Racine de l'application Remix.
-    - **`components`**: Composants React réutilisables.
-        - **`@settings`**: Composants pour le panneau de paramètres (profil, notifications, connexions à des services externes, débogage, etc.).
-        - **`chat`**: Composants liés à l'interface de chat et à l'interaction avec l'IA.
-        - **`editor`**: Composants de l'éditeur de code, incluant des extensions CodeMirror personnalisées.
-        - **`git`**: Composants pour l'intégration de Git (ex: importation depuis une URL Git).
-        - **`header`**: Composants de l'en-tête de l'application.
-        - **`modals`**: Composants de fenêtres modales (ex: modal Netlify).
-        - **`sidebar`**: Composants de la barre latérale (historique des chats, etc.).
-        - **`sync`**: Composants pour la synchronisation de fichiers (expérimental).
-        - **`ui`**: Composants d'interface utilisateur de base (boutons, entrées, etc.).
-        - **`workbench`**: Composants de l'espace de travail principal (éditeur, terminal, aperçu).
-    - **`hooks`**: Hooks React personnalisés (ex: `useClipboard`, `useLocalStorage`).
-    - **`lib`**: Fonctions utilitaires et logiques métier.
-        - **`api`**: Fonctions pour interagir avec des API externes (ex: vérification de l'état des connexions).
-        - **`common`**: Fonctions et constantes partagées.
-        - **`crypto`**: Fonctions de cryptographie (non utilisées dans l'extrait de code).
-        - **`hooks`**: Hooks React personnalisés, regroupés.
-        - **`modules`**:
-            - **`llm`**: Gestion des modèles de langage (LLM), y compris les fournisseurs (OpenAI, Anthropic, etc.).
-        - **`persistence`**: Fonctions de persistance des données (ex: IndexedDB, localStorage).
-        - **`runtime`**: Fonctions liées à l'exécution du code (ex: analyse des messages).
-        - **`stores`**: Stores Nanostores pour la gestion de l'état global.
-        - **`utils`**: Fonctions utilitaires diverses.
-        - **`webcontainer`**: Fonctions liées à l'intégration de WebContainer.
-    - **`routes`**: Définition des routes de l'application Remix.
-    - **`styles`**: Feuilles de style globales et spécifiques aux composants.
-    - **`types`**: Définitions de types TypeScript.
-    - **`utils`**: Fonctions utilitaires diverses.
+*   `app/`: Contient le code source de l'application Remix.
+    *   `components/`: Composants React réutilisables, organisés en sous-répertoires par fonctionnalité (e.g., `@settings`, `chat`, `editor`, `git`, `header`, `modals`, `sidebar`, `sync`, `ui`, `workbench`).
+    *   `hooks/`: Hooks React personnalisés (e.g., `useClipboard`, `useLocalStorage`, `useUpdateCheck`).
+    *   `lib/`: Fonctions utilitaires, logique métier, et intégrations avec des services tiers.
+        *   `api/`: Fonctions pour interagir avec des API externes.
+        *   `common/`: Fonctions et constantes partagées entre le client et le serveur.
+            * `llms-docs`: Documentation pour divers LLM et frameworks.
+            * `prompts`: Prompts système par défaut.
+        *   `modules/`: Modules spécifiques (actuellement, principalement la gestion des LLM).
+            *   `llm/`:
+                * `base-provider.ts`: Classe abstraite de base pour les fournisseurs de LLM.
+                * `manager.ts`:  Gestionnaire centralisé des fournisseurs de LLM.
+                * `providers/`:  Implémentations concrètes des fournisseurs de LLM (OpenAI, Anthropic, Google, etc.).
+                * `registry.ts`: Enregistre les fournisseurs disponibles.
+                * `types.ts`: Types pour les LLM.
+        *   `persistence/`: Fonctions pour la persistance des données (IndexedDB, localStorage, gestion de l'historique des chats).
+        *   `runtime/`: Fonctions liées à l'exécution du code (e.g., parsing des messages, exécution d'actions).
+        *   `stores/`: Stores [Nanostores](https://github.com/nanostores/nanostores) pour la gestion de l'état global de l'application (thème, paramètres, fichiers, etc.).
+        *   `utils/`: Fonctions utilitaires diverses (manipulation de chaînes, formatage, etc.).
+        *   `webcontainer/`: Initialisation et configuration de WebContainer.
+    *   `routes/`: Définition des routes de l'application Remix (API et pages).
+    *   `styles/`: Feuilles de style globales et spécifiques aux composants (principalement SCSS).
+    *   `types/`: Définitions de types TypeScript globales.
+    *   `root.tsx`: Composant racine de l'application.
+    *   `entry.client.tsx`: Point d'entrée côté client.
+    *   `entry.server.tsx`: Point d'entrée côté serveur.
 
-## Composants Clés
+## Installation et Exécution
 
-### 1. `components/@settings`
+1.  **Prérequis**:
+    *   Node.js (version 18 ou supérieure)
+    *   pnpm
+2.  **Clonez le dépôt**:
+    ```bash
+    git clone https://github.com/moonback/NeuroCode-IA-Full-Officiel.git
+    ```
+3. **Installation des dépendances:**
+    ```bash
+     cd NeuroCode-IA-Full-Officiel
+     pnpm install
+    ```
+4.  **Exécuter le projet :**
+    ```bash
+     pnpm run dev
+    ```
+    `pnpm run dev` ouvre l'application dans votre navigateur. L'interface utilisateur s'affiche à la racine (`/`), tandis que l'éditeur et les autres outils sont accessibles via l'URL `/chat/:id`, où `:id` est un identifiant unique.
 
-Ce répertoire contient tous les composants liés au panneau de paramètres de l'application.
+## Configuration
 
-- **`core`**:
-    - **`AvatarDropdown.tsx`**: Menu déroulant pour la gestion du profil utilisateur.
-    - **`constants.ts`**: Constantes pour les icônes, labels, descriptions et configuration par défaut des onglets.
-    - **`ControlPanel.tsx`**: Le panneau de contrôle principal, qui gère l'affichage des différents onglets de paramètres.
-    - **`CustomPromptSettings.tsx`**: Interface pour personnaliser les instructions système.
-    - **`types.ts`**: Définitions de types pour les paramètres.
-- **`index.ts`**: Exporte les composants et utilitaires principaux du répertoire `@settings`.
-- **`shared/components`**: Composants réutilisables utilisés dans les différents onglets.
-    - **`DraggableTabList.tsx`**: Liste d'onglets réorganisables par glisser-déposer.
-    - **`TabManagement.tsx`**: Interface pour gérer la visibilité et l'ordre des onglets.
-    - **`TabTile.tsx`**: Composant pour afficher une tuile d'onglet individuel.
-- **`tabs`**: Composants pour chaque onglet du panneau de paramètres.
-    - **`connections`**: Gestion des connexions à des services externes (GitHub, Netlify).
-        - **`components`**: Sous-composants pour la gestion des connexions (formulaires, dialogues, etc.).
-        - **`types`**: Types spécifiques à GitHub.
-    - **`data`**: Gestion des données de l'application (export, import, suppression).
-    - **`debug`**: Outils de débogage et informations système.
-    - **`event-logs`**: Affichage des journaux d'événements.
-    - **`features`**: Gestion des fonctionnalités expérimentales.
-    - **`notifications`**: Gestion des notifications.
-    - **`profile`**: Gestion du profil utilisateur.
-    - **`providers`**: Configuration des fournisseurs de modèles de langage (cloud et local).
-    - **`settings`**: Paramètres généraux de l'application.
-    - **`sync`**: Paramètres de synchronisation des fichiers.
-    - **`task-manager`**: Gestionnaire de tâches (expérimental).
-    - **`update`**: Gestion des mises à jour de l'application.
-- **`utils`**: Fonctions utilitaires pour la gestion des onglets (ex: réorganisation, réinitialisation).
+La plupart des paramètres de l'application peuvent être configurés via le panneau "Paramètres" accessible depuis l'interface utilisateur.  Cependant, certains paramètres plus avancés peuvent être configurés via des variables d'environnement (dans un fichier `.env` ou directement dans l'environnement d'exécution).
 
-### 2. `components/chat`
+**Variables d'environnement importantes :**
 
-Ce répertoire contient les composants liés à l'interface de chat et à l'interaction avec l'IA.
+*   `VITE_GITHUB_ACCESS_TOKEN`: (Optionnel) Jeton d'accès GitHub personnel pour l'intégration Git (portée `repo` requise).  Si non fourni, l'authentification GitHub sera limitée aux dépôts publics.
+*   **Clés API des fournisseurs LLM**:  Vous *devez* configurer les clés API pour les fournisseurs de LLM que vous souhaitez utiliser (ex: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`).  Vous pouvez également définir des URLs de base personnalisées pour certains fournisseurs.
+*   `VITE_OLLAMA_API_BASE_URL`: URL de base pour l'API Ollama (par défaut: `http://127.0.0.1:11434`).
+*   `VITE_GITHUB_ACCESS_TOKEN`: Jeton d'accès personnel GitHub (utilisé par `GitUrlImport.client.tsx` pour l'importation de dépôts).
 
-- **`APIKeyManager.tsx`**: Gère les clés API pour les différents fournisseurs.
-- **`Artifact.tsx`**: Affiche les artefacts générés par l'IA (fichiers, commandes shell, etc.).
-- **`AssistantMessage.tsx`**: Affiche un message de l'assistant (IA).
-- **`BaseChat.tsx`**: Composant de base pour le chat, incluant la zone de saisie et la liste des messages.
-- **`Chat.client.tsx`**: Point d'entrée du chat côté client.
-- **`ChatAlert.tsx`**: Affiche une alerte dans le chat (ex: erreur de preview).
-- **`chatExportAndImport`**:  Gestion de l'export et import de l'historique des chats.
-- **`CodeBlock.tsx`**: Affiche un bloc de code avec coloration syntaxique.
-- **`Markdown.tsx`**: Affiche du texte Markdown.
-- **`Messages.client.tsx`**: Gère l'affichage de la liste des messages (utilisateur et assistant).
-- **`ModelSelector.tsx`**: Permet de sélectionner le modèle de langage à utiliser.
-- **`SendButton.client.tsx`**: Bouton d'envoi du message.
-- **`SpeechRecognition.tsx`**: Composant pour la reconnaissance vocale (expérimental).
+## Contribution
 
-### 3. `components/editor`
+Les contributions à NeuroCode sont les bienvenues! Veuillez consulter le fichier `CONTRIBUTING.md` (à créer) pour connaître les directives. En résumé:
 
-Ce répertoire contient les composants de l'éditeur de code.
+1.  Faites un fork du dépôt.
+2.  Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`).
+3.  Faites vos modifications et assurez-vous que les tests passent (`pnpm test`).
+4.  Commitez vos changements (`git commit -m 'Ajout de la fonctionnalité incroyable'`).
+5.  Poussez vers la branche (`git push origin feature/AmazingFeature`).
+6.  Ouvrez une Pull Request.
 
-- **`codemirror`**:
-    - **`BinaryContent.tsx`**: Affiche un message pour les fichiers binaires.
-    - **`cm-theme.ts`**: Configuration du thème CodeMirror.
-    - **`CodeMirrorEditor.tsx`**: L'éditeur de code principal, basé sur CodeMirror.
-    - **`indent.ts`**: Configuration de l'indentation.
-    - **`languages.ts`**: Configuration des langages supportés.
+## Licence
 
-### 4. `components/workbench`
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-- **`DiffView.tsx`**: Affiche les différences entre deux versions d'un fichier.
-- **`EditorPanel.tsx`**: Le panneau de l'éditeur, qui contient l'éditeur de code et la gestion des fichiers.
-- **`FileBreadcrumb.tsx`**: Affiche un fil d'Ariane pour le fichier sélectionné.
-- **`FileTree.tsx`**: Affiche l'arborescence des fichiers du projet.
-- **`Preview.tsx`**: Affiche l'aperçu en direct de l'application.
-- **`TargetFileButton.tsx`**: Button for file targeting in chat.
-- **`DependenciesPanel.tsx`**: Gestion et visualisation des dépendances du projet (extrait du package.json).
-- **`terminal`**:
-    - **`Terminal.tsx`**: Le composant de terminal, basé sur xterm.js.
-    - **`TerminalTabs.tsx`**: Gère les onglets du terminal.
-    - **`theme.ts`**: Configuration du thème du terminal.
-- **`Workbench.client.tsx`**: Le composant principal de l'espace de travail, qui gère la disposition et l'interaction entre les différents panneaux (éditeur, terminal, aperçu).
+## FAQ
 
-### 5. `lib`
+**Q: Comment puis-je contribuer au projet ?**
 
-- **`api`**:
-  - `connection.ts`: Vérifie la connectivité réseau.
-  - `cookies.ts`: Fonctions utilitaires pour parser les cookies (notamment les clés API et les paramètres des fournisseurs).
-  - `debug.ts`: Fonctions pour le débogage (vérification de l'utilisation de la mémoire, etc.).
-  - `features.ts`: Gestion des fonctionnalités expérimentales (non implémenté dans l'extrait).
-  - `notifications.ts`: Gestion des notifications (lecture, marquage comme lu, etc.).
-  - `updates.ts`: Vérification des mises à jour de l'application.
-- **`modules/llm`**:
-  - `base-provider.ts`: Définit une classe abstraite pour les fournisseurs de modèles de langage.
-  - `manager.ts`: Gère les différents fournisseurs de modèles de langage.
-  - `providers`: Implémentation des différents fournisseurs (OpenAI, Anthropic, etc.).
-  - `registry.ts`: Enregistre les différents fournisseurs.
-  - `types.ts`: Types pour les modèles de langage.
-- **`persistence`**:
-  - `ChatDescription.client.tsx`: Gère la description du chat (affichage et édition).
-  - `db.ts`: Fonctions pour interagir avec la base de données IndexedDB (stockage de l'historique des chats).
-  - `index.ts`: Exporte les fonctions de persistance.
-  - `localStorage.ts`: Fonctions pour interagir avec le stockage local du navigateur.
-  - `project-folders.ts`: Gestion des dossiers de projet (pour la synchronisation).
-  - `sync-folder.ts`: Gestion du dossier de synchronisation.
-  - `types.ts`: Types pour la persistance.
-  - `useChatHistory.ts`: Hook pour gérer l'historique des chats.
-- **`runtime`**:
-  - `action-runner.ts`: Exécute les actions définies dans les artefacts (commandes shell, écriture de fichiers, etc.).
-  - `message-parser.ts`: Analyse les messages de l'IA pour extraire les artefacts et les actions.
-- **`stores`**:
-  - `chat.ts`: Store pour l'état du chat (ex: visibilité).
-  - `editor.ts`: Store pour l'état de l'éditeur (documents, fichier sélectionné, etc.).
-  - `files.ts`: Store pour la gestion des fichiers (contenu, état binaire, etc.).
-  - `logs.ts`: Store pour les logs.
-  - `previews.ts`: Store pour la gestion des aperçus.
-  - `profile.ts`: Store pour le profil de l'utilisateur.
-  - `settings.ts`: Store pour les paramètres de l'application (thème, langue, notifications, etc.).
-  - `sync-sidebar.ts`: Store pour la visibilité de la barre latérale de synchronisation.
-  - `terminal.ts`: Store pour la gestion du terminal (processus shell, etc.).
-  - `theme.ts`: Store pour le thème de l'application (clair/sombre).
-  - `workbench.ts`: Store pour l'état de l'espace de travail (vue sélectionnée, visibilité des panneaux, etc.).
-- **`utils`**:
-    - `clipboard.ts`:  Fonction pour copier du texte dans le presse-papiers.
-    - `cn.ts`, `classNames.ts`: Utilitaires pour la gestion des noms de classe CSS.
-    - `constants.ts`: Constantes globales (ex: répertoire de travail, expressions régulières).
-    - `debounce.ts`: Implémentation de la fonction `debounce`.
-    - `diff.ts`: Fonctions pour calculer et afficher les différences entre les fichiers.
-    - `documentUtils.ts`: Fonctions pour extraire du texte des PDF et DOCX.
-    - `easings.ts`: Fonctions d'easing pour les animations.
-    - `fileUtils.ts`: Fonctions utilitaires pour la gestion des fichiers (vérification du type, taille, etc.).
-    - `formatSize.ts`: Formate une taille de fichier en unités lisibles.
-    - `getLanguageFromExtension.ts`: Détermine le langage de programmation à partir de l'extension du fichier.
-    - `logger.ts`: Implémentation d'un logger personnalisé.
-    - `markdown.ts`: Configuration de la génération de Markdown (plugins, éléments HTML autorisés, etc.).
-    - `mergeRefs.ts`: Utilitaires pour fusionner plusieurs refs React.
-    - `os.ts`: Détection de l'OS (utile pour les raccourcis clavier).
-    - `path.ts`: Fonctions pour la manipulation des chemins de fichiers (compatibles avec le navigateur).
-    - `projectCommands.ts`: Détection et création de commandes de projet (ex: `npm install`, `npm run dev`).
-    - `promises.ts`: Utilitaires pour les promesses.
-    - `react.ts`: Fonctions utilitaires pour React (ex: `genericMemo`).
-    - `sampler.ts`: Utilitaires pour les appels de fonction.
-    - `stripIndent.ts`: Supprime les indentations inutiles des chaînes de caractères.
-    - `unreachable.ts`: Fonction pour signaler les cas inatteignables.
-- **`webcontainer`**:
-    - `index.ts`: Initialisation du WebContainer.
+**R:** Nous apprécions les contributions de la communauté! Veuillez consulter notre fichier `CONTRIBUTING.md` pour connaître les directives. En résumé :
+   1. Fork le dépôt.
+   2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`).
+   3. Faites vos modifications et assurez-vous que les tests passent (`pnpm test`).
+   4. Commitez vos changements (`git commit -m 'Ajout de la fonctionnalité incroyable'`).
+   5. Poussez vers la branche (`git push origin feature/AmazingFeature`).
+   6. Ouvrez une Pull Request.
 
-## Fonctionnalités IA
+**Q: Puis-je utiliser ce projet à des fins commerciales ?**
 
-### Amélioration Automatique des Prompts
+**R:** Oui, NeuroCode est sous licence MIT, ce qui signifie que vous pouvez l'utiliser, le modifier et le distribuer à des fins commerciales.  Cependant, nous vous demandons d'inclure une attribution à NeuroCode.
 
-NeuroCode intègre un système sophistiqué d'amélioration automatique des prompts qui enrichit dynamiquement les interactions avec l'IA :
+**Q: Comment puis-je signaler un bug ou demander une fonctionnalité ?**
 
-- **Enrichissement Contextuel** : Analyse automatique du contexte de développement pour enrichir les prompts avec la documentation pertinente.
-- **Adaptation Intelligente** : Ajustement automatique des prompts en fonction du contexte technique spécifique du projet.
-- **Documentation Intégrée** : Utilisation de la base de connaissances LLMs pour fournir des réponses plus précises et contextuelles.
+**R:** Vous pouvez signaler les bugs et demander des fonctionnalités en ouvrant une "issue" sur notre dépôt GitHub : [https://github.com/moonback/NeuroCode-IA-Full-Officiel/issues](https://github.com/moonback/NeuroCode-IA-Full-Officiel/issues).
+Soyez aussi précis que possible dans votre description.
 
-### Optimisation pour Petits Modèles LLM
+**Q: Comment puis-je configurer mon environnement de développement ?**
 
-Pour garantir des performances optimales même avec des modèles LLM plus légers :
+**R:**  Assurez-vous d'avoir installé Node.js (version 18 ou supérieure) et pnpm.  Clonez le dépôt, exécutez `pnpm install` pour installer les dépendances, puis `pnpm dev` pour démarrer le serveur de développement.  L'application sera accessible à l'adresse `http://localhost:3000`.
 
-- **Prompts Optimisés** : Structuration intelligente des prompts pour maximiser l'efficacité des modèles plus petits.
-- **Compression Contextuelle** : Réduction intelligente du contexte tout en préservant les informations essentielles.
-- **Adaptation Dynamique** : Ajustement automatique du format des prompts selon les capacités du modèle utilisé.
+**Q: Comment puis-je personnaliser l'invite (prompt) de l'IA ?**
 
-## Technologies
+**R:** Vous pouvez personnaliser l'invite de l'IA en allant dans les paramètres, puis l'onglet "Instructions personnalisées".  Entrez votre invite personnalisé dans la zone de texte et enregistrez.
 
-- **Framework**: Remix
-- **Langage**: TypeScript
-- **Interface utilisateur**: React, CodeMirror (éditeur), xterm.js (terminal)
-- **Gestion de l'état**: Nanostores
-- **Persistance**: IndexedDB, localStorage, cookies
-- **Styling**: SCSS, Tailwind CSS
-- **Animations**: Framer Motion
-- **Gestion des listes et tableaux**: Radix UI
-- **Gestion du drag and drop** : react-dnd
-- **Gestion du thème** : use-context-selector
-- **Intégration Git**: isomorphic-git
-- **Format de diff**: jsdiff
-- **Génération de PDF**: jsPDF
-- **Gestion asynchrone des messages** : message-parser.ts (custom)
-- **Fournisseurs LLM**: Multiples (OpenAI, Anthropic, Google, etc.)
-- **Utilitaires**: classnames, date-fns, lodash, nanoid, etc.
+**Q: Comment activer/désactiver la synchronisation des fichiers ?**
 
-## Conclusion
+**R:** Vous pouvez activer ou désactiver la synchronisation des fichiers dans l'onglet "Synchronisation de fichiers" des paramètres.  Vous devez d'abord sélectionner un dossier de synchronisation.
 
-NeuroCode est une plateforme de développement web ambitieuse qui tire parti de l'IA pour améliorer l'expérience de développement. Sa structure modulaire et l'utilisation de technologies modernes en font un outil puissant et flexible.
-`;
+**Q: Où puis-je trouver la documentation des modèles de langage (LLMs) supportés ?**
+
+**R:** Vous pouvez trouver la documentation des LLMs supportés dans `app/lib/common/llms-docs`.  Chaque fichier texte correspond à un modèle ou à une bibliothèque spécifique (par exemple, `openai.txt`, `anthropic.txt`, `nextjs.txt`, etc.). Vous pouvez également accéder à cette documentation via l'API en utilisant le point de terminaison `/api/library-docs`.
+
+**Q: Comment puis-je contribuer à la documentation des LLMs ?**
+
+**R:** Si vous souhaitez améliorer la documentation des LLMs, vous pouvez modifier les fichiers texte correspondants dans `app/lib/common/llms-docs` et soumettre une Pull Request.  Assurez-vous que vos modifications sont claires, concises et précises.
+
+**Q: Comment accéder à la version de l'application ?**
+
+**R:** La version de l'application est disponible via une requête à `/api/system/app-info`. La réponse inclut la version, le nom de l'application, la description, la licence, et d'autres informations utiles.  Ces informations sont également affichées dans l'onglet "Débogage" des paramètres.
+
+**Q: L'application prend-elle en charge d'autres langues que le français ?**
+
+**R:** Oui, l'application prend en charge plusieurs langues, y compris l'anglais, l'espagnol, le français, l'allemand, l'italien, le portugais, le russe, le chinois, le japonais et le coréen. Vous pouvez changer la langue de l'application dans l'onglet "Paramètres".
+
+**Q: Où puis-je trouver la documentation de l'API ?**
+
+**R:** Une documentation OpenAPI (Swagger) n'est pas *directement* intégrée dans ce projet, mais est une excellente suggestion d'amélioration. La structure du code et le nommage des routes (par exemple, `routes/api.chat.ts`, `routes/api.models.$provider.ts`) fournissent une bonne indication des endpoints disponibles. Le code est bien commenté, ce qui facilite la compréhension.
+
+**Q: Comment signaler un problème de sécurité ?**
+
+**R:** Si vous trouvez un problème de sécurité, veuillez NE PAS l'ouvrir publiquement. Envoyez plutôt un e-mail directement aux mainteneurs du projet (remplacer par une adresse email valide) en décrivant le problème et les étapes pour le reproduire.
+
+**Q: Comment puis-je exporter ou importer mon historique de chat ?**
+
+**R:** Vous pouvez exporter l'historique de votre chat au format JSON en utilisant le bouton "Exporter les conversations" dans l'onglet "Gestion des données" des paramètres. Pour importer un historique, utilisez le bouton "Importer les paramètres" dans le même onglet.
+
+**Q: Comment puis-je personnaliser les paramètres de synchronisation des fichiers ?**
+
+**R:** Vous pouvez personnaliser les paramètres de synchronisation des fichiers, tels que l'activation/désactivation de la synchronisation automatique, l'intervalle de synchronisation et la synchronisation à la sauvegarde, dans l'onglet "Synchronisation de fichiers" des paramètres.
