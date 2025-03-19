@@ -9,11 +9,13 @@ import cypressDocs from './cypress.txt';
 import expressDocs from './express.txt';
 import fireproofDocs from './fireproof.txt';
 import jestDocs from './jest.txt';
+import nextjsDocs from './nextjs.txt';
 import openrouterDocs from './openrouter.txt';
 import prismaDocs from './prisma.txt';
 import reactQueryDocs from './react-query.txt';
 import reduxDocs from './redux.txt';
 import reduxToolkitDocs from './redux-toolkit.txt';
+import tailwindDocs from './tailwind.txt';
 import viteDocs from './vite.txt';
 
 interface LlmsDoc {
@@ -47,6 +49,11 @@ export const availableDocuments: LlmsDoc[] = [
     content: jestDocs,
   },
   {
+    id: 'nextjs',
+    name: 'Next.js Framework',
+    content: nextjsDocs,
+  },
+  {
     id: 'openrouter',
     name: 'OpenRouter API',
     content: openrouterDocs,
@@ -70,6 +77,11 @@ export const availableDocuments: LlmsDoc[] = [
     id: 'redux-toolkit',
     name: 'Redux Toolkit',
     content: reduxToolkitDocs,
+  },
+  {
+    id: 'tailwind',
+    name: 'Tailwind CSS Framework',
+    content: tailwindDocs,
   },
   {
     id: 'vite',
