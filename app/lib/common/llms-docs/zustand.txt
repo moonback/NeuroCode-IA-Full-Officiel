@@ -1,0 +1,101 @@
+# Zustand API
+
+Zustand est une bibliothèque de gestion d'état minimaliste pour React. Elle offre une API simple et performante avec une excellente intégration TypeScript.
+
+## Installation
+
+```bash
+npm install zustand
+```
+
+## Utilisation de base
+
+```typescript
+import create from 'zustand'
+
+interface BearStore {
+  bears: number
+  increase: () => void
+}
+
+const useStore = create<BearStore>((set) => ({
+  bears: 0,
+  increase: () => set((state) => ({ bears: state.bears + 1 })),
+}))
+```
+
+## Utilisation dans les composants
+
+```typescript
+function BearCounter() {
+  const bears = useStore((state) => state.bears)
+  return <h1>{bears} ours autour d'ici</h1>
+}
+
+function Controls() {
+  const increase = useStore((state) => state.increase)
+  return <button onClick={increase}>un ours de plus</button>
+}
+```
+
+## Fonctionnalités principales
+
+### Middleware
+
+```typescript
+import { devtools, persist } from 'zustand/middleware'
+
+const useStore = create(
+  devtools(
+    persist(
+      (set) => ({
+        bears: 0,
+      }),
+      { name: 'bear-storage' }
+    )
+  )
+)
+```
+
+### Actions asynchrones
+
+```typescript
+const useStore = create((set) => ({
+  fetchBears: async () => {
+    const response = await fetch('https://api.bears.com')
+    set({ bears: await response.json() })
+  }
+}))
+```
+
+## Bonnes pratiques
+
+1. **Sélecteurs memoïsés**:
+```typescript
+const bears = useStore(
+  useCallback(
+    (state) => state.bears,
+    []
+  )
+)
+```
+
+2. **Séparation des stores**:
+```typescript
+const useBearStore = create(...)
+const useFishStore = create(...)
+```
+
+3. **TypeScript**:
+- Toujours définir les interfaces pour le store
+- Utiliser les génériques pour un meilleur typage
+
+## Avantages clés
+
+- **Léger**: ~1KB gzippé
+- **Simple**: API minimaliste
+- **Performant**: Mises à jour optimisées
+- **TypeScript**: Support natif
+- **DevTools**: Intégration Redux DevTools
+
+Pour plus d'informations, consultez la [documentation officielle de Zustand](https://github.com/pmndrs/zustand).
