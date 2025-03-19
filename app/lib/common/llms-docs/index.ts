@@ -18,6 +18,8 @@ import reduxDocs from './redux.txt';
 import reduxToolkitDocs from './redux-toolkit.txt';
 import tailwindDocs from './tailwind.txt';
 import viteDocs from './vite.txt';
+import vitestDocs from './vitest.txt';
+import zustandDocs from './zustand.txt';
 
 interface LlmsDoc {
   id: string;
@@ -93,6 +95,16 @@ export const availableDocuments: LlmsDoc[] = [
     id: 'vite',
     name: 'Vite Build Tool',
     content: viteDocs,
+  },
+  {
+    id: 'vitest',
+    name: 'Vitest Testing Framework',
+    content: vitestDocs,
+  },
+  {
+    id: 'zustand',
+    name: 'Zustand State Management',
+    content: zustandDocs,
   },
 ];
 
