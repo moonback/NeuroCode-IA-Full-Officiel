@@ -17,6 +17,7 @@ import openapiDocs from './openapi.txt';
 import openrouterDocs from './openrouter.txt';
 import prismaDocs from './prisma.txt';
 import reactQueryDocs from './react-query.txt';
+import reactRouterDomDocs from './react-router-dom.txt';
 import reduxDocs from './redux.txt';
 import reduxToolkitDocs from './redux-toolkit.txt';
 import socketioDocs from './socketio.txt';
@@ -129,6 +130,11 @@ export const availableDocuments: LlmsDoc[] = [
     id: 'react-query',
     name: 'React Query',
     content: reactQueryDocs,
+  },
+  {
+    id: 'react-router-dom',
+    name: 'React Router DOM',
+    content: reactRouterDomDocs,
   },
   {
     id: 'redux',
