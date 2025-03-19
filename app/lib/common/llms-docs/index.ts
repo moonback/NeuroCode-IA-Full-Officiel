@@ -8,7 +8,9 @@
 import axiosDocs from './axios.txt';
 import cypressDocs from './cypress.txt';
 import expressDocs from './express.txt';
+import fastifyDocs from './fastify.txt';
 import fireproofDocs from './fireproof.txt';
+import graphqlDocs from './graphql.txt';
 import jestDocs from './jest.txt';
 import nextjsDocs from './nextjs.txt';
 import openapiDocs from './openapi.txt';
@@ -24,6 +26,8 @@ import vitestDocs from './vitest.txt';
 import webpackDocs from './webpack.txt';
 import zustandDocs from './zustand.txt';
 import mongooseDocs from './mongoose.txt';
+import nestjsDocs from './nestjs.txt';
+import sequelizeDocs from './sequelize.txt';
 
 interface LlmsDoc {
   id: string;
@@ -41,9 +45,29 @@ export const availableDocuments: LlmsDoc[] = [
     content: axiosDocs,
   },
   {
+    id: 'fastify',
+    name: 'Fastify Framework',
+    content: fastifyDocs,
+  },
+  {
+    id: 'graphql',
+    name: 'GraphQL Query Language',
+    content: graphqlDocs,
+  },
+  {
     id: 'mongoose',
     name: 'Mongoose ODM',
     content: mongooseDocs,
+  },
+  {
+    id: 'nestjs',
+    name: 'NestJS Framework',
+    content: nestjsDocs,
+  },
+  {
+    id: 'sequelize',
+    name: 'Sequelize ORM',
+    content: sequelizeDocs,
   },
   {
     id: 'webpack',
