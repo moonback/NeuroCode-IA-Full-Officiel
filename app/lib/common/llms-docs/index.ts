@@ -29,7 +29,7 @@ import webpackDocs from './webpack.txt';
 import zustandDocs from './zustand.txt';
 import mongooseDocs from './mongoose.txt';
 import nestjsDocs from './nestjs.txt';
-import sequelizeDocs from './sequelize.txt';
+// import sequelizeDocs from './sequelize.txt';
 
 interface LlmsDoc {
   id: string;
@@ -74,11 +74,11 @@ export const availableDocuments: LlmsDoc[] = [
     name: 'NestJS Framework',
     content: nestjsDocs,
   },
-  {
-    id: 'sequelize',
-    name: 'Sequelize ORM',
-    content: sequelizeDocs,
-  },
+  // {
+  //   id: 'sequelize',
+  //   name: 'Sequelize ORM',
+  //   content: sequelizeDocs,
+  // },
   {
     id: 'webpack',
     name: 'Webpack Bundler',
