@@ -1,0 +1,108 @@
+# Axios HTTP Client
+
+Axios est un client HTTP basé sur les promesses pour le navigateur et Node.js. Il est isomorphique (il peut fonctionner dans le navigateur et Node.js avec la même base de code).
+
+## Installation
+
+```bash
+npm install axios
+```
+
+## Caractéristiques Principales
+
+- **Requêtes HTTP depuis le navigateur** (XMLHttpRequest)
+- **Requêtes HTTP depuis node.js** (http module)
+- Support des **Promesses**
+- Interception des requêtes et réponses
+- Transformation des données de requête et réponse
+- Annulation des requêtes
+- Transformations automatiques pour JSON
+- Protection XSRF côté client
+
+## Exemples d'Utilisation
+
+### Requête GET
+```javascript
+axios.get('/api/data')
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+```
+
+### Requête POST
+```javascript
+axios.post('/api/data', {
+  firstName: 'Fred',
+  lastName: 'Flintstone'
+})
+.then(response => {
+  console.log(response);
+})
+.catch(error => {
+  console.error(error);
+});
+```
+
+### Configuration Globale
+```javascript
+axios.defaults.baseURL = 'https://api.example.com';
+axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+```
+
+### Instance Personnalisée
+```javascript
+const instance = axios.create({
+  baseURL: 'https://api.example.com',
+  timeout: 5000,
+  headers: {'X-Custom-Header': 'value'}
+});
+```
+
+## Meilleures Pratiques
+
+- Utilisez des instances Axios pour différentes configurations API
+- Configurez des intercepteurs pour la gestion globale des erreurs
+- Définissez des timeouts appropriés
+- Utilisez la transformation des réponses pour normaliser les données
+- Implémentez la gestion des annulations pour les requêtes longues
+
+## Gestion des Erreurs
+
+```javascript
+axios.get('/api/data')
+  .then(response => {
+    // Traitement de la réponse
+  })
+  .catch(error => {
+    if (error.response) {
+      // Erreur serveur (status !== 2xx)
+      console.error(error.response.data);
+    } else if (error.request) {
+      // Erreur réseau
+      console.error('Erreur réseau');
+    } else {
+      // Autre erreur
+      console.error(error.message);
+    }
+  });
+```
+
+## Intégration avec TypeScript
+
+Axios inclut des définitions TypeScript par défaut:
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+}
+
+axios.get<User>('/user/12345')
+  .then(response => {
+    // response.data est typé comme User
+    console.log(response.data.name);
+  });
+```

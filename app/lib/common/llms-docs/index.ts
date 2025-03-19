@@ -5,6 +5,7 @@
  * which can be used by the AI to generate more accurate code for specific libraries.
  */
 
+import axiosDocs from './axios.txt';
 import cypressDocs from './cypress.txt';
 import expressDocs from './express.txt';
 import fireproofDocs from './fireproof.txt';
@@ -16,6 +17,7 @@ import prismaDocs from './prisma.txt';
 import reactQueryDocs from './react-query.txt';
 import reduxDocs from './redux.txt';
 import reduxToolkitDocs from './redux-toolkit.txt';
+import socketioDocs from './socketio.txt';
 import tailwindDocs from './tailwind.txt';
 import viteDocs from './vite.txt';
 import vitestDocs from './vitest.txt';
@@ -31,6 +33,16 @@ interface LlmsDoc {
  * Available llms.txt documentation files
  */
 export const availableDocuments: LlmsDoc[] = [
+  {
+    id: 'axios',
+    name: 'Axios HTTP Client',
+    content: axiosDocs,
+  },
+  {
+    id: 'socketio',
+    name: 'Socket.IO',
+    content: socketioDocs,
+  },
   {
     id: 'cypress',
     name: 'Cypress Testing Framework',
