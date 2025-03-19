@@ -10,6 +10,7 @@ import expressDocs from './express.txt';
 import fireproofDocs from './fireproof.txt';
 import jestDocs from './jest.txt';
 import nextjsDocs from './nextjs.txt';
+import openapiDocs from './openapi.txt';
 import openrouterDocs from './openrouter.txt';
 import prismaDocs from './prisma.txt';
 import reactQueryDocs from './react-query.txt';
@@ -52,6 +53,11 @@ export const availableDocuments: LlmsDoc[] = [
     id: 'nextjs',
     name: 'Next.js Framework',
     content: nextjsDocs,
+  },
+  {
+    id: 'openapi',
+    name: 'OpenAPI Specification',
+    content: openapiDocs,
   },
   {
     id: 'openrouter',
