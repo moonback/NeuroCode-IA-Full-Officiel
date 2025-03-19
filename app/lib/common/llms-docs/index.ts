@@ -35,6 +35,9 @@ interface LlmsDoc {
   id: string;
   name: string;
   content: string;
+  version?: string;
+  priority?: number;
+  categories?: string[];
 }
 
 /**
@@ -241,7 +244,7 @@ export function autoEnhancePrompt(userPrompt: string): string {
  * @param messages Array of messages in the chat history
  * @returns Array of library IDs found in history
  */
-export function detectLibraryInHistory(messages: Array<{ content: string }>): string[] {
+export function detectLibraryInHistory(messages: Array<{ content: string | { type: string; text: string }[] }>): string[] {
   const detectedLibraries = new Set<string>();
 
   // Go through messages from newest to oldest
@@ -251,9 +254,13 @@ export function detectLibraryInHistory(messages: Array<{ content: string }>): st
       continue;
     }
 
+    const textContent = Array.isArray(message.content)
+      ? message.content.find((item) => item.type === 'text')?.text || ''
+      : message.content;
+
     // Check each library
     for (const doc of availableDocuments) {
-      if (message.content.toLowerCase().includes(doc.id.toLowerCase())) {
+      if (textContent.toLowerCase().includes(doc.id.toLowerCase())) {
         detectedLibraries.add(doc.id);
       }
     }
@@ -283,6 +290,72 @@ export function enhancePromptFromHistory(userPrompt: string, messages: Array<{ c
       // Start with just the first detected library to avoid token overload
       enhancedPrompt = enhancePromptWithLibrary(userPrompt, historyLibraryIds[0]);
     }
+  }
+
+  return enhancedPrompt;
+}
+
+
+/**
+ * Trie les documents par priorité et pertinence contextuelle
+ * @param documents Liste des documents à trier
+ * @param context Contexte du projet (optionnel)
+ * @returns Documents triés par priorité
+ */
+export function sortDocumentsByPriority(documents: LlmsDoc[], context?: string): LlmsDoc[] {
+  return [...documents].sort((a, b) => {
+    // Priorité explicite d'abord
+    const priorityDiff = (b.priority || 0) - (a.priority || 0);
+    if (priorityDiff !== 0) return priorityDiff;
+
+    // Si un contexte est fourni, prioriser les documents pertinents
+    if (context) {
+      const aRelevance = isDocumentRelevantToContext(a, context);
+      const bRelevance = isDocumentRelevantToContext(b, context);
+      if (aRelevance !== bRelevance) {
+        return bRelevance ? 1 : -1;
+      }
+    }
+
+    return a.name.localeCompare(b.name);
+  });
+}
+
+/**
+ * Vérifie si un document est pertinent pour un contexte donné
+ */
+function isDocumentRelevantToContext(doc: LlmsDoc, context: string): boolean {
+  const contextLower = context.toLowerCase();
+  return (
+    doc.categories?.some(cat => contextLower.includes(cat.toLowerCase())) ||
+    doc.name.toLowerCase().includes(contextLower) ||
+    doc.id.toLowerCase().includes(contextLower)
+  );
+}
+
+/**
+ * Amélioration de la fonction enhancePromptWithLibrary pour supporter
+ * plusieurs bibliothèques et la priorisation
+ */
+export function enhancePromptWithLibraries(
+  userPrompt: string,
+  libraryIds: string[],
+  context?: string
+): string {
+  const docs = libraryIds
+    .map(id => getDocumentById(id))
+    .filter((doc): doc is LlmsDoc => doc !== undefined);
+
+  const sortedDocs = sortDocumentsByPriority(docs, context);
+  
+  let enhancedPrompt = userPrompt;
+  for (const doc of sortedDocs) {
+    enhancedPrompt = `Je veux utiliser ${doc.name}${doc.version ? ` (version ${doc.version})` : ''} dans mon projet.
+Voici la documentation de l'API :
+"""
+${doc.content}
+"""
+Maintenant, avec cela en tête, aidez-moi avec : ${enhancedPrompt}`;
   }
 
   return enhancedPrompt;
