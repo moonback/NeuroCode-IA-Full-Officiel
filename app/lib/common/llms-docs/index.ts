@@ -5,9 +5,16 @@
  * which can be used by the AI to generate more accurate code for specific libraries.
  */
 
+import cypressDocs from './cypress.txt';
+import expressDocs from './express.txt';
 import fireproofDocs from './fireproof.txt';
+import jestDocs from './jest.txt';
 import openrouterDocs from './openrouter.txt';
+import prismaDocs from './prisma.txt';
 import reactQueryDocs from './react-query.txt';
+import reduxDocs from './redux.txt';
+import reduxToolkitDocs from './redux-toolkit.txt';
+import viteDocs from './vite.txt';
 
 interface LlmsDoc {
   id: string;
@@ -20,9 +27,24 @@ interface LlmsDoc {
  */
 export const availableDocuments: LlmsDoc[] = [
   {
+    id: 'cypress',
+    name: 'Cypress Testing Framework',
+    content: cypressDocs,
+  },
+  {
+    id: 'express',
+    name: 'Express.js Framework',
+    content: expressDocs,
+  },
+  {
     id: 'fireproof',
     name: 'Fireproof Database',
     content: fireproofDocs,
+  },
+  {
+    id: 'jest',
+    name: 'Jest Testing Framework',
+    content: jestDocs,
   },
   {
     id: 'openrouter',
@@ -30,12 +52,32 @@ export const availableDocuments: LlmsDoc[] = [
     content: openrouterDocs,
   },
   {
+    id: 'prisma',
+    name: 'Prisma ORM',
+    content: prismaDocs,
+  },
+  {
     id: 'react-query',
     name: 'React Query',
     content: reactQueryDocs,
   },
-  // Add more docs here as they are added
+  {
+    id: 'redux',
+    name: 'Redux State Management',
+    content: reduxDocs,
+  },
+  {
+    id: 'redux-toolkit',
+    name: 'Redux Toolkit',
+    content: reduxToolkitDocs,
+  },
+  {
+    id: 'vite',
+    name: 'Vite Build Tool',
+    content: viteDocs,
+  },
 ];
+
 
 /**
  * Get llms.txt documentation by ID
