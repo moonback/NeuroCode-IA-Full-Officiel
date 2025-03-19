@@ -626,7 +626,38 @@ const InlineDiffComparison = memo(
         if (!shikiHighlighter) {
           shikiHighlighter = await getHighlighter({
             themes: ['github-dark', 'github-light'],
-            langs: ['typescript', 'javascript', 'json', 'html', 'css', 'jsx', 'tsx', 'python', 'php'],
+            langs: [
+              'typescript',
+              'javascript', 
+              'json',
+              'html',
+              'css',
+              'jsx',
+              'tsx',
+              'python',
+              'php',
+              'bash',
+              'yaml',
+              'markdown',
+              'sql',
+              'xml',
+              'java',
+              'c',
+              'cpp',
+              'csharp',
+              'go',
+              'ruby',
+              'rust',
+              'swift',
+              'kotlin',
+              'scala',
+              'r',
+              'dart',
+              'vue',
+              'dockerfile',
+              'graphql',
+              'nginx'
+            ],
           });
         }
         setHighlighter(shikiHighlighter);
