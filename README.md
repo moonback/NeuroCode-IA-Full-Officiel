@@ -197,6 +197,24 @@ Ce répertoire contient les composants de l'éditeur de code.
 - **`webcontainer`**:
     - `index.ts`: Initialisation du WebContainer.
 
+## Fonctionnalités IA
+
+### Amélioration Automatique des Prompts
+
+NeuroCode intègre un système sophistiqué d'amélioration automatique des prompts qui enrichit dynamiquement les interactions avec l'IA :
+
+- **Enrichissement Contextuel** : Analyse automatique du contexte de développement pour enrichir les prompts avec la documentation pertinente.
+- **Adaptation Intelligente** : Ajustement automatique des prompts en fonction du contexte technique spécifique du projet.
+- **Documentation Intégrée** : Utilisation de la base de connaissances LLMs pour fournir des réponses plus précises et contextuelles.
+
+### Optimisation pour Petits Modèles LLM
+
+Pour garantir des performances optimales même avec des modèles LLM plus légers :
+
+- **Prompts Optimisés** : Structuration intelligente des prompts pour maximiser l'efficacité des modèles plus petits.
+- **Compression Contextuelle** : Réduction intelligente du contexte tout en préservant les informations essentielles.
+- **Adaptation Dynamique** : Ajustement automatique du format des prompts selon les capacités du modèle utilisé.
+
 ## Technologies
 
 - **Framework**: Remix
