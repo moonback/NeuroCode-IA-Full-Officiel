@@ -21,6 +21,7 @@ import reduxDocs from './redux.txt';
 import reduxToolkitDocs from './redux-toolkit.txt';
 import socketioDocs from './socketio.txt';
 import tailwindDocs from './tailwind.txt';
+import turboDocs from './turbo.txt';
 import viteDocs from './vite.txt';
 import vitestDocs from './vitest.txt';
 import webpackDocs from './webpack.txt';
@@ -43,6 +44,11 @@ export const availableDocuments: LlmsDoc[] = [
     id: 'axios',
     name: 'Axios HTTP Client',
     content: axiosDocs,
+  },
+  {
+    id: 'turbo',
+    name: 'Turborepo Build System',
+    content: turboDocs,
   },
   {
     id: 'fastify',
