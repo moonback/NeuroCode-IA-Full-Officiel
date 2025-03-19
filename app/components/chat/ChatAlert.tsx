@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
- import type { ActionAlert } from '~/types/actions';
- import { classNames } from '~/utils/classNames';
+import type { ActionAlert } from '~/types/actions';
+import { classNames } from '~/utils/classNames';
+import { findRelevantDocumentation } from '~/lib/common/error-docs';
  
  interface Props {
    alert: ActionAlert;
@@ -10,6 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
  
  export default function ChatAlert({ alert, clearAlert, postMessage }: Props) {
    const { description, content, source } = alert;
+const documentation = alert.documentation || findRelevantDocumentation(alert);
  
    const isPreview = source === 'preview';
    const title = isPreview ? 'Erreur de Prévisualisation' : 'Erreur de Terminal';
@@ -58,6 +60,25 @@ import { AnimatePresence, motion } from 'framer-motion';
                    Erreur : {description}
                  </div>
                )}
+               {documentation && documentation.length > 0 && (
+                 <div className="mt-4 space-y-2">
+                   <p className="text-sm font-medium text-bolt-elements-textPrimary">Documentation utile :</p>
+                   {documentation.map((doc, index) => (
+                     <a
+                       key={index}
+                       href={doc.url}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="block text-sm text-green-500 hover:text-green-400 transition-colors"
+                     >
+                       {doc.title}
+                       {doc.description && (
+                         <p className="text-xs text-bolt-elements-textSecondary mt-1">{doc.description}</p>
+                       )}
+                     </a>
+                   ))}
+                 </div>
+               )}
              </motion.div>
  
              {/* Actions */}
@@ -75,7 +96,12 @@ import { AnimatePresence, motion } from 'framer-motion';
                         ${description || 'Unknown error'}*\n` +
                        `*How can I resolve this? Please provide a concise fix if possible.*\n` +
                        `\`\`\`${isPreview ? 'js' : 'sh'}\n${content}\n\`\`\`\n` +
-                       `- Error type: ${title}\n`
+                       `- Error type: ${title}\n` +
+                       (documentation && documentation.length > 0
+                         ? `\n*Relevant documentation:*\n${documentation
+                             .map(doc => `- [${doc.title}](${doc.url})${doc.description ? `: ${doc.description}` : ''}`)
+                             .join('\n')}`
+                         : '')
                        
                      )
                    }
