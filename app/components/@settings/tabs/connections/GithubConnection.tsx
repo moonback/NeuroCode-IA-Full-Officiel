@@ -545,7 +545,7 @@ export default function GitHubConnection() {
           <div className="flex items-center gap-2">
             <GithubLogo />
             <h3 className="text-base font-medium text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
-              GitHub Connection
+              Connexion GitHub
             </h3>
           </div>
         </div>
@@ -554,14 +554,14 @@ export default function GitHubConnection() {
           <div className="text-xs text-bolt-elements-textSecondary bg-bolt-elements-background-depth-1 dark:bg-bolt-elements-background-depth-1 p-3 rounded-lg mb-4">
             <p className="flex items-center gap-1 mb-1">
               <span className="i-ph:lightbulb w-3.5 h-3.5 text-bolt-elements-icon-success dark:text-bolt-elements-icon-success" />
-              <span className="font-medium">Tip:</span> You can also set the{' '}
+              <span className="font-medium">Astuce :</span> Vous pouvez également définir la variable d'environnement{' '}
               <code className="px-1 py-0.5 bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-2 rounded">
                 VITE_GITHUB_ACCESS_TOKEN
               </code>{' '}
-              environment variable to connect automatically.
+              pour vous connecter automatiquement.
             </p>
             <p>
-              For fine-grained tokens, also set{' '}
+              Pour les tokens fine-grained, définissez également{' '}
               <code className="px-1 py-0.5 bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-2 rounded">
                 VITE_GITHUB_TOKEN_TYPE=fine-grained
               </code>
@@ -590,23 +590,21 @@ export default function GitHubConnection() {
                 'disabled:opacity-50',
               )}
             >
-              <option value="classic">Personal Access Token (Classic)</option>
-              <option value="fine-grained">Fine-grained Token</option>
+              <option value="classic">Token d'accès personnel (Classique)</option>
+              <option value="fine-grained">Token Fine-grained</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm text-bolt-elements-textSecondary dark:text-bolt-elements-textSecondary mb-2">
-              {connection.tokenType === 'classic' ? 'Personal Access Token' : 'Fine-grained Token'}
+              {connection.tokenType === 'classic' ? 'Token d\'accès personnel' : 'Token Fine-grained'}
             </label>
             <input
               type="password"
               value={connection.token}
               onChange={(e) => setConnection((prev) => ({ ...prev, token: e.target.value }))}
               disabled={isConnecting || !!connection.user}
-              placeholder={`Enter your GitHub ${
-                connection.tokenType === 'classic' ? 'personal access token' : 'fine-grained token'
-              }`}
+              placeholder={`Entrez votre ${connection.tokenType === 'classic' ? 'token d\'accès personnel GitHub' : 'token fine-grained GitHub'}`}
               className={classNames(
                 'w-full px-3 py-2 rounded-lg text-sm',
                 'bg-bolt-elements-background-depth-1 dark:bg-bolt-elements-background-depth-1',
@@ -629,10 +627,10 @@ export default function GitHubConnection() {
               </a>
               <span className="mx-2">•</span>
               <span>
-                Required scopes:{' '}
+                Scopes requis :{' '}
                 {connection.tokenType === 'classic'
                   ? 'repo, read:org, read:user'
-                  : 'Repository access, Organization access'}
+                  : 'Accès aux dépôts, Accès aux organisations'}
               </span>
             </div>
           </div>
@@ -672,7 +670,7 @@ export default function GitHubConnection() {
                       <span className="text-sm text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
                         Connected to GitHub using{' '}
                         <span className="text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent font-medium">
-                          {connection.tokenType === 'classic' ? 'PAT' : 'Fine-grained Token'}
+                          {connection.tokenType === 'classic' ? 'PAT' : 'Token Fine-grained'}
                         </span>
                       </span>
                     </div>
@@ -680,8 +678,8 @@ export default function GitHubConnection() {
                       <div className="flex items-center gap-2 text-xs text-bolt-elements-textSecondary">
                         <div className="i-ph:chart-line-up w-3.5 h-3.5 text-bolt-elements-icon-success" />
                         <span>
-                          API Limit: {connection.rateLimit.remaining.toLocaleString()}/
-                          {connection.rateLimit.limit.toLocaleString()} • Resets in{' '}
+                          Limite API : {connection.rateLimit.remaining.toLocaleString()}/
+                          {connection.rateLimit.limit.toLocaleString()} • Réinitialisation dans{' '}
                           {Math.max(0, Math.floor((connection.rateLimit.reset * 1000 - Date.now()) / 60000))} min
                         </span>
                       </div>
@@ -709,12 +707,12 @@ export default function GitHubConnection() {
                     {isFetchingStats ? (
                       <>
                         <div className="i-ph:spinner-gap w-4 h-4 animate-spin" />
-                        Refreshing...
+                        Actualisation...
                       </>
                     ) : (
                       <>
                         <div className="i-ph:arrows-clockwise w-4 h-4" />
-                        Refresh Stats
+                        Actualiser les stats
                       </>
                     )}
                   </Button>
@@ -744,11 +742,9 @@ export default function GitHubConnection() {
 
             <Collapsible open={isStatsExpanded} onOpenChange={setIsStatsExpanded}>
               <CollapsibleTrigger asChild>
-                <div className="flex items-center justify-between p-4 rounded-lg bg-bolt-elements-background dark:bg-bolt-elements-background-depth-2 border border-bolt-elements-borderColor dark:border-bolt-elements-borderColor hover:border-bolt-elements-borderColorActive/70 dark:hover:border-bolt-elements-borderColorActive/70 transition-all duration-200">
-                  <div className="flex items-center gap-2">
-                    <div className="i-ph:chart-bar w-4 h-4 text-bolt-elements-item-contentAccent" />
-                    <span className="text-sm font-medium text-bolt-elements-textPrimary">GitHub Stats</span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <div className="i-ph:chart-bar w-4 h-4 text-bolt-elements-item-contentAccent" />
+                  <span className="text-sm font-medium text-bolt-elements-textPrimary">GitHub Stats</span>
                   <div
                     className={classNames(
                       'i-ph:caret-down w-4 h-4 transform transition-transform duration-200 text-bolt-elements-textSecondary',
@@ -781,7 +777,7 @@ export default function GitHubConnection() {
                   <div className="grid grid-cols-4 gap-4 mb-6">
                     {[
                       {
-                        label: 'Member Since',
+                        label: 'Membre depuis',
                         value: new Date(connection.user.created_at).toLocaleDateString(),
                       },
                       {
@@ -789,11 +785,11 @@ export default function GitHubConnection() {
                         value: connection.stats.publicGists,
                       },
                       {
-                        label: 'Organizations',
+                        label: 'Organisations',
                         value: connection.stats.organizations ? connection.stats.organizations.length : 0,
                       },
                       {
-                        label: 'Languages',
+                        label: 'Langages',
                         value: Object.keys(connection.stats.languages).length,
                       },
                     ].map((stat, index) => (
