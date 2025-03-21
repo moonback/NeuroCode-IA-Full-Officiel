@@ -726,9 +726,9 @@ export default function NetlifyConnection() {
               <div className="text-[#00AD9F]">
                 <NetlifyLogo />
               </div>
-              <h2 className="text-lg font-medium text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
-                Netlify Connection
-              </h2>
+              <h3 className="text-base font-medium text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
+                Connexion Netlify
+              </h3>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
