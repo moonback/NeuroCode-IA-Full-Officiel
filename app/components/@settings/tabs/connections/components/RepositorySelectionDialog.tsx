@@ -53,22 +53,22 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
             <Dialog.Content className="bg-white dark:bg-[#1E1E1E] rounded-lg border border-[#E5E5E5] dark:border-[#333333] shadow-xl">
               <div className="p-6 space-y-4">
                 <div>
-                  <h3 className="text-lg font-medium text-[#111111] dark:text-white">Repository Overview</h3>
+                  <h3 className="text-lg font-medium text-[#111111] dark:text-white">Aperçu du dépôt</h3>
                   <div className="mt-4 space-y-2">
-                    <p className="text-sm text-[#666666] dark:text-[#999999]">Repository Statistics:</p>
+                    <p className="text-sm text-[#666666] dark:text-[#999999]">Statistiques du dépôt :</p>
                     <div className="space-y-2 text-sm text-[#111111] dark:text-white">
                       <div className="flex items-center gap-2">
                         <span className="i-ph:files text-green-500 w-4 h-4" />
-                        <span>Total Files: {stats.totalFiles}</span>
+                        <span>Fichiers totaux : {stats.totalFiles}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="i-ph:database text-green-500 w-4 h-4" />
-                        <span>Total Size: {formatSize(stats.totalSize)}</span>
+                        <span>Taille totale : {formatSize(stats.totalSize)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="i-ph:code text-green-500 w-4 h-4" />
                         <span>
-                          Languages:{' '}
+                          Langages :{' '}
                           {Object.entries(stats.languages)
                             .sort(([, a], [, b]) => b - a)
                             .slice(0, 3)
@@ -79,13 +79,13 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
                       {stats.hasPackageJson && (
                         <div className="flex items-center gap-2">
                           <span className="i-ph:package text-green-500 w-4 h-4" />
-                          <span>Has package.json</span>
+                          <span>Contient un package.json</span>
                         </div>
                       )}
                       {stats.hasDependencies && (
                         <div className="flex items-center gap-2">
                           <span className="i-ph:tree-structure text-green-500 w-4 h-4" />
-                          <span>Has dependencies</span>
+                          <span>Contient des dépendances</span>
                         </div>
                       )}
                     </div>
@@ -94,8 +94,8 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
                     <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg text-sm flex items-start gap-2">
                       <span className="i-ph:warning text-yellow-600 dark:text-yellow-500 w-4 h-4 flex-shrink-0 mt-0.5" />
                       <div className="text-yellow-800 dark:text-yellow-500">
-                        This repository is quite large ({formatSize(stats.totalSize)}). Importing it might take a while
-                        and could impact performance.
+                        Ce dépôt est assez volumineux ({formatSize(stats.totalSize)}). Son importation pourrait prendre
+                        un certain temps et pourrait affecter les performances.
                       </div>
                     </div>
                   )}
@@ -106,7 +106,7 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
                   onClick={onClose}
                   className="px-4 py-2 rounded-lg bg-[#F5F5F5] dark:bg-[#333333] text-[#666666] hover:text-[#111111] dark:text-[#999999] dark:hover:text-white transition-colors"
                 >
-                  Cancel
+                  Annuler
                 </button>
                 <button
                   onClick={onConfirm}
@@ -148,7 +148,7 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
       if (response.ok) {
         const userData = (await response.json()) as GitHubUserResponse;
 
-        // Save connection data
+        // Sauvegarder les données de connexion
         const connectionData = {
           token,
           tokenType,
@@ -162,23 +162,23 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 
         localStorage.setItem('github_connection', JSON.stringify(connectionData));
 
-        // Set cookies for API requests
+        // Définir les cookies pour les requêtes API
         Cookies.set('githubToken', token);
         Cookies.set('githubUsername', userData.login);
         Cookies.set('git:github.com', JSON.stringify({ username: token, password: 'x-oauth-basic' }));
 
-        toast.success(`Successfully connected as ${userData.login}`);
+        toast.success(`Connecté avec succès en tant que ${userData.login}`);
         onClose();
       } else {
         if (response.status === 401) {
-          toast.error('Invalid GitHub token. Please check and try again.');
+          toast.error('Token GitHub invalide. Veuillez vérifier et réessayer.');
         } else {
-          toast.error(`GitHub API error: ${response.status} ${response.statusText}`);
+          toast.error(`Erreur de l'API GitHub : ${response.status} ${response.statusText}`);
         }
       }
     } catch (error) {
-      console.error('Error connecting to GitHub:', error);
-      toast.error('Failed to connect to GitHub. Please try again.');
+      console.error('Erreur de connexion à GitHub :', error);
+      toast.error('Échec de la connexion à GitHub. Veuillez réessayer.');
     } finally {
       setIsSubmitting(false);
     }
@@ -197,20 +197,20 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
           >
             <Dialog.Content className="bg-white dark:bg-[#1A1A1A] rounded-lg shadow-xl max-w-sm w-full mx-4 overflow-hidden">
               <div className="p-4 space-y-3">
-                <h2 className="text-lg font-semibold text-[#111111] dark:text-white">Access Private Repositories</h2>
+                <h2 className="text-lg font-semibold text-[#111111] dark:text-white">Accéder aux dépôts privés</h2>
 
                 <p className="text-sm text-[#666666] dark:text-[#999999]">
-                  To access private repositories, you need to connect your GitHub account by providing a personal access
-                  token.
+                  Pour accéder aux dépôts privés, vous devez connecter votre compte GitHub en fournissant un token
+                  d'accès personnel.
                 </p>
 
                 <div className="bg-[#F9F9F9] dark:bg-[#252525] p-4 rounded-lg space-y-3">
-                  <h3 className="text-base font-medium text-[#111111] dark:text-white">Connect with GitHub Token</h3>
+                  <h3 className="text-base font-medium text-[#111111] dark:text-white">Se connecter avec un token GitHub</h3>
 
                   <form onSubmit={handleSubmit} className="space-y-3">
                     <div>
                       <label className="block text-sm text-[#666666] dark:text-[#999999] mb-1">
-                        GitHub Personal Access Token
+                        Token d'accès personnel GitHub
                       </label>
                       <input
                         type="password"
@@ -317,26 +317,26 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
   const [pendingGitUrl, setPendingGitUrl] = useState<string>('');
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
-  // Handle GitHub auth dialog close and refresh repositories
+  // Gérer la fermeture de la boîte de dialogue d'authentification GitHub et actualiser les dépôts
   const handleAuthDialogClose = () => {
     setShowAuthDialog(false);
 
-    // If we're on the my-repos tab, refresh the repository list
+    // Si nous sommes sur l'onglet "Mes dépôts", actualiser la liste des dépôts
     if (activeTab === 'my-repos') {
       fetchUserRepos();
     }
   };
 
-  // Initialize GitHub connection and fetch repositories
+  // Initialiser la connexion GitHub et récupérer les dépôts
   useEffect(() => {
     const savedConnection = getLocalStorage('github_connection');
 
-    // If no connection exists but environment variables are set, create a connection
+    // Si aucune connexion n'existe mais que les variables d'environnement sont définies, créer une connexion
     if (!savedConnection && import.meta.env.VITE_GITHUB_ACCESS_TOKEN) {
       const token = import.meta.env.VITE_GITHUB_ACCESS_TOKEN;
       const tokenType = import.meta.env.VITE_GITHUB_TOKEN_TYPE === 'fine-grained' ? 'fine-grained' : 'classic';
 
-      // Fetch GitHub user info to initialize the connection
+      // Récupérer les informations de l'utilisateur GitHub pour initialiser la connexion
       fetch('https://api.github.com/user', {
         headers: {
           Accept: 'application/vnd.github.v3+json',
@@ -345,7 +345,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
       })
         .then((response) => {
           if (!response.ok) {
-            throw new Error('Invalid token or unauthorized');
+            throw new Error('Token invalide ou non autorisé');
           }
 
           return response.json();
@@ -353,7 +353,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
         .then((data: unknown) => {
           const userData = data as GitHubUserResponse;
 
-          // Save connection to local storage
+          // Sauvegarder la connexion dans le stockage local
           const newConnection = {
             token,
             tokenType,
@@ -367,23 +367,23 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
 
           localStorage.setItem('github_connection', JSON.stringify(newConnection));
 
-          // Also save as cookies for API requests
+          // Également sauvegarder en tant que cookies pour les requêtes API
           Cookies.set('githubToken', token);
           Cookies.set('githubUsername', userData.login);
           Cookies.set('git:github.com', JSON.stringify({ username: token, password: 'x-oauth-basic' }));
 
-          // Refresh repositories after connection is established
+          // Actualiser les dépôts après l'établissement de la connexion
           if (isOpen && activeTab === 'my-repos') {
             fetchUserRepos();
           }
         })
         .catch((error) => {
-          console.error('Failed to initialize GitHub connection from environment variables:', error);
+          console.error('Échec de l\'initialisation de la connexion GitHub à partir des variables d\'environnement :', error);
         });
     }
   }, [isOpen]);
 
-  // Fetch repositories when dialog opens or tab changes
+  // Récupérer les dépôts lorsque la boîte de dialogue s'ouvre ou que l'onglet change
   useEffect(() => {
     if (isOpen && activeTab === 'my-repos') {
       fetchUserRepos();
@@ -394,7 +394,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
     const connection = getLocalStorage('github_connection');
 
     if (!connection?.token) {
-      toast.error('Please connect your GitHub account first');
+      toast.error('Veuillez d\'abord connecter votre compte GitHub');
       return;
     }
 
@@ -409,23 +409,23 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch repositories');
+        throw new Error('Échec de la récupération des dépôts');
       }
 
       const data = await response.json();
 
-      // Add type assertion and validation
+      // Ajouter une assertion de type et une validation
       if (
         Array.isArray(data) &&
         data.every((item) => typeof item === 'object' && item !== null && 'full_name' in item)
       ) {
         setRepositories(data as GitHubRepoInfo[]);
       } else {
-        throw new Error('Invalid repository data format');
+        throw new Error('Format de données de dépôt invalide');
       }
     } catch (error) {
-      console.error('Error fetching repos:', error);
-      toast.error('Failed to fetch your repositories');
+      console.error('Erreur lors de la récupération des dépôts :', error);
+      toast.error('Échec de la récupération de vos dépôts');
     } finally {
       setIsLoading(false);
     }
@@ -460,20 +460,20 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
       );
 
       if (!response.ok) {
-        throw new Error('Failed to search repositories');
+        throw new Error('Échec de la recherche de dépôts');
       }
 
       const data = await response.json();
 
-      // Add type assertion and validation
+      // Ajouter une assertion de type et une validation
       if (typeof data === 'object' && data !== null && 'items' in data && Array.isArray(data.items)) {
         setSearchResults(data.items as GitHubRepoInfo[]);
       } else {
-        throw new Error('Invalid search results format');
+        throw new Error('Format des résultats de recherche invalide');
       }
     } catch (error) {
-      console.error('Error searching repos:', error);
-      toast.error('Failed to search repositories');
+      console.error('Erreur lors de la recherche de dépôts :', error);
+      toast.error('Échec de la recherche de dépôts');
     } finally {
       setIsLoading(false);
     }
@@ -495,12 +495,12 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch branches');
+        throw new Error('Échec de la récupération des branches');
       }
 
       const data = await response.json();
 
-      // Add type assertion and validation
+      // Ajouter une assertion de type et une validation
       if (Array.isArray(data) && data.every((item) => typeof item === 'object' && item !== null && 'name' in item)) {
         setBranches(
           data.map((branch) => ({
@@ -509,11 +509,11 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
           })),
         );
       } else {
-        throw new Error('Invalid branch data format');
+        throw new Error('Format de données de branche invalide');
       }
     } catch (error) {
-      console.error('Error fetching branches:', error);
-      toast.error('Failed to fetch branches');
+      console.error('Erreur lors de la récupération des branches :', error);
+      toast.error('Échec de la récupération des branches');
     } finally {
       setIsLoading(false);
     }
@@ -525,11 +525,11 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
   };
 
   const formatGitUrl = (url: string): string => {
-    // Remove any tree references and ensure .git extension
+    // Supprimer toute référence à l'arborescence et s'assurer de l'extension .git
     const baseUrl = url
-      .replace(/\/tree\/[^/]+/, '') // Remove /tree/branch-name
-      .replace(/\/$/, '') // Remove trailing slash
-      .replace(/\.git$/, ''); // Remove .git if present
+      .replace(/\/tree\/[^/]+/, '') // Supprimer /tree/nom-de-la-branche
+      .replace(/\/$/, '') // Supprimer le slash final
+      .replace(/\.git$/, ''); // Supprim
     return `${baseUrl}.git`;
   };
 
@@ -812,7 +812,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
           <Dialog.Content className="fixed top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[600px] max-h-[85vh] overflow-hidden bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-[51] border border-[#E5E5E5] dark:border-[#333333]">
             <div className="p-4 border-b border-[#E5E5E5] dark:border-[#333333] flex items-center justify-between">
               <Dialog.Title className="text-lg font-semibold text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark">
-                Import GitHub Repository
+                Importer un dépôt GitHub
               </Dialog.Title>
               <Dialog.Close
                 onClick={handleClose}
@@ -825,7 +825,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                 )}
               >
                 <span className="i-ph:x block w-5 h-5" aria-hidden="true" />
-                <span className="sr-only">Close dialog</span>
+                <span className="sr-only">Fermer la boîte de dialogue</span>
               </Dialog.Close>
             </div>
 
@@ -833,7 +833,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
               <div className="flex items-center gap-2">
                 <span className="i-ph:info text-blue-500" />
                 <span className="text-sm text-bolt-elements-textSecondary dark:text-bolt-elements-textSecondary-dark">
-                  Need to access private repositories?
+                  Besoin d'accéder à des dépôts privés ?
                 </span>
               </div>
               <button
@@ -841,7 +841,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                 className="px-3 py-1.5 rounded-lg bg-green-500 hover:bg-green-600 text-white text-sm transition-colors flex items-center gap-1.5"
               >
                 <span className="i-ph:key" />
-                Connect GitHub Account
+                Connecter le compte GitHub
               </button>
             </div>
 
@@ -849,11 +849,11 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
               <div className="flex gap-2 mb-4">
                 <TabButton active={activeTab === 'my-repos'} onClick={() => setActiveTab('my-repos')}>
                   <span className="i-ph:book-bookmark" />
-                  My Repos
+                  Mes dépôts
                 </TabButton>
                 <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}>
                   <span className="i-ph:magnifying-glass" />
-                  Search
+                  Rechercher
                 </TabButton>
                 <TabButton active={activeTab === 'url'} onClick={() => setActiveTab('url')}>
                   <span className="i-ph:link" />
@@ -865,7 +865,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                 <div className="space-y-4">
                   <Input
                     type="text"
-                    placeholder="Enter GitHub repository URL"
+                    placeholder="Entrez l'URL du dépôt GitHub"
                     value={customUrl}
                     onChange={(e) => setCustomUrl(e.target.value)}
                     className="w-full"
@@ -881,7 +881,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                         : 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed',
                     )}
                   >
-                    Import Repository
+                    Importer le dépôt
                   </button>
                 </div>
               ) : (
@@ -891,7 +891,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          placeholder="Search repositories..."
+                          placeholder="Rechercher des dépôts..."
                           value={searchQuery}
                           onChange={(e) => {
                             setSearchQuery(e.target.value);
@@ -909,7 +909,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                       <div className="grid grid-cols-2 gap-2">
                         <input
                           type="text"
-                          placeholder="Filter by language..."
+                          placeholder="Filtrer par langage..."
                           value={filters.language || ''}
                           onChange={(e) => {
                             setFilters({ ...filters, language: e.target.value });
@@ -919,7 +919,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                         />
                         <input
                           type="number"
-                          placeholder="Min stars..."
+                          placeholder="Étoiles min..."
                           value={filters.stars || ''}
                           onChange={(e) => handleFilterChange('stars', e.target.value)}
                           className="px-3 py-1.5 text-sm rounded-lg bg-[#F5F5F5] dark:bg-[#252525] border border-[#E5E5E5] dark:border-[#333333]"
@@ -927,7 +927,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                       </div>
                       <input
                         type="number"
-                        placeholder="Min forks..."
+                        placeholder="Forks min..."
                         value={filters.forks || ''}
                         onChange={(e) => handleFilterChange('forks', e.target.value)}
                         className="px-3 py-1.5 text-sm rounded-lg bg-[#F5F5F5] dark:bg-[#252525] border border-[#E5E5E5] dark:border-[#333333]"
@@ -948,7 +948,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                           <h3 className="font-medium">{selectedRepository.full_name}</h3>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm text-bolt-elements-textSecondary">Select Branch</label>
+                          <label className="text-sm text-bolt-elements-textSecondary">Sélectionner une branche</label>
                           <select
                             value={selectedBranch}
                             onChange={(e) => setSelectedBranch(e.target.value)}
@@ -960,7 +960,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                                 value={branch.name}
                                 className="bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark"
                               >
-                                {branch.name} {branch.default ? '(default)' : ''}
+                                {branch.name} {branch.default ? '(par défaut)' : ''}
                               </option>
                             ))}
                           </select>
@@ -968,7 +968,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                             onClick={handleImport}
                             className="w-full h-10 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center"
                           >
-                            Import Selected Branch
+                            Importer la branche sélectionnée
                           </button>
                         </div>
                       </div>
@@ -1036,8 +1036,8 @@ function RepositoryList({
     return (
       <div className="flex items-center justify-center py-8 text-bolt-elements-textSecondary">
         <span className="i-ph:spinner animate-spin mr-2" />
-        Loading repositories...
-      </div>
+          Chargement des dépôts...      
+       </div>
     );
   }
 
@@ -1066,7 +1066,7 @@ function RepositoryCard({ repo, onSelect }: { repo: GitHubRepoInfo; onSelect: ()
           className="px-4 py-2 h-10 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center"
         >
           <span className="i-ph:download-simple w-4 h-4" />
-          Import
+          Importer
         </button>
       </div>
       {repo.description && <p className="text-sm text-bolt-elements-textSecondary mb-3">{repo.description}</p>}
