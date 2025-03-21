@@ -43,6 +43,8 @@ export async function streamText(props: {
   contextFiles?: FileMap;
   summary?: string;
   messageSliceId?: number;
+  abortSignal?: AbortSignal;
+
 }) {
   const {
     messages,
@@ -55,6 +57,8 @@ export async function streamText(props: {
     contextOptimization,
     contextFiles,
     summary,
+    abortSignal,
+
     isPromptCachingEnabled,
   } = props;
   let currentModel = DEFAULT_MODEL;
@@ -202,6 +206,8 @@ ${props.summary}
         apiKeys,
         providerSettings,
       }),
+      abortSignal,
+
       maxTokens: dynamicMaxTokens,
       messages,
       ...options,

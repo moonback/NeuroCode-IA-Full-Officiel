@@ -110,6 +110,8 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             providerSettings,
             promptId,
             contextOptimization,
+            abortSignal: request.signal,
+
             onFinish(resp) {
               if (resp.usage) {
                 logger.debug('Utilisation des tokens pour la synthèse de la conversation', JSON.stringify(resp.usage));
@@ -153,6 +155,8 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             providerSettings,
             promptId,
             contextOptimization,
+            abortSignal: request.signal,
+
             summary,
             onFinish(resp) {
               const cacheUsage = resp?.experimental_providerMetadata?.anthropic;
@@ -316,18 +320,29 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
               summary,
               isPromptCachingEnabled,
               messageSliceId,
+              abortSignal: request.signal,
+
             });
 
             result.mergeIntoDataStream(dataStream);
 
             (async () => {
-              for await (const part of result.fullStream) {
-                if (part.type === 'error') {
-                  const error: any = part.error;
-                  logger.error(`${error}`);
+              try {
+                for await (const part of result.fullStream) {
+                  if (part.type === 'error') {
+                    const error: any = part.error;
+                    logger.error(`${error}`);
 
+                    return;
+                  }
+                }
+              } catch (e: any) {
+                if (e.name === 'AbortError') {
+                  logger.info('Request aborted.');
                   return;
                 }
+
+                throw e;
               }
             })();
 
@@ -362,16 +377,27 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           contextFiles: filteredFiles,
           summary,
           messageSliceId,
+          abortSignal: request.signal,
+
         });
 
         (async () => {
-          for await (const part of result.fullStream) {
-            if (part.type === 'error') {
-              const error: any = part.error;
-              logger.error(`${error}`);
+          try {
+            for await (const part of result.fullStream) {
+              if (part.type === 'error') {
+                const error: any = part.error;
+                logger.error(`${error}`);
 
+                return;
+              }
+            }
+          } catch (e: any) {
+            if (e.name === 'AbortError') {
+              logger.info('Request aborted.');
               return;
             }
+
+            throw e;
           }
         })();
         result.mergeIntoDataStream(dataStream);

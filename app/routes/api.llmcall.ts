@@ -127,6 +127,8 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
         }),
         maxTokens: dynamicMaxTokens,
         toolChoice: 'none',
+        abortSignal: request.signal,
+
       });
         logger.info(`Réponse générée`);
 
