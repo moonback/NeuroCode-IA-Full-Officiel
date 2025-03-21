@@ -298,7 +298,7 @@ export const AssistantMessage = memo(
                   className={classNames(
                     "flex gap-2 items-center",
                     "bg-green-50/50 dark:bg-green-500/10",
-                    "text-green-700 dark:text-green-300",
+                    "text-white dark:text-white",
                     "hover:bg-green-100 dark:hover:bg-green-500/20",
                     "focus:ring-2 focus:ring-green-500 focus:outline-none",
                     "rounded-lg px-3 py-2 transition-all",
