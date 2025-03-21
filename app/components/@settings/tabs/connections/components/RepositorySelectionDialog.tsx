@@ -139,7 +139,7 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
                 </button>
                 <button
                   onClick={onConfirm}
-                  className="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-green-500/20 text-white hover:bg-green-600 transition-colors"
                 >
                   OK
                 </button>
@@ -249,7 +249,7 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                         className="w-full px-3 py-1.5 rounded-lg border border-[#E5E5E5] dark:border-[#333333] bg-white dark:bg-[#1A1A1A] text-[#111111] dark:text-white placeholder-[#999999] text-sm"
                       />
                       <div className="mt-1 text-xs text-[#666666] dark:text-[#999999]">
-                        Get your token at{' '}
+                      Obtenez votre jeton sur{' '}
                         <a
                           href="https://github.com/settings/tokens"
                           target="_blank"
@@ -288,9 +288,9 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      className="w-full py-2 bg-green-500/20 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                     >
-                      {isSubmitting ? 'Connecting...' : 'Connect to GitHub'}
+                      {isSubmitting ? 'Connexion...' : 'Se connecter à GitHub'}
                     </button>
                   </form>
                 </div>
@@ -298,16 +298,16 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                 <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg space-y-1.5">
                   <h3 className="text-sm text-amber-800 dark:text-amber-300 font-medium flex items-center gap-1.5">
                     <span className="i-ph:warning-circle w-4 h-4" />
-                    Accessing Private Repositories
+                    Accéder aux référentiels privés
                   </h3>
                   <p className="text-xs text-amber-700 dark:text-amber-400">
-                    Important things to know about accessing private repositories:
+                  Choses importantes à savoir sur l’accès aux référentiels privés :
                   </p>
                   <ul className="list-disc pl-4 text-xs text-amber-700 dark:text-amber-400 space-y-0.5">
-                    <li>You must be granted access to the repository by its owner</li>
-                    <li>Your GitHub token must have the 'repo' scope</li>
-                    <li>For organization repositories, you may need additional permissions</li>
-                    <li>No token can give you access to repositories you don't have permission for</li>
+                    <li>Vous devez avoir accès au référentiel par son propriétaire</li>
+                    <li>Votre jeton GitHub doit avoir la portée « repo »</li>
+                    <li>Pour les référentiels d'organisation, vous aurez peut-être besoin d'autorisations supplémentaires</li>
+                    <li>Aucun jeton ne peut vous donner accès à des référentiels pour lesquels vous n'avez pas l'autorisation</li>
                   </ul>
                 </div>
               </div>
@@ -318,7 +318,7 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     onClick={onClose}
                     className="px-4 py-1.5 bg-[#F5F5F5] hover:bg-[#E5E5E5] dark:bg-[#252525] dark:hover:bg-[#333333] rounded-lg text-[#111111] dark:text-white transition-colors text-sm"
                   >
-                    Close
+                    Fermer
                   </button>
                 </Dialog.Close>
               </div>
@@ -787,7 +787,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
           <div className="space-y-2">
             <p>{errorMessage}</p>
             <button onClick={() => setShowAuthDialog(true)} className="underline font-medium block text-green-500">
-              Learn how to access private repositories
+              Apprenez à accéder aux référentiels privés
             </button>
           </div>,
           { autoClose: 10000 }, // Keep the toast visible longer
@@ -867,7 +867,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
               </div>
               <button
                 onClick={() => setShowAuthDialog(true)}
-                className="px-3 py-1.5 rounded-lg bg-green-500 hover:bg-green-600 text-white text-sm transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-600 text-white text-sm transition-colors flex items-center gap-1.5"
               >
                 <span className="i-ph:key" />
                 Connecter le compte GitHub
@@ -906,7 +906,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                     className={classNames(
                       'w-full h-10 px-4 py-2 rounded-lg text-white transition-all duration-200 flex items-center gap-2 justify-center',
                       customUrl
-                        ? 'bg-green-500 hover:bg-green-600'
+                        ? 'bg-green-500/20 hover:bg-green-600'
                         : 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed',
                     )}
                   >
@@ -1005,7 +1005,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                               <button
                                 onClick={handleImport}
                                 disabled={isLoading}
-                                className="w-full h-10 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full h-10 px-4 py-2 rounded-lg bg-green-500/20 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                                 aria-label="Importer la branche sélectionnée"
                               >
                                 {isLoading ? (
@@ -1071,7 +1071,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
       className={classNames(
         'px-4 py-2 h-10 rounded-lg transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center',
         active
-          ? 'bg-green-500 text-white hover:bg-green-600'
+          ? 'bg-green-500/20 text-white hover:bg-green-600'
           : 'bg-[#F5F5F5] dark:bg-[#252525] text-bolt-elements-textPrimary dark:text-white hover:bg-[#E5E5E5] dark:hover:bg-[#333333] border border-[#E5E5E5] dark:border-[#333333]',
       )}
     >
@@ -1122,7 +1122,7 @@ function RepositoryCard({ repo, onSelect }: { repo: GitHubRepoInfo; onSelect: ()
         </div>
         <button
           onClick={onSelect}
-          className="px-4 py-2 h-10 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center"
+          className="px-4 py-2 h-10 rounded-lg bg-green-500/20 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center"
         >
           <span className="i-ph:download-simple w-4 h-4" />
           Importer
