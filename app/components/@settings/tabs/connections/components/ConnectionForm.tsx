@@ -16,7 +16,7 @@ interface ConnectionFormProps {
 export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }: ConnectionFormProps) {
   // Check for saved token on mount
   useEffect(() => {
-    const savedToken = Cookies.get(GITHUB_TOKEN_KEY) || getLocalStorage(GITHUB_TOKEN_KEY);
+    const savedToken = Cookies.get(GITHUB_TOKEN_KEY) || Cookies.get('githubToken') || getLocalStorage(GITHUB_TOKEN_KEY);
 
     if (savedToken && !authState.tokenInfo?.token) {
       setAuthState((prev: GitHubAuthState) => ({
@@ -30,6 +30,9 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
           followers: 0,
         },
       }));
+
+      // Ensure the token is also saved with the correct key for API requests
+      Cookies.set('githubToken', savedToken);
     }
   }, []);
 
@@ -42,8 +45,8 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
               <div className="i-ph:plug-fill text-bolt-elements-textTertiary" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-bolt-elements-textPrimary">Paramètres de connexion</h3>
-              <p className="text-sm text-bolt-elements-textSecondary">Configurez votre connexion GitHub</p>
+              <h3 className="text-lg font-medium text-bolt-elements-textPrimary">Connection Settings</h3>
+              <p className="text-sm text-bolt-elements-textSecondary">Configure your GitHub connection</p>
             </div>
           </div>
         </div>
@@ -51,7 +54,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
         <form onSubmit={onSave} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-bolt-elements-textSecondary mb-2">
-              Nom d'utilisateur GitHub
+              GitHub Username
             </label>
             <input
               id="username"
@@ -62,7 +65,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                 'w-full px-4 py-2.5 bg-[#F5F5F5] dark:bg-[#1A1A1A] border rounded-lg',
                 'text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary text-base',
                 'border-[#E5E5E5] dark:border-[#1A1A1A]',
-                'focus:ring-2 focus:ring-green-500/50 focus:border-green-500',
+                'focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500',
                 'transition-all duration-200',
               )}
               placeholder="e.g., octocat"
@@ -72,7 +75,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
           <div>
             <div className="flex items-center justify-between mb-2">
               <label htmlFor="token" className="block text-sm font-medium text-bolt-elements-textSecondary">
-                Jeton personnel
+                Personal Access Token
               </label>
               <a
                 href="https://github.com/settings/tokens/new?scopes=repo,user,read:org,workflow,delete_repo,write:packages,read:packages"
@@ -80,11 +83,11 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                 rel="noopener noreferrer"
                 className={classNames(
                   'inline-flex items-center gap-1.5 text-xs',
-                  'text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300',
+                  'text-purple-500 hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300',
                   'transition-colors duration-200',
                 )}
               >
-                <span>Générer un nouveau jeton</span>
+                <span>Generate new token</span>
                 <div className="i-ph:plus-circle" />
               </a>
             </div>
@@ -113,7 +116,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                 'w-full px-4 py-2.5 bg-[#F5F5F5] dark:bg-[#1A1A1A] border rounded-lg',
                 'text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary text-base',
                 'border-[#E5E5E5] dark:border-[#1A1A1A]',
-                'focus:ring-2 focus:ring-green-500/50 focus:border-green-500',
+                'focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500',
                 'transition-all duration-200',
               )}
               placeholder="ghp_xxxxxxxxxxxx"
@@ -128,7 +131,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                   disabled={authState.isVerifying || !authState.username || !authState.tokenInfo?.token}
                   className={classNames(
                     'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                    'bg-green-500 hover:bg-green-600',
+                    'bg-purple-500 hover:bg-purple-600',
                     'text-white',
                     'disabled:opacity-50 disabled:cursor-not-allowed',
                   )}
@@ -136,12 +139,12 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                   {authState.isVerifying ? (
                     <>
                       <div className="i-ph:spinner animate-spin" />
-                      <span>Vérification...</span>
+                      <span>Verifying...</span>
                     </>
                   ) : (
                     <>
                       <div className="i-ph:plug-fill" />
-                      <span>Connecter</span>
+                      <span>Connect</span>
                     </>
                   )}
                 </button>
@@ -157,11 +160,11 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                     )}
                   >
                     <div className="i-ph:plug-fill" />
-                    <span>Déconnecter</span>
+                    <span>Disconnect</span>
                   </button>
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-green-600 dark:text-green-400 bg-green-500/5 rounded-lg border border-green-500/20">
                     <div className="i-ph:check-circle-fill" />
-                    <span>Connecté</span>
+                    <span>Connected</span>
                   </span>
                 </>
               )}
@@ -169,7 +172,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
             {authState.rateLimits && (
               <div className="flex items-center gap-2 text-sm text-bolt-elements-textTertiary">
                 <div className="i-ph:clock-countdown opacity-60" />
-                <span>Limite de vitesse réinitialisée à {authState.rateLimits.reset.toLocaleTimeString()}</span>
+                <span>Rate limit resets at {authState.rateLimits.reset.toLocaleTimeString()}</span>
               </div>
             )}
           </div>
