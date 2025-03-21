@@ -158,15 +158,29 @@ export default function GitCloneButton({ importChat, className }: GitCloneButton
 
         const filesMessage: Message = {
           role: 'assistant',
-          content: `✅ Dépôt Git cloné avec succès: ${repoUrl}\n📁 Emplacement local: ${workdir}\n\n📊 Statistiques:\n- Fichiers importés: ${fileContents.length}\n- Fichiers ignorés: ${skippedFiles.length}\n\nStatut : Opération terminée
+          content: `
+# Clonage du Dépôt Git 📋
+
+## Détails du Dépôt
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Statut      : Cloné avec succès
+🔗 Dépôt       : ${repoUrl}
+📁 Chemin Local : ${workdir}
+
+## Statistiques d'Importation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Fichiers Importés : ${fileContents.length}
+⚠️ Fichiers Ignorés  : ${skippedFiles.length}
 ${
   skippedFiles.length > 0
-    ? `\nFichiers ignorés (${skippedFiles.length}):
-${skippedFiles.map((f) => `- ${f}`).join('\n')}`
+    ? `
+## Détails des Fichiers Ignorés
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${skippedFiles.map((f) => `• ${f}`).join('\n')}`
     : ''
 }
 
-<boltArtifact id="imported-files" title="Fichiers clonés de ${repoUrl}" type="bundled">
+<boltArtifact id="imported-files" title="Fichiers du Dépôt: ${repoUrl.split('/').pop()}" type="bundled">
 ${fileContents
   .map(
     (file) =>
