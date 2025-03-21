@@ -963,42 +963,71 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                       />
                     </div>
                   )}
-
                   <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                     {selectedRepository ? (
                       <div className="space-y-4">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setSelectedRepository(null)}
-                            className="p-1.5 rounded-lg hover:bg-[#F5F5F5] dark:hover:bg-[#252525]"
+                            className="p-1.5 rounded-lg bg-bolt-elements-background-depth-2 text-red hover:bg-[#F5F5F5] dark:hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                            aria-label="Retour à la liste des dépôts"
                           >
-                            <span className="i-ph:arrow-left w-4 h-4" />
+                            <span className="w-4 h-4" />X
                           </button>
-                          <h3 className="font-medium">{selectedRepository.full_name}</h3>
+                          <h3 className="font-medium text-white" aria-label={`Dépôt sélectionné: ${selectedRepository.full_name}`}>
+                            {selectedRepository.full_name}
+                          </h3>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm text-bolt-elements-textSecondary">Sélectionner une branche</label>
-                          <select
-                            value={selectedBranch}
-                            onChange={(e) => setSelectedBranch(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor dark:border-bolt-elements-borderColor-dark text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark focus:outline-none focus:ring-2 focus:ring-bolt-elements-borderColor dark:focus:ring-bolt-elements-borderColor-dark"
-                          >
-                            {branches.map((branch) => (
-                              <option
-                                key={branch.name}
-                                value={branch.name}
-                                className="bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark"
+                          <label htmlFor="branch-select" className="text-sm text-bolt-elements-textSecondary">
+                            Sélectionner une branche
+                          </label>
+                          {branches.length > 0 ? (
+                            <>
+                              <select
+                                id="branch-select"
+                                value={selectedBranch}
+                                onChange={(e) => setSelectedBranch(e.target.value)}
+                                className="w-full px-3 py-2 rounded-lg bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor dark:border-bolt-elements-borderColor-dark text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark focus:outline-none focus:ring-2 focus:ring-green-500"
+                                aria-label="Sélection de la branche"
+                                disabled={isLoading}
                               >
-                                {branch.name} {branch.default ? '(par défaut)' : ''}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            onClick={handleImport}
-                            className="w-full h-10 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center"
-                          >
-                            Importer la branche sélectionnée
-                          </button>
+                                {branches.map((branch) => (
+                                  <option
+                                    key={branch.name}
+                                    value={branch.name}
+                                    className="bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark"
+                                  >
+                                    {branch.name} {branch.default ? '(par défaut)' : ''}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                onClick={handleImport}
+                                disabled={isLoading}
+                                className="w-full h-10 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                aria-label="Importer la branche sélectionnée"
+                              >
+                                {isLoading ? (
+                                  <span className="i-ph:spinner animate-spin w-4 h-4" />
+                                ) : (
+                                  <span className="i-ph:download-simple w-4 h-4" />
+                                )}
+                                {isLoading ? 'Chargement...' : 'Importer la branche sélectionnée'}
+                              </button>
+                            </>
+                          ) : (
+                            <div className="flex items-center justify-center py-4 text-bolt-elements-textSecondary">
+                              {isLoading ? (
+                                <>
+                                  <span className="i-ph:spinner animate-spin mr-2" />
+                                  Chargement des branches...
+                                </>
+                              ) : (
+                                'Aucune branche disponible'
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
@@ -1010,6 +1039,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                       />
                     )}
                   </div>
+                   
                 </>
               )}
             </div>
