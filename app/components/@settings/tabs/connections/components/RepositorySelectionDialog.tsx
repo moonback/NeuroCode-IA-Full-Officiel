@@ -52,50 +52,79 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
           >
             <Dialog.Content className="bg-white dark:bg-[#1E1E1E] rounded-lg border border-[#E5E5E5] dark:border-[#333333] shadow-xl">
               <div className="p-6 space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium text-[#111111] dark:text-white">Aperçu du dépôt</h3>
-                  <div className="mt-4 space-y-2">
-                    <p className="text-sm text-[#666666] dark:text-[#999999]">Statistiques du dépôt :</p>
-                    <div className="space-y-2 text-sm text-[#111111] dark:text-white">
-                      <div className="flex items-center gap-2">
-                        <span className="i-ph:files text-green-500 w-4 h-4" />
-                        <span>Fichiers totaux : {stats.totalFiles}</span>
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <span className="i-ph:info text-blue-500 w-6 h-6" />
+                    <h3 className="text-xl font-semibold text-[#111111] dark:text-white">Aperçu du dépôt</h3>
+                  </div>
+                  
+                  <div className="bg-[#F9F9F9] dark:bg-[#1F1F1F] p-4 rounded-lg border border-[#E5E5E5] dark:border-[#333333]">
+                    <h4 className="text-sm font-medium text-[#666666] dark:text-[#999999] mb-3">Statistiques du dépôt</h4>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#1A1A1A] rounded-lg">
+                        <span className="i-ph:files text-green-500 w-5 h-5" />
+                        <div>
+                          <p className="text-sm text-[#666666] dark:text-[#999999]">Fichiers totaux</p>
+                          <p className="font-medium text-[#111111] dark:text-white">{stats.totalFiles}</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="i-ph:database text-green-500 w-4 h-4" />
-                        <span>Taille totale : {formatSize(stats.totalSize)}</span>
+                      
+                      <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#1A1A1A] rounded-lg">
+                        <span className="i-ph:database text-green-500 w-5 h-5" />
+                        <div>
+                          <p className="text-sm text-[#666666] dark:text-[#999999]">Taille totale</p>
+                          <p className="font-medium text-[#111111] dark:text-white">{formatSize(stats.totalSize)}</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="i-ph:code text-green-500 w-4 h-4" />
-                        <span>
-                          Langages :{' '}
-                          {Object.entries(stats.languages)
-                            .sort(([, a], [, b]) => b - a)
-                            .slice(0, 3)
-                            .map(([lang, size]) => `${lang} (${formatSize(size)})`)
-                            .join(', ')}
-                        </span>
+                      
+                      <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#1A1A1A] rounded-lg">
+                        <span className="i-ph:code text-green-500 w-5 h-5" />
+                        <div>
+                          <p className="text-sm text-[#666666] dark:text-[#999999]">Langages principaux</p>
+                          <p className="font-medium text-[#111111] dark:text-white">
+                            {Object.entries(stats.languages)
+                              .sort(([, a], [, b]) => b - a)
+                              .slice(0, 3)
+                              .map(([lang, size]) => `${lang} (${formatSize(size)})`)
+                              .join(', ')}
+                          </p>
+                        </div>
                       </div>
+                      
                       {stats.hasPackageJson && (
-                        <div className="flex items-center gap-2">
-                          <span className="i-ph:package text-green-500 w-4 h-4" />
-                          <span>Contient un package.json</span>
+                        <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#1A1A1A] rounded-lg">
+                          <span className="i-ph:package text-green-500 w-5 h-5" />
+                          <div>
+                            <p className="text-sm text-[#666666] dark:text-[#999999]">Configuration</p>
+                            <p className="font-medium text-[#111111] dark:text-white">Contient un package.json</p>
+                          </div>
                         </div>
                       )}
+                      
                       {stats.hasDependencies && (
-                        <div className="flex items-center gap-2">
-                          <span className="i-ph:tree-structure text-green-500 w-4 h-4" />
-                          <span>Contient des dépendances</span>
+                        <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#1A1A1A] rounded-lg">
+                          <span className="i-ph:tree-structure text-green-500 w-5 h-5" />
+                          <div>
+                            <p className="text-sm text-[#666666] dark:text-[#999999]">Dépendances</p>
+                            <p className="font-medium text-[#111111] dark:text-white">Dépendances détectées</p>
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
+                  
                   {isLargeRepo && (
-                    <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg text-sm flex items-start gap-2">
-                      <span className="i-ph:warning text-yellow-600 dark:text-yellow-500 w-4 h-4 flex-shrink-0 mt-0.5" />
-                      <div className="text-yellow-800 dark:text-yellow-500">
-                        Ce dépôt est assez volumineux ({formatSize(stats.totalSize)}). Son importation pourrait prendre
-                        un certain temps et pourrait affecter les performances.
+                    <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg border border-yellow-200 dark:border-yellow-500/20">
+                      <div className="flex items-start gap-3">
+                        <span className="i-ph:warning text-yellow-600 dark:text-yellow-500 w-5 h-5 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Attention : Dépôt volumineux</p>
+                          <p className="text-sm text-yellow-700 dark:text-yellow-400">
+                            Ce dépôt est assez volumineux ({formatSize(stats.totalSize)}). Son importation pourrait prendre
+                            un certain temps et pourrait affecter les performances.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
