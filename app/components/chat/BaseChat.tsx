@@ -812,6 +812,18 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           onStop={stopListening}
                           disabled={isStreaming}
                         />
+                        {!chatStarted && (
+                          <IconButton
+                            title="Afficher/Masquer les prompts d'exemple" 
+                            className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
+                            onClick={() => setIsExamplePromptsVisible(!isExamplePromptsVisible)}
+                          >
+                            <div 
+                              className={`${isExamplePromptsVisible ? 'i-ph:book-open' : 'i-ph:book'} text-xl hover:scale-110 transition-transform`}
+                              title={isExamplePromptsVisible ? "Hide example prompts" : "Show example prompts"}
+                            />
+                          </IconButton>
+                        )}
                         {chatStarted && <ClientOnly>{() => <ExportChatButton exportChat={exportChat} />}</ClientOnly>}
                         <IconButton
                           title="Paramètres du modèle"
@@ -827,18 +839,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           <div className={`i-ph:caret-${isModelSettingsCollapsed ? 'right' : 'down'} text-lg`} />
                           {isModelSettingsCollapsed ? <span className="text-xs">{model}</span> : <span />}
                         </IconButton>
-                        {!chatStarted && (
-                          <IconButton
-                            title="Afficher/Masquer les prompts d'exemple" 
-                            className="transition-all hover:bg-bolt-elements-item-backgroundAccent"
-                            onClick={() => setIsExamplePromptsVisible(!isExamplePromptsVisible)}
-                          >
-                            <div 
-                              className={`${isExamplePromptsVisible ? 'i-ph:caret-up' : 'i-ph:caret-down'} text-xl hover:scale-110 transition-transform`}
-                              title={isExamplePromptsVisible ? "Hide example prompts" : "Show example prompts"}
-                            />
-                          </IconButton>
-                        )}
+                        
                       </div>
                       {input.length > 3 ? (
                         <div className="text-xs text-bolt-elements-textTertiary">
