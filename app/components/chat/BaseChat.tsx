@@ -545,6 +545,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   ) : null;
                 }}
               </ClientOnly>
+              {progressAnnotations && contextOptimizationEnabled && <ProgressCompilation data={progressAnnotations} />}
+
               <div
                 className={classNames('flex flex-col w-full max-w-chat mx-auto z-prompt', {                  
                   'sticky bottom-2': chatStarted,
@@ -561,7 +563,6 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     }}
                   />
                 )}
-                {progressAnnotations && contextOptimizationEnabled && <ProgressCompilation data={progressAnnotations} />}
                 <div
                   className={classNames(
                     'bg-bolt-elements-background-depth-2 p-4 rounded-xl border border-bolt-elements-borderColor/50 relative w-full max-w-chat mx-auto z-prompt',
@@ -846,6 +847,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           <kbd className="kdb px-1.5 py-0.5 rounded bg-bolt-elements-background-depth-2">Shift</kbd> + <kbd className="kdb px-1.5 py-0.5 rounded bg-bolt-elements-background-depth-2">↵</kbd> pour saut de ligne
                         </div>
                       ) : null}
+                      
                       {input && (
                       <IconButton
                         title="Effacer le texte"
@@ -898,7 +900,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                 }}
               />
             )}
-          </ClientOnly>        </div>
+          </ClientOnly>        
+          </div>
       </div>
     );
 
