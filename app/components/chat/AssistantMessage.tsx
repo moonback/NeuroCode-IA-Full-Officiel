@@ -178,18 +178,23 @@ export const AssistantMessage = memo(
             path: normalized,
             type: path.endsWith('.ts') || path.endsWith('.tsx') ? 'typescript' : 'javascript',
             metadata: {
-              lineCount: 0, // This should be updated with actual file metadata
+              lineCount: 0,
               hasTypes: path.endsWith('.ts') || path.endsWith('.tsx'),
               hasComponents: path.includes('components'),
               hasHooks: path.includes('hooks'),
               hasStyles: path.includes('styles') || path.includes('css'),
-              dependencies: 0 // This should be updated with actual dependency count
+              dependencies: 0
             }
           };
         });
-        setContextFiles(files);
+        // Only update if files have actually changed
+        const filesString = JSON.stringify(files);
+        const contextFilesString = JSON.stringify(contextFiles);
+        if (filesString !== contextFilesString) {
+          setContextFiles(files);
+        }
       }
-    }, [filteredAnnotations]);
+    }, [filteredAnnotations, contextFiles]);
 
     const usage: {
       completionTokens: number;
