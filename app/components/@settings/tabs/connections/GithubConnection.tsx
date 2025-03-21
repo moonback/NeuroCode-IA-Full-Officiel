@@ -167,7 +167,7 @@ export default function GitHubConnection() {
 
       logStore.logInfo('Connected to GitHub', {
         type: 'system',
-        message: `Connected to GitHub as ${user.login}`,
+        message: `Connecté à GitHub en tant que ${user.login}`,
       });
 
       // Fetch additional GitHub stats
@@ -622,7 +622,7 @@ export default function GitHubConnection() {
                 className="text-bolt-elements-link-text dark:text-bolt-elements-link-text hover:text-bolt-elements-link-textHover dark:hover:text-bolt-elements-link-textHover flex items-center gap-1"
               >
                 <div className="i-ph:key w-4 h-4" />
-                Get your token
+                Obtenez votre jeton                
                 <div className="i-ph:arrow-square-out w-3 h-3" />
               </a>
               <span className="mx-2">•</span>
@@ -647,12 +647,12 @@ export default function GitHubConnection() {
               {isConnecting ? (
                 <>
                   <div className="i-ph:spinner-gap animate-spin w-4 h-4" />
-                  Connecting...
+                  Connexion ...
                 </>
               ) : (
                 <>
                   <div className="i-ph:github-logo w-4 h-4" />
-                  Connect
+                  Connexion
                 </>
               )}
             </Button>
@@ -662,13 +662,13 @@ export default function GitHubConnection() {
                 <div className="flex items-center gap-4">
                   <Button onClick={handleDisconnect} variant="destructive" className="flex items-center gap-2">
                     <div className="i-ph:sign-out w-4 h-4" />
-                    Disconnect
-                  </Button>
+                    Déconnecter                  
+                    </Button>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <div className="i-ph:check-circle w-4 h-4 text-bolt-elements-icon-success dark:text-bolt-elements-icon-success" />
                       <span className="text-sm text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
-                        Connected to GitHub using{' '}
+                      Connecté à GitHub en utilisant{' '}
                         <span className="text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent font-medium">
                           {connection.tokenType === 'classic' ? 'PAT' : 'Token Fine-grained'}
                         </span>
@@ -693,8 +693,8 @@ export default function GitHubConnection() {
                     className="flex items-center gap-2 hover:bg-bolt-elements-item-backgroundActive/10 hover:text-bolt-elements-textPrimary dark:hover:text-bolt-elements-textPrimary transition-colors"
                   >
                     <div className="i-ph:layout-dashboard w-4 h-4" />
-                    Dashboard
-                  </Button>
+                    Tableau de bord                  
+                    </Button>
                   <Button
                     onClick={() => {
                       fetchGitHubStats(connection.token);
@@ -807,7 +807,7 @@ export default function GitHubConnection() {
                   <div className="mt-4">
                     <div className="space-y-4">
                       <div>
-                        <h5 className="text-sm font-medium text-bolt-elements-textPrimary mb-2">Repository Stats</h5>
+                        <h5 className="text-sm font-medium text-bolt-elements-textPrimary mb-2">Statistiques du dépôt</h5>
                         <div className="grid grid-cols-2 gap-4">
                           {[
                             {
@@ -831,7 +831,7 @@ export default function GitHubConnection() {
                       </div>
 
                       <div>
-                        <h5 className="text-sm font-medium text-bolt-elements-textPrimary mb-2">Contribution Stats</h5>
+                        <h5 className="text-sm font-medium text-bolt-elements-textPrimary mb-2">Statistiques de contribution</h5>
                         <div className="grid grid-cols-3 gap-4">
                           {[
                             {
@@ -868,7 +868,7 @@ export default function GitHubConnection() {
                       </div>
 
                       <div>
-                        <h5 className="text-sm font-medium text-bolt-elements-textPrimary mb-2">Gists</h5>
+                        <h5 className="text-sm font-medium text-bolt-elements-textPrimary mb-2">L'essentiel</h5>
                         <div className="grid grid-cols-2 gap-4">
                           {[
                             {
@@ -876,7 +876,7 @@ export default function GitHubConnection() {
                               value: connection.stats.publicGists,
                             },
                             {
-                              label: 'Private',
+                              label: 'Priver',
                               value: connection.stats.privateGists || 0,
                             },
                           ].map((stat, index) => (
@@ -893,7 +893,7 @@ export default function GitHubConnection() {
 
                       <div className="pt-2 border-t border-bolt-elements-borderColor">
                         <span className="text-xs text-bolt-elements-textSecondary">
-                          Last updated: {new Date(connection.stats.lastUpdated).toLocaleString()}
+                        Dernière mise à jour :{new Date(connection.stats.lastUpdated).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -975,7 +975,7 @@ function LoadingSpinner() {
     <div className="flex items-center justify-center p-4">
       <div className="flex items-center gap-2">
         <div className="i-ph:spinner-gap-bold animate-spin w-4 h-4" />
-        <span className="text-bolt-elements-textSecondary">Loading...</span>
+        <span className="text-bolt-elements-textSecondary">Chargement...</span>
       </div>
     </div>
   );
