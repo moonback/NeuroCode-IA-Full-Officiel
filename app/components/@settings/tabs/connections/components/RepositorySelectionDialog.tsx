@@ -58,15 +58,15 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
                     <p className="text-sm text-[#666666] dark:text-[#999999]">Repository Statistics:</p>
                     <div className="space-y-2 text-sm text-[#111111] dark:text-white">
                       <div className="flex items-center gap-2">
-                        <span className="i-ph:files text-purple-500 w-4 h-4" />
+                        <span className="i-ph:files text-green-500 w-4 h-4" />
                         <span>Total Files: {stats.totalFiles}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="i-ph:database text-purple-500 w-4 h-4" />
+                        <span className="i-ph:database text-green-500 w-4 h-4" />
                         <span>Total Size: {formatSize(stats.totalSize)}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="i-ph:code text-purple-500 w-4 h-4" />
+                        <span className="i-ph:code text-green-500 w-4 h-4" />
                         <span>
                           Languages:{' '}
                           {Object.entries(stats.languages)
@@ -78,13 +78,13 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
                       </div>
                       {stats.hasPackageJson && (
                         <div className="flex items-center gap-2">
-                          <span className="i-ph:package text-purple-500 w-4 h-4" />
+                          <span className="i-ph:package text-green-500 w-4 h-4" />
                           <span>Has package.json</span>
                         </div>
                       )}
                       {stats.hasDependencies && (
                         <div className="flex items-center gap-2">
-                          <span className="i-ph:tree-structure text-purple-500 w-4 h-4" />
+                          <span className="i-ph:tree-structure text-green-500 w-4 h-4" />
                           <span>Has dependencies</span>
                         </div>
                       )}
@@ -110,7 +110,7 @@ function StatsDialog({ isOpen, onClose, onConfirm, stats, isLargeRepo }: StatsDi
                 </button>
                 <button
                   onClick={onConfirm}
-                  className="px-4 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
                 >
                   OK
                 </button>
@@ -225,7 +225,7 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                           href="https://github.com/settings/tokens"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-purple-500 hover:underline"
+                          className="text-green-500 hover:underline"
                         >
                           github.com/settings/tokens
                         </a>
@@ -240,7 +240,7 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                             type="radio"
                             checked={tokenType === 'classic'}
                             onChange={() => setTokenType('classic')}
-                            className="w-3.5 h-3.5 accent-purple-500"
+                            className="w-3.5 h-3.5 accent-green-500"
                           />
                           <span className="text-sm text-[#111111] dark:text-white">Classic</span>
                         </label>
@@ -249,7 +249,7 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                             type="radio"
                             checked={tokenType === 'fine-grained'}
                             onChange={() => setTokenType('fine-grained')}
-                            className="w-3.5 h-3.5 accent-purple-500"
+                            className="w-3.5 h-3.5 accent-green-500"
                           />
                           <span className="text-sm text-[#111111] dark:text-white">Fine-grained</span>
                         </label>
@@ -259,7 +259,7 @@ function GitHubAuthDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      className="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                     >
                       {isSubmitting ? 'Connecting...' : 'Connect to GitHub'}
                     </button>
@@ -757,7 +757,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
         toast.error(
           <div className="space-y-2">
             <p>{errorMessage}</p>
-            <button onClick={() => setShowAuthDialog(true)} className="underline font-medium block text-purple-500">
+            <button onClick={() => setShowAuthDialog(true)} className="underline font-medium block text-green-500">
               Learn how to access private repositories
             </button>
           </div>,
@@ -838,7 +838,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
               </div>
               <button
                 onClick={() => setShowAuthDialog(true)}
-                className="px-3 py-1.5 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-sm transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-green-500 hover:bg-green-600 text-white text-sm transition-colors flex items-center gap-1.5"
               >
                 <span className="i-ph:key" />
                 Connect GitHub Account
@@ -877,7 +877,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                     className={classNames(
                       'w-full h-10 px-4 py-2 rounded-lg text-white transition-all duration-200 flex items-center gap-2 justify-center',
                       customUrl
-                        ? 'bg-purple-500 hover:bg-purple-600'
+                        ? 'bg-green-500 hover:bg-green-600'
                         : 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed',
                     )}
                   >
@@ -966,7 +966,7 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                           </select>
                           <button
                             onClick={handleImport}
-                            className="w-full h-10 px-4 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-all duration-200 flex items-center gap-2 justify-center"
+                            className="w-full h-10 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center"
                           >
                             Import Selected Branch
                           </button>
@@ -1012,7 +1012,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
       className={classNames(
         'px-4 py-2 h-10 rounded-lg transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center',
         active
-          ? 'bg-purple-500 text-white hover:bg-purple-600'
+          ? 'bg-green-500 text-white hover:bg-green-600'
           : 'bg-[#F5F5F5] dark:bg-[#252525] text-bolt-elements-textPrimary dark:text-white hover:bg-[#E5E5E5] dark:hover:bg-[#333333] border border-[#E5E5E5] dark:border-[#333333]',
       )}
     >
@@ -1063,7 +1063,7 @@ function RepositoryCard({ repo, onSelect }: { repo: GitHubRepoInfo; onSelect: ()
         </div>
         <button
           onClick={onSelect}
-          className="px-4 py-2 h-10 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center"
+          className="px-4 py-2 h-10 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 min-w-[120px] justify-center"
         >
           <span className="i-ph:download-simple w-4 h-4" />
           Import
