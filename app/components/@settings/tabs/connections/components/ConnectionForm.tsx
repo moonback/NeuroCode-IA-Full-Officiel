@@ -45,8 +45,8 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
               <div className="i-ph:plug-fill text-bolt-elements-textTertiary" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-bolt-elements-textPrimary">Connection Settings</h3>
-              <p className="text-sm text-bolt-elements-textSecondary">Configure your GitHub connection</p>
+              <h3 className="text-lg font-medium text-bolt-elements-textPrimary">Paramètres de connexion</h3>
+              <p className="text-sm text-bolt-elements-textSecondary">Configurez votre connexion GitHub</p>
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
         <form onSubmit={onSave} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-bolt-elements-textSecondary mb-2">
-              GitHub Username
+              Nom d'utilisateur GitHub
             </label>
             <input
               id="username"
@@ -68,14 +68,14 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                 'focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500',
                 'transition-all duration-200',
               )}
-              placeholder="e.g., octocat"
+              placeholder="ex: octocat"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
               <label htmlFor="token" className="block text-sm font-medium text-bolt-elements-textSecondary">
-                Personal Access Token
+                Token d'accès personnel
               </label>
               <a
                 href="https://github.com/settings/tokens/new?scopes=repo,user,read:org,workflow,delete_repo,write:packages,read:packages"
@@ -87,7 +87,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                   'transition-colors duration-200',
                 )}
               >
-                <span>Generate new token</span>
+                <span>Générer un nouveau token</span>
                 <div className="i-ph:plus-circle" />
               </a>
             </div>
@@ -139,12 +139,12 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                   {authState.isVerifying ? (
                     <>
                       <div className="i-ph:spinner animate-spin" />
-                      <span>Verifying...</span>
+                      <span>Vérification...</span>
                     </>
                   ) : (
                     <>
                       <div className="i-ph:plug-fill" />
-                      <span>Connect</span>
+                      <span>Connecter</span>
                     </>
                   )}
                 </button>
@@ -160,11 +160,11 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
                     )}
                   >
                     <div className="i-ph:plug-fill" />
-                    <span>Disconnect</span>
+                    <span>Déconnecter</span>
                   </button>
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-green-600 dark:text-green-400 bg-green-500/5 rounded-lg border border-green-500/20">
                     <div className="i-ph:check-circle-fill" />
-                    <span>Connected</span>
+                    <span>Connecté</span>
                   </span>
                 </>
               )}
@@ -172,7 +172,7 @@ export function ConnectionForm({ authState, setAuthState, onSave, onDisconnect }
             {authState.rateLimits && (
               <div className="flex items-center gap-2 text-sm text-bolt-elements-textTertiary">
                 <div className="i-ph:clock-countdown opacity-60" />
-                <span>Rate limit resets at {authState.rateLimits.reset.toLocaleTimeString()}</span>
+                <span>Limite de requêtes réinitialisée à {authState.rateLimits.reset.toLocaleTimeString()}</span>
               </div>
             )}
           </div>
