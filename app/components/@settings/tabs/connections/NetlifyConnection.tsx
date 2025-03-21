@@ -401,7 +401,7 @@ export default function NetlifyConnection() {
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-sm font-medium flex items-center gap-2 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
                         <BuildingLibraryIcon className="h-4 w-4 text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent" />
-                        Your Sites
+                        Vos Sites
                       </h4>
                       <Button
                         variant="outline"
@@ -416,7 +416,7 @@ export default function NetlifyConnection() {
                             { 'animate-spin': fetchingStats },
                           )}
                         />
-                        {fetchingStats ? 'Refreshing...' : 'Refresh'}
+                        {fetchingStats ? 'Actualisation...' : 'Actualiser'}
                       </Button>
                     </div>
                     <div className="space-y-3">
@@ -508,7 +508,7 @@ export default function NetlifyConnection() {
                                   <div className="flex items-center gap-1">
                                     <ClockIcon className="h-4 w-4 text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent" />
                                     <span className="text-bolt-elements-textSecondary dark:text-bolt-elements-textSecondary">
-                                      Published {formatDistanceToNow(new Date(site.published_deploy.published_at))} ago
+                                      Publier {formatDistanceToNow(new Date(site.published_deploy.published_at))} ago
                                     </span>
                                   </div>
                                   {site.published_deploy.branch && (
@@ -532,7 +532,7 @@ export default function NetlifyConnection() {
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-sm font-medium flex items-center gap-2 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
                           <BuildingLibraryIcon className="h-4 w-4 text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent" />
-                          Recent Deployments
+                          Déploiements récents
                         </h4>
                       </div>
                       <div className="space-y-2">
@@ -566,7 +566,7 @@ export default function NetlifyConnection() {
                                 </Badge>
                               </div>
                               <span className="text-xs text-bolt-elements-textSecondary dark:text-bolt-elements-textSecondary">
-                                {formatDistanceToNow(new Date(deploy.created_at))} ago
+                              il y a {formatDistanceToNow(new Date(deploy.created_at))} 
                               </span>
                             </div>
                             {deploy.branch && (
@@ -600,7 +600,7 @@ export default function NetlifyConnection() {
                                 className="flex items-center gap-1 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary"
                               >
                                 <BuildingLibraryIcon className="h-4 w-4 text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent" />
-                                Publish
+                                Publier
                               </Button>
                               {deploy.state === 'ready' ? (
                                 <Button
@@ -666,7 +666,7 @@ export default function NetlifyConnection() {
                                 </Badge>
                               </div>
                               <span className="text-xs text-bolt-elements-textSecondary dark:text-bolt-elements-textSecondary">
-                                {formatDistanceToNow(new Date(build.created_at))} ago
+                              il y a {formatDistanceToNow(new Date(build.created_at))}
                               </span>
                             </div>
                             {build.error && (
