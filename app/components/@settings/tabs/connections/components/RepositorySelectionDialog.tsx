@@ -464,20 +464,22 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
       }}
     >
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-        <Dialog.Content className="fixed top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[600px] max-h-[85vh] overflow-hidden bg-white dark:bg-[#1A1A1A] rounded-xl shadow-xl z-[51] border border-[#E5E5E5] dark:border-[#333333]">
-          <div className="p-4 border-b border-[#E5E5E5] dark:border-[#333333] flex items-center justify-between">
-            <Dialog.Title className="text-lg font-semibold text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark">
+        <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300 ease-in-out" />
+        <Dialog.Content className="fixed top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[600px] max-h-[85vh] overflow-hidden bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-2xl z-[51] border border-[#E5E5E5]/20 dark:border-[#333333]/20 transition-all duration-300 ease-in-out transform scale-100 opacity-100">
+          <div className="p-5 border-b border-[#E5E5E5]/10 dark:border-[#333333]/10 flex items-center justify-between bg-gradient-to-r from-transparent to-[#F8F8F8] dark:to-[#222222]">
+            <Dialog.Title className="text-xl font-semibold text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark flex items-center gap-2">
+              <span className="i-ph:git-branch text-green-500 w-6 h-6" />
               Importer un dépôt GitHub
             </Dialog.Title>
             <Dialog.Close
               onClick={handleClose}
               className={classNames(
-                'p-2 rounded-lg transition-all duration-200 ease-in-out',
+                'p-2.5 rounded-xl transition-all duration-200 ease-in-out',
                 'text-bolt-elements-textTertiary hover:text-bolt-elements-textPrimary',
                 'dark:text-bolt-elements-textTertiary-dark dark:hover:text-bolt-elements-textPrimary-dark',
-                'hover:bg-bolt-elements-background-depth-2 dark:hover:bg-bolt-elements-background-depth-3',
-                'focus:outline-none focus:ring-2 focus:ring-bolt-elements-borderColor dark:focus:ring-bolt-elements-borderColor-dark',
+                'hover:bg-bolt-elements-background-depth-2/80 dark:hover:bg-bolt-elements-background-depth-3/80',
+                'focus:outline-none focus:ring-2 focus:ring-green-500/20 dark:focus:ring-green-500/20',
+                'hover:rotate-90 transform'
               )}
             >
               <span className="i-ph:x block w-5 h-5" aria-hidden="true" />
@@ -485,18 +487,18 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
             </Dialog.Close>
           </div>
 
-          <div className="p-4">
-            <div className="flex gap-2 mb-4">
+          <div className="p-5">
+            <div className="flex gap-3 mb-6">
               <TabButton active={activeTab === 'my-repos'} onClick={() => setActiveTab('my-repos')}>
-                <span className="i-ph:book-bookmark" />
+                <span className="i-ph:book-bookmark w-4 h-4" />
                 Mes dépôts
               </TabButton>
               <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}>
-                <span className="i-ph:magnifying-glass" />
+                <span className="i-ph:magnifying-glass w-4 h-4" />
                 Rechercher
               </TabButton>
               <TabButton active={activeTab === 'url'} onClick={() => setActiveTab('url')}>
-                <span className="i-ph:link" />
+                <span className="i-ph:link w-4 h-4" />
                 URL
               </TabButton>
             </div>
@@ -522,51 +524,71 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
             ) : (
               <>
                 {activeTab === 'search' && (
-                  <div className="space-y-4 mb-4">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Rechercher des dépôts..."
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          handleSearch(e.target.value);
-                        }}
-                        className="flex-1 px-4 py-2 rounded-lg bg-[#F5F5F5] dark:bg-[#252525] border border-[#E5E5E5] dark:border-[#333333] text-bolt-elements-textPrimary"
-                      />
+                  <div className="space-y-5 mb-6">
+                    <div className="flex gap-3">
+                      <div className="relative flex-1">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bolt-elements-textTertiary dark:text-bolt-elements-textTertiary-dark">
+                          <span className="i-ph:magnifying-glass w-4 h-4" />
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Rechercher des dépôts..."
+                          value={searchQuery}
+                          onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            handleSearch(e.target.value);
+                          }}
+                          className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-[#F5F5F5]/80 dark:bg-[#252525]/80 border border-[#E5E5E5]/20 dark:border-[#333333]/20 text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary/60 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200"
+                        />
+                      </div>
                       <button
                         onClick={() => setFilters({})}
-                        className="px-3 py-2 rounded-lg bg-[#F5F5F5] dark:bg-[#252525] text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary"
+                        className="px-4 py-2.5 rounded-xl bg-[#F5F5F5]/80 dark:bg-[#252525]/80 text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary hover:bg-[#E5E5E5]/20 dark:hover:bg-[#333333]/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500/20"
                       >
-                        <span className="i-ph:funnel-simple" />
+                        <span className="i-ph:funnel-simple w-5 h-5" />
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="text"
-                        placeholder="Filtrer par langue..."
-                        value={filters.language || ''}
-                        onChange={(e) => {
-                          setFilters({ ...filters, language: e.target.value });
-                          handleSearch(searchQuery);
-                        }}
-                        className="px-3 py-1.5 text-sm rounded-lg bg-[#F5F5F5] dark:bg-[#252525] border border-[#E5E5E5] dark:border-[#333333]"
-                      />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bolt-elements-textTertiary dark:text-bolt-elements-textTertiary-dark">
+                          <span className="i-ph:code w-4 h-4" />
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Filtrer par langue..."
+                          value={filters.language || ''}
+                          onChange={(e) => {
+                            setFilters({ ...filters, language: e.target.value });
+                            handleSearch(searchQuery);
+                          }}
+                          className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl bg-[#F5F5F5]/80 dark:bg-[#252525]/80 border border-[#E5E5E5]/20 dark:border-[#333333]/20 placeholder-bolt-elements-textTertiary/60 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200"
+                        />
+                      </div>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bolt-elements-textTertiary dark:text-bolt-elements-textTertiary-dark">
+                          <span className="i-ph:star w-4 h-4" />
+                        </span>
+                        <input
+                          type="number"
+                          placeholder="Min étoiles..."
+                          value={filters.stars || ''}
+                          onChange={(e) => handleFilterChange('stars', e.target.value)}
+                          className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl bg-[#F5F5F5]/80 dark:bg-[#252525]/80 border border-[#E5E5E5]/20 dark:border-[#333333]/20 placeholder-bolt-elements-textTertiary/60 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200"
+                        />
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bolt-elements-textTertiary dark:text-bolt-elements-textTertiary-dark">
+                        <span className="i-ph:git-fork w-4 h-4" />
+                      </span>
                       <input
                         type="number"
-                        placeholder="Min étoiles..."
-                        value={filters.stars || ''}
-                        onChange={(e) => handleFilterChange('stars', e.target.value)}
-                        className="px-3 py-1.5 text-sm rounded-lg bg-[#F5F5F5] dark:bg-[#252525] border border-[#E5E5E5] dark:border-[#333333]"
+                        placeholder="Min forks..."
+                        value={filters.forks || ''}
+                        onChange={(e) => handleFilterChange('forks', e.target.value)}
+                        className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl bg-[#F5F5F5]/80 dark:bg-[#252525]/80 border border-[#E5E5E5]/20 dark:border-[#333333]/20 placeholder-bolt-elements-textTertiary/60 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200"
                       />
                     </div>
-                    <input
-                      type="number"
-                      placeholder="Min forks..."
-                      value={filters.forks || ''}
-                      onChange={(e) => handleFilterChange('forks', e.target.value)}
-                      className="px-3 py-1.5 text-sm rounded-lg bg-[#F5F5F5] dark:bg-[#252525] border border-[#E5E5E5] dark:border-[#333333]"
-                    />
                   </div>
                 )}
 
@@ -582,27 +604,36 @@ export function RepositorySelectionDialog({ isOpen, onClose, onSelect }: Reposit
                         </button>
                         <h3 className="font-medium">{selectedRepository.full_name}</h3>
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-sm text-bolt-elements-textSecondary">Sélectionner une branche</label>
-                        <select
-                          value={selectedBranch}
-                          onChange={(e) => setSelectedBranch(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor dark:border-bolt-elements-borderColor-dark text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark focus:outline-none focus:ring-2 focus:ring-bolt-elements-borderColor dark:focus:ring-bolt-elements-borderColor-dark"
-                        >
-                          {branches.map((branch) => (
-                            <option
-                              key={branch.name}
-                              value={branch.name}
-                              className="bg-bolt-elements-background-depth-2 dark:bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark"
-                            >
-                              {branch.name} {branch.default ? '(default)' : ''}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="space-y-3">
+                        <label className="text-sm font-medium text-bolt-elements-textSecondary flex items-center gap-2">
+                          <span className="i-ph:git-branch w-4 h-4" />
+                          Sélectionner une branche
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={selectedBranch}
+                            onChange={(e) => setSelectedBranch(e.target.value)}
+                            className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-[#F5F5F5]/80 dark:bg-[#252525]/80 border border-[#E5E5E5]/20 dark:border-[#333333]/20 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200 appearance-none"
+                          >
+                            {branches.map((branch) => (
+                              <option
+                                key={branch.name}
+                                value={branch.name}
+                                className="bg-[#F5F5F5] dark:bg-[#252525] text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary-dark py-1.5"
+                              >
+                                {branch.name} {branch.default ? '(default)' : ''}
+                              </option>
+                            ))}
+                          </select>
+                          <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-bolt-elements-textTertiary dark:text-bolt-elements-textTertiary-dark">
+                            <span className="i-ph:caret-down w-4 h-4" />
+                          </span>
+                        </div>
                         <button
                           onClick={handleImport}
-                          className="w-full h-10 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center gap-2 justify-center"
+                          className="w-full h-11 px-4 py-2.5 rounded-xl bg-green-500 text-white hover:bg-green-600 active:bg-green-700 transition-all duration-200 flex items-center gap-2 justify-center font-medium shadow-lg shadow-green-500/20 hover:shadow-green-500/30"
                         >
+                          <span className="i-ph:git-pull-request w-4 h-4" />
                           Importer la branche sélectionnée
                         </button>
                       </div>
