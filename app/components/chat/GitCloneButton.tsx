@@ -93,7 +93,7 @@ export default function GitCloneButton({ importChat, className }: GitCloneButton
 
     try {
       const { workdir, data } = await gitClone(repoUrl);
-      toast.success('Référentiel cloné avec succès !');
+      toast.success('Référentiel cloné avec succès !');
 
       if (importChat) {
         const filePaths = Object.keys(data).filter((filePath) => !ig.ignores(filePath));
@@ -163,8 +163,8 @@ export default function GitCloneButton({ importChat, className }: GitCloneButton
 
 ## Détails du Dépôt
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Statut      : Cloné avec succès
-🔗 Dépôt       : ${repoUrl}
+✅ Statut : Cloné avec succès
+🔗 Dépôt  : ${repoUrl}
 📁 Chemin Local : ${workdir}
 
 ## Statistiques d'Importation
