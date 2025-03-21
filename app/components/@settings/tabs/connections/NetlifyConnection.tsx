@@ -714,10 +714,10 @@ export default function NetlifyConnection() {
               <div className="text-[#00AD9F]">
                 <NetlifyLogo />
               </div>
-              <h2 className="text-lg font-medium text-bolt-elements-textPrimary">Netlify Connection</h2>
+              <h2 className="text-lg font-medium text-bolt-elements-textPrimary">Connexion Netlify</h2>
             </div>
             <Button onClick={handleConnect} variant="outline" className="flex items-center gap-2">
-              Connect
+              Connection
             </Button>
           </>
         ) : (
@@ -756,13 +756,13 @@ export default function NetlifyConnection() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                Disconnect
+                Déconnecter
               </Button>
 
               <div className="flex items-center gap-2">
                 <CheckCircleIcon className="h-4 w-4 text-green-500" />
                 <span className="text-sm text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
-                  Connected to Netlify
+                Connecté à Netlify
                 </span>
               </div>
 
@@ -773,7 +773,7 @@ export default function NetlifyConnection() {
                   className="flex items-center gap-2 hover:bg-bolt-elements-item-backgroundActive/10 hover:text-bolt-elements-textPrimary dark:hover:text-bolt-elements-textPrimary transition-colors"
                 >
                   <div className="i-ph:layout-dashboard w-4 h-4" />
-                  Dashboard
+                  Tableau de bord
                 </Button>
                 <Button
                   onClick={() => fetchNetlifyStats(connection.token)}
@@ -785,14 +785,14 @@ export default function NetlifyConnection() {
                     <>
                       <div className="i-ph:spinner-gap w-4 h-4 animate-spin text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary" />
                       <span className="text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
-                        Refreshing...
+                      Actualisation...
                       </span>
                     </>
                   ) : (
                     <>
                       <ArrowPathIcon className="h-4 w-4 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary" />
                       <span className="text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
-                        Refresh Stats
+                      Actualiser les statistiques
                       </span>
                     </>
                   )}
@@ -812,7 +812,7 @@ export default function NetlifyConnection() {
             type="password"
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
-            placeholder="Enter your Netlify API token"
+            placeholder="Saisissez votre jeton API Netlify"
             className={classNames(
               'w-full px-3 py-2 rounded-lg text-sm',
               'bg-bolt-elements-background-depth-1 dark:bg-bolt-elements-background-depth-1',
@@ -829,7 +829,7 @@ export default function NetlifyConnection() {
               className="text-bolt-elements-link-text dark:text-bolt-elements-link-text hover:text-bolt-elements-link-textHover dark:hover:text-bolt-elements-link-textHover flex items-center gap-1"
             >
               <div className="i-ph:key w-4 h-4" />
-              Get your token
+              Obtenez votre jeton
               <div className="i-ph:arrow-square-out w-3 h-3" />
             </a>
           </div>
@@ -844,14 +844,14 @@ export default function NetlifyConnection() {
           <div className="space-y-2">
             <h4 className="text-sm font-medium flex items-center gap-2 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary">
               <PlusIcon className="h-4 w-4 text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent" />
-              Create Build Hook
+              Créer un crochet
             </h4>
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={hookTitle}
                 onChange={(e) => setHookTitle(e.target.value)}
-                placeholder="Build hook title"
+                placeholder="Créer un titre d\'accroche"
                 className="flex-1 px-3 py-1 text-sm rounded-md bg-bolt-elements-background-depth-1 dark:bg-bolt-elements-background-depth-2 border border-bolt-elements-borderColor dark:border-bolt-elements-borderColor text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary"
               />
               <Button
@@ -859,7 +859,7 @@ export default function NetlifyConnection() {
                 size="sm"
                 onClick={async () => {
                   if (!hookTitle) {
-                    toast.error('Please enter a hook title');
+                    toast.error('Veuillez saisir un titre d\'accroche');
                     return;
                   }
 
@@ -873,7 +873,7 @@ export default function NetlifyConnection() {
                 className="flex items-center gap-1 text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary"
               >
                 <PlusIcon className="h-4 w-4 text-bolt-elements-item-contentAccent dark:text-bolt-elements-item-contentAccent" />
-                Create Hook
+                Créer un crochet
               </Button>
             </div>
           </div>
