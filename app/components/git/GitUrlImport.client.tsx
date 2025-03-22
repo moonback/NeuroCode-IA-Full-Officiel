@@ -109,7 +109,7 @@ N'hésitez pas à me solliciter pour toute information ou assistance supplément
             messages.push({
               role: 'user',
               id: generateId(),
-              content: 'Analyse et configuration de la base du projet. Démarrage de l\'application :',
+              content: 'Analyse détaillée et configuration initiale du projet. Préparation et démarrage de l\'application avec les paramètres optimaux :',
             });
             messages.push(commandsMessage);
           }
