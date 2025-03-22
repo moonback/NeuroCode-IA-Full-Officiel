@@ -206,67 +206,22 @@ export const AssistantMessage = memo(
       <div className="overflow-hidden w-full">
         <>
           <div className="flex gap-2 items-center text-sm text-bolt-elements-textSecondary mb-3">
-            {/* {(contextFiles.length > 0 || chatSummary) && (
-              <>
-                <button 
-                  onClick={() => setIsSummaryModalOpen(true)}
-                  className="text-green-500 text-xl hover:text-green-600 cursor-pointer i-ph:info transition-colors"
-                />
-                <Modal
-                  isOpen={isSummaryModalOpen}
-                  onClose={() => setIsSummaryModalOpen(false)}
-                  title="Résumé du chat"
-                >
-                  <div className="max-w-chat p-4 space-y-6">
-                    {chatSummary && (
-                      <div className="summary max-h-[40vh] flex flex-col">
-                        <div className="overflow-y-auto p-2">
-                          <Markdown>{chatSummary}</Markdown>
-                        </div>
-                      </div>
-                    )}
-                    {contextFiles.length > 0 && (
-                      <div className="code-context flex flex-col p-4 border border-bolt-elements-borderColor/20 rounded-md bg-bolt-elements-background-depth-1">
-                        <h2 className="text-lg font-medium mb-4">Contexte du code</h2>
-                        <div className="space-y-4">
-                          <ContextSection 
-                            title="Fichiers source" 
-                            files={contextFiles.filter(f => f.type === 'typescript' || f.type === 'javascript')} 
-                          />
-                          <ContextSection 
-                            title="Configuration" 
-                            files={contextFiles.filter(f => f.path.includes('config') || f.path.endsWith('.json') || f.path.endsWith('.yaml'))} 
-                          />
-                          <ContextSection 
-                            title="Tests" 
-                            files={contextFiles.filter(f => f.path.includes('test') || f.path.includes('spec'))} 
-                          />
-                          <ContextSection 
-                            title="Documentation" 
-                            files={contextFiles.filter(f => f.path.endsWith('.md') || f.path.includes('docs'))} 
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Modal>
-              </>
-            )} */}
+           
             {usage && (
-              <div className="flex gap-2 items-center bg-bolt-elements-background-depth-1 px-3 py-1 rounded-full text-xs border border-bolt-elements-borderColor/20">
-                <div className="flex items-center gap-1">
-                  <span className="i-ph:hash text-bolt-elements-textTertiary"></span>
-                  <span>Total: {usage.totalTokens}</span>
+              <div className="flex gap-2 items-center bg-bolt-elements-background-depth-1 px-3.5 py-2 rounded-full text-xs border border-bolt-elements-borderColor/20 hover:bg-bolt-elements-background-depth-2 transition-all duration-300 shadow-sm hover:shadow-md backdrop-blur-sm">
+                <div className="flex items-center gap-2 group cursor-help" title="Nombre total de tokens utilisés dans cette interaction">
+                  <span className="i-ph:hash text-bolt-elements-textTertiary group-hover:text-bolt-elements-textPrimary transition-colors duration-200"></span>
+                  <span className="font-semibold tracking-wider">{usage.totalTokens.toLocaleString()}</span>
                 </div>
-                <div className="w-px h-4 bg-bolt-elements-borderColor/20"></div>
-                <div className="flex items-center gap-1">
-                  <span className="i-ph:arrow-up text-bolt-elements-textTertiary"></span>
-                  <span>Invite: {usage.promptTokens}</span>
+                <div className="w-[1px] h-4 bg-bolt-elements-borderColor/30 transform scale-y-90"></div>
+                <div className="flex items-center gap-2 group cursor-help" title="Tokens utilisés dans la requête">
+                  <span className="i-ph:arrow-up text-bolt-elements-textTertiary group-hover:text-green-400 transition-colors duration-200"></span>
+                  <span className="font-semibold tracking-wider">{usage.promptTokens.toLocaleString()}</span>
                 </div>
-                <div className="w-px h-4 bg-bolt-elements-borderColor/20"></div>
-                <div className="flex items-center gap-1">
-                  <span className="i-ph:arrow-down text-bolt-elements-textTertiary"></span>
-                  <span>Réponse: {usage.completionTokens}</span>
+                <div className="w-[1px] h-4 bg-bolt-elements-borderColor/30 transform scale-y-90"></div>
+                <div className="flex items-center gap-2 group cursor-help" title="Tokens utilisés dans la réponse">
+                  <span className="i-ph:arrow-down text-bolt-elements-textTertiary group-hover:text-blue-400 transition-colors duration-200"></span>
+                  <span className="font-semibold tracking-wider">{usage.completionTokens.toLocaleString()}</span>
                 </div>
               </div>
             )}
