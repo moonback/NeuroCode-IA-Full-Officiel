@@ -511,13 +511,21 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
           <div className={classNames(styles.Chat, 'flex flex-col flex-grow lg:min-w-[var(--chat-min-width)] h-full')}>
             {!chatStarted && (
               <div id="intro" className="mt-[14vh] max-w-chat mx-auto text-center px-4 lg:px-0">
-                <div className="space-y-6 animate-[fade-in_0.8s_ease-out]">
-                  <h1 className="text-4xl lg:text-5xl font-bold text-bolt-elements-textPrimary">
-                    NeuroCode Assistant
-                  </h1>
-                  <p className="text-lg text-bolt-elements-textSecondary">
-                    Votre assistant IA pour le développement web
-                  </p>
+                <div className="space-y-8 animate-[fade-in_1s_ease-out]">
+                  <div className="flex flex-col items-center">
+                    <h1 className="text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-800">
+                      NeuroCode Assistant
+                    </h1>
+                    <div className="mt-4 flex items-center gap-2">
+                      <div className="h-1 w-12 bg-gradient-to-r from-green-500 to-transparent rounded"></div>
+                      <p className="text-xl text-bolt-elements-textSecondary font-medium">
+                      Assistant de développement Web intelligent                      </p>
+                      <div className="h-1 w-12 bg-gradient-to-l from-blue-500 to-transparent rounded"></div>
+                    </div>
+                  </div>
+                  {/* <p className="text-lg text-bolt-elements-textSecondary/80 max-w-2xl mx-auto">
+                  Améliorez votre flux de travail de développement avec une assistance de code basée sur l'IA, des suggestions en temps réel et des capacités de résolution de problèmes intelligentes.                  
+                  </p> */}
                 </div>
               </div>
             )}
