@@ -73,7 +73,10 @@ export function GitUrlImport() {
 
           const filesMessage: Message = {
             role: 'assistant',
-            content: `Le dépôt ${repoUrl} a été cloné avec succès dans ${workdir}
+            content: `✨ Dépôt cloné avec succès ✨
+Dépôt: ${repoUrl}
+Emplacement: ${workdir}
+
 <boltArtifact id="imported-files" title="Fichiers Importés" type="bundled">
 ${fileContents
   .map(
@@ -85,9 +88,17 @@ ${escapeBoltTags(file.content)}
   .join('\n')}
 </boltArtifact>
 
-La structure du projet a été analysée et les fichiers ont été traités pour examen.
-Un total de ${fileContents.length} fichiers ont été importés.
-Vous pouvez maintenant commencer à explorer et à travailler sur le code.`,
+📊 Résumé de l'Analyse du Projet:
+• Structure du projet analysée avec succès
+• ${fileContents.length} fichiers traités et importés
+• Tous les fichiers sont validés et prêts pour examen
+
+🚀 Prochaines Étapes:
+• Vous pouvez maintenant explorer la base de code
+• Examiner le contenu des fichiers via l'explorateur
+• Commencer les tâches de développement et d'analyse
+
+N'hésitez pas à me solliciter pour toute information ou assistance supplémentaire !`,
             id: generateId(),
             createdAt: new Date(),
           };
