@@ -7,9 +7,7 @@ import type { FileHistory } from '~/types/actions';
 import { diffLines, type Change } from 'diff';
 import { toast } from 'react-toastify';
 import { addTargetedFile } from '~/components/chat/TargetedFilesDisplay';
-import { useStore } from '@nanostores/react';
 import { workbenchStore } from '~/lib/stores/workbench';
-import type { MapStore } from 'nanostores';
 
 const logger = createScopedLogger('FileTree');
 
@@ -235,7 +233,7 @@ interface FolderContextMenuProps {
   onCopyRelativePath?: () => void;
   onSendToChat?: () => void;
   onDownload?: () => void;
-  onRename?: () => void;
+  // onRename?: () => void;
   onDelete?: () => void;
   onCreateFile?: () => void;
   onCreateFolder?: () => void;
@@ -258,7 +256,7 @@ function FileContextMenu({
   onCopyRelativePath, 
   onSendToChat, 
   onDownload, 
-  onRename, 
+  // onRename, 
   onDelete, 
   onCreateFile, 
   onCreateFolder, 
@@ -529,7 +527,7 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
       <FileContextMenu 
         onCopyPath={onCopyPath}
         onCopyRelativePath={onCopyRelativePath}
-        onRename={handleRename}
+        // onRename={handleRename}
         onDelete={handleDelete}
         onCreateFile={handleCreateFile}
         onCreateFolder={handleCreateFolder}
@@ -733,9 +731,9 @@ function File({
       
       // Show success message
       if (addedCount > 0) {
-        toast.success(`${addedCount} fichier(s) ciblé(s) dans le chat`, 
-          { autoClose: 2000, position: 'bottom-right', theme: 'dark' }
-        );
+        // toast.success(`${addedCount} fichier(s) ciblé(s) dans le chat`, 
+        //   { autoClose: 2000, position: 'bottom-right', theme: 'dark' }
+        // );
       } else {
         toast.info('ℹ️ Ces fichiers sont déjà ciblés', 
           { autoClose: 2000, position: 'bottom-right', theme: 'dark' }
@@ -819,7 +817,7 @@ function File({
       onCopyRelativePath={onCopyRelativePath}
       onSendToChat={handleSendToChat}
       onDownload={onDownload}
-      onRename={handleRename}
+      // onRename={handleRename}
       onDelete={handleDelete}
     >
       <NodeButton
