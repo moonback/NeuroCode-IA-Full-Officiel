@@ -146,14 +146,9 @@ export class FilesStore {
         throw new Error(`EINVAL: invalid file path, create '${relativePath}'`);
       }
 
-      // Vérifier si l'opération est autorisée
-      if (await this.#isOperationBlocked('create', filePath)) {
-        throw new Error(`Operation blocked: Cannot create file at ${filePath}`);
-      }
-
       // Vérifier si le fichier existe déjà
-      const dirent = this.files.get()[filePath];
-      if (dirent) {
+      const existingFile = this.files.get()[filePath];
+      if (existingFile) {
         throw new Error(`File already exists: ${filePath}`);
       }
 
@@ -164,13 +159,7 @@ export class FilesStore {
       }
 
       await webcontainer.fs.writeFile(relativePath, content);
-      
-      // Update store with new file
       this.files.setKey(filePath, { type: 'file', content, isBinary: false });
-      
-      // Track modification
-      this.#modifiedFiles.set(filePath, '');
-      
       logger.info(`File created: ${filePath}`);
       return true;
     } catch (error) {
