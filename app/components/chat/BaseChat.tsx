@@ -100,7 +100,7 @@ const QuickActions = ({ onAction, chatStarted }: { onAction: (action: string) =>
     { 
       label: 'Document', 
       icon: 'i-ph:book-open',
-      command: 'Create clear and complete documentation for the project and its components'
+      command: 'Create clear and complete documentation of the project and its components in a Doc folder'
     }
   ];
 
