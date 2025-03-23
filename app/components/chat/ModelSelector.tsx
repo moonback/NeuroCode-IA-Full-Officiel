@@ -325,8 +325,8 @@ export const ModelSelector = ({
                     role="searchbox"
                     aria-label="Rechercher un fournisseur"
                   />
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                    <span className="i-ph:magnifying-glass text-bolt-elements-textTertiary text-lg" />
+                  <div className="absolute i-ph:magnifying-glass text-white left-3 top-1/2 -translate-y-1/2">
+                    {/* <span className="i-ph:magnifying-glass text-bolt-elements-textTertiary text-lg" /> */}
                   </div>
                 </div>
               </div>
@@ -432,8 +432,8 @@ export const ModelSelector = ({
                     role="searchbox"
                     aria-label="Rechercher un modèle"
                   />
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                    <span className="i-ph:magnifying-glass text-bolt-elements-textTertiary text-lg" />
+                  <div className="absolute i-ph:magnifying-glass text-white left-3 top-1/2 -translate-y-1/2">
+                    {/* <span className="i-ph:magnifying-glass text-bolt-elements-textTertiary text-lg" /> */}
                   </div>
                 </div>
                 
