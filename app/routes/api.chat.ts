@@ -44,6 +44,49 @@ function isValidHeaderValue(value: string): boolean {
   return /^[a-zA-Z0-9\-._~()'!*:@,;=+$\/?%#\[\]]+$/.test(value);
 }
 
+const calculateTokenUsage = (usage: any, cacheUsage: any) => {
+  const completionTokens = Math.round(usage.completionTokens || 0);
+  const promptTokens = Math.round(
+    (usage.promptTokens || 0) +
+    ((cacheUsage?.cacheCreationInputTokens as number) || 0) * CLAUDE_CACHE_TOKENS_MULTIPLIER.WRITE +
+    ((cacheUsage?.cacheReadInputTokens as number) || 0) * CLAUDE_CACHE_TOKENS_MULTIPLIER.READ
+  );
+  
+  return {
+    completionTokens,
+    promptTokens,
+    totalTokens: completionTokens + promptTokens
+  };
+};
+
+function createResponseHeaders(customPrompt?: string): Headers {
+  const headers = new Headers({
+    'Content-Type': 'text/event-stream; charset=utf-8',
+    Connection: 'keep-alive',
+    'Cache-Control': 'no-cache',
+    'Text-Encoding': 'chunked',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(self)',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+  });
+
+  if (customPrompt && isValidHeaderValue(customPrompt)) {
+    headers.append('Custom-Prompt', customPrompt);
+  }
+
+  return headers;
+}
+
+/**
+ * Gère les requêtes de chat via API
+ * @param context - Contexte Cloudflare contenant les variables d'environnement
+ * @param request - Requête HTTP entrante
+ * @returns Response avec le stream de données ou une erreur
+ * @throws {Response} En cas d'erreur d'authentification ou de serveur
+ */
 async function chatAction({ context, request }: ActionFunctionArgs) {
     const { messages, files, promptId, contextOptimization, customPrompt, isPromptCachingEnabled } = await request.json<{
     messages: Messages;
@@ -100,8 +143,11 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           } satisfies ProgressAnnotation);
 
           // Create a summary of the chat
-          console.log('Nombre de messages: ', messages.length);
-          console.log(`Nombre de fichiers: ${filePaths.length}`);
+          logger.info('Chat processing started', {
+            messageCount: messages.length,
+            fileCount: filePaths.length,
+            contextOptimization
+          });
 
           summary = await createSummary({
             messages: [...messages],
@@ -146,7 +192,11 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           } satisfies ProgressAnnotation);
 
           // Select context files
-          console.log('Nombre de messages: ', messages.length);
+          logger.info('Chat processing started', {
+            messageCount: messages.length,
+            fileCount: filePaths.length,
+            contextOptimization
+          });
           filteredFiles = await selectContext({
             messages: [...messages],
             env: context.cloudflare?.env,
@@ -450,40 +500,32 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
       }),
     );
 
-    const headers = new Headers({
-      'Content-Type': 'text/event-stream; charset=utf-8',
-      Connection: 'keep-alive',
-      'Cache-Control': 'no-cache',
-      'Text-Encoding': 'chunked',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block',
-      'X-Content-Type-Options': 'nosniff',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Permissions-Policy': 'geolocation=(self)',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
-    });
-
-    if (customPrompt && isValidHeaderValue(customPrompt)) {
-      headers.append('Custom-Prompt', customPrompt);
-    }
+    const headers = createResponseHeaders(customPrompt);
 
     return new Response(dataStream, {
       status: 200,
       headers
     });
   } catch (error: any) {
-    logger.error(error);
-
+    logger.error('Chat action failed:', error);
+    
     if (error.message?.includes('API key')) {
-      throw new Response('Clé API invalide ou manquante', {
+      return new Response('Clé API invalide ou manquante', {
         status: 401,
         statusText: 'Non autorisé',
       });
     }
 
-    throw new Response(null, {
+    if (error.name === 'AbortError') {
+      return new Response('Requête annulée', {
+        status: 499, // Client Closed Request
+        statusText: 'Annulé',
+      });
+    }
+
+    return new Response('Erreur interne du serveur', {
       status: 500,
-      statusText: 'Erreur interne du serveur',
+      statusText: error.message || 'Erreur inconnue',
     });
   }
 }
