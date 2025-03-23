@@ -36,7 +36,7 @@ export const createChatFromFolder = async (
 
   const filesMessage: Message = {
     role: 'assistant',
-    content: `Importation du dossier "${folderName}" terminée avec succès.${binaryFilesMessage}
+    content: `Importation du projet "${folderName}" terminée avec succès.${binaryFilesMessage}
 
 <boltArtifact id="imported-files" title="Fichiers importés" type="bundled" >
 ${fileArtifacts
@@ -54,7 +54,7 @@ ${escapeBoltTags(file.content)}
   const userMessage: Message = {
     role: 'user',
     id: generateId(),
-    content: `Importation du dossier "${folderName}" en cours...`,
+    content: `Importe le projet "${folderName}"`,
     createdAt: new Date(),
   };
 
@@ -64,8 +64,7 @@ ${escapeBoltTags(file.content)}
     messages.push({
       role: 'user',
       id: generateId(),
-      content: 'Analyse du projet en cours... Configuration des dépendances et préparation du démarrage de l\'application :',
-    });
+      content: 'Analyse le projet et effectue la Configuration des dépendances avant la préparation du démarrage de l\'application :',    });
     messages.push(commandsMessage);
   }
 
