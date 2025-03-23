@@ -420,17 +420,27 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
   };
   
   const handleCreateFileSubmit = async () => {
-    if (newFileName) {
-      const newFilePath = `${folder.fullPath}/${newFileName}`;
+    if (!newFileName) {
+      toast.error('Veuillez entrer un nom de fichier');
+      return;
+    }
+
+    const newFilePath = `${folder.fullPath}/${newFileName}`;
+    
+    try {
       const success = await workbench.createFile(newFilePath, '');
       if (success) {
         toast.success(`Fichier créé avec succès`);
+        setShowCreateFileInput(false);
+        setNewFileName('');
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('already exists')) {
+        toast.error(`Le fichier existe déjà. Veuillez choisir un autre nom.`);
       } else {
-        toast.error(`Échec de la création du fichier`);
+        toast.error(`Échec de la création du fichier: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
       }
     }
-    setShowCreateFileInput(false);
-    setNewFileName('');
   };
   
   const handleCreateFolderSubmit = async () => {
@@ -530,7 +540,7 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
       
       {showCreateFolderInput && (
         <div 
-          className="flex items-center w-full pr-2 border-2 border-transparent text-faded py-0.5 pl-8"
+          className="flex items-center text-green-500  w-full pr-2 border-2 border-transparent text-faded py-0.5 pl-8"
           style={{ paddingLeft: `${6 + (folder.depth + 1) * NODE_PADDING_LEFT}px` }}
         >
           <div className="scale-120 shrink-0 i-ph:folder-plus scale-98"></div>
