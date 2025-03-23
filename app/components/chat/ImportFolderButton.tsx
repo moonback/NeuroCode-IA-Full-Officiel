@@ -122,7 +122,7 @@ export const ImportFolderButton: React.FC<ImportFolderButtonProps> = ({ classNam
         title="Importer un dossier"
         variant="ghost"
         size="icon"
-        className="p-0 hover:bg-transparent -mx-1 bg-transparent border-none text-white hover:text-white bg-bolt-elements-background-depth-2"
+        className="p-0 hover:bg-bolt-elements-background-depth-3 -mx-1 bg-transparent border-none text-white hover:text-white bg-bolt-elements-background-depth-2"
         disabled={isLoading}
       >
         {isLoading ? (
