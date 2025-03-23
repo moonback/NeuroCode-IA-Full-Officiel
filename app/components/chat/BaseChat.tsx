@@ -83,29 +83,24 @@ const QuickActions = ({ onAction, chatStarted }: { onAction: (action: string) =>
 
   const actions = [
     { 
-      label: 'Continue', 
-      icon: 'i-ph:arrow-right', 
-      command: 'Continue with the current conversation'
+      label: 'Create', 
+      icon: 'i-ph:plus-circle',
+      command: 'Create a new component or feature using best practices'
     },
     { 
-      label: 'CSS', 
-      icon: 'i-ph:paint-brush', 
-      command: 'Optimize and enhance the CSS code for better visual presentation and responsiveness' 
+      label: 'Improve', 
+      icon: 'i-ph:sparkle',
+      command: 'Suggest improvements and best practices for existing code'
     },
     { 
-      label: 'Refactor', 
-      icon: 'i-ph:arrows-clockwise', 
-      command: 'Refactor and improve the code structure for better maintainability and performance'
+      label: 'Test', 
+      icon: 'i-ph:test-tube',
+      command: 'Generate unit and integration tests to ensure code quality'
     },
     { 
-      label: 'Debug', 
-      icon: 'i-ph:bug', 
-      command: 'Help identify and fix potential issues or bugs in the code'
-    },
-    {
-      label: 'Explain', 
+      label: 'Document', 
       icon: 'i-ph:book-open',
-      command: 'Provide a detailed explanation of how the code works'
+      command: 'Create clear and complete documentation for the project and its components'
     }
   ];
 
