@@ -836,17 +836,30 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         {chatStarted && <ClientOnly>{() => <ExportChatButton exportChat={exportChat} />}</ClientOnly>}
                         <IconButton
                           title="Paramètres du modèle"
-                          className={classNames('transition-all flex items-center gap-1', {
-                            'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent':
-                              isModelSettingsCollapsed,
-                            'bg-bolt-elements-item-backgroundDefault text-bolt-elements-item-contentDefault':
-                              !isModelSettingsCollapsed,
-                          })}
+                          className={classNames(
+                            'transition-all flex items-center gap-2.5 px-3.5 py-2 rounded-md border', 
+                            {
+                              'bg-gradient-to-br from-bolt-elements-background-depth-2 to-bolt-elements-background-depth-3 text-bolt-elements-textPrimary border-bolt-elements-border-subtle shadow-sm backdrop-blur-sm':
+                                isModelSettingsCollapsed,
+                              'bg-bolt-elements-background-depth-1/80 text-bolt-elements-textSecondary border-transparent hover:border-bolt-elements-border-subtle':
+                                !isModelSettingsCollapsed,
+                            }
+                          )}
                           onClick={() => setIsModelSettingsCollapsed(!isModelSettingsCollapsed)}
                           disabled={!providerList || providerList.length === 0}
                         >
-                          <div className={`i-ph:caret-${isModelSettingsCollapsed ? 'right' : 'down'} text-lg`} />
-                          {isModelSettingsCollapsed ? <span className="text-xs">{model}</span> : <span />}
+                          <div 
+                            className={`i-ph:caret-${isModelSettingsCollapsed ? 'right' : 'down'} text-base transition-transform duration-200 ease-in-out`} 
+                          />
+                          {isModelSettingsCollapsed ? (
+                            <span className="text-sm font-medium tracking-wide truncate max-w-[120px]">
+                              {model}
+                            </span>
+                          ) : (
+                            <span className="text-sm font-medium tracking-wide">
+                              Configuration
+                            </span>
+                          )}
                         </IconButton>
                         
                       </div>
