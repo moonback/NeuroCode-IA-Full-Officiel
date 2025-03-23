@@ -232,7 +232,7 @@ export default function FeaturesTab() {
         description: 'Activer la journalisation détaillée des événements et des actions de l\'utilisateur',
         icon: 'i-ph:list-bullets',
         enabled: eventLogs,
-        tooltip: 'Désactivé par défaut. Activez cette fonctionnalité pour enregistrer les logs détaillés des événements du système et des actions de l\'utilisateur. Utile pour le débogage mais peut affecter les performances.',
+        tooltip: 'Activé par défaut. Fonctionnalité pour enregistrer les logs détaillés des événements du système et des actions de l\'utilisateur. Utile pour le débogage mais peut affecter les performances.',
       },
     ],
     beta: [],
