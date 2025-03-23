@@ -32,7 +32,16 @@ const FORBIDDEN_PATTERNS = [
   /eval\(/i, // eval function
   /document\./i, // Document object access
   /window\./i, // Window object access
-  /<script.*?>.*?<\/script>/is // Script tags
+  /<script.*?>.*?<\/script>/is, // Script tags
+  /<\?php/i, // PHP code
+  /<\?=/i,   // PHP short tags
+  /<\?/i,    // PHP tags
+  /sql\s*=/i, // SQL injection patterns
+  /union\s+select/i, // SQL injection
+  /--\s+/i,  // SQL comments
+  /\/\*.*?\*\//s, // SQL block comments
+  /<iframe/i, // iframe tags
+  /<style.*?>.*?<\/style>/is // Style tags
 ];
 
 const TOAST_CONFIG: ToastConfig = {
