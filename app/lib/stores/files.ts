@@ -146,13 +146,18 @@ export class FilesStore {
         throw new Error(`EINVAL: invalid file path, create '${relativePath}'`);
       }
 
-      // Check if file already exists
+      // Vérifier si l'opération est autorisée
+      if (await this.#isOperationBlocked('create', filePath)) {
+        throw new Error(`Operation blocked: Cannot create file at ${filePath}`);
+      }
+
+      // Vérifier si le fichier existe déjà
       const dirent = this.files.get()[filePath];
       if (dirent) {
         throw new Error(`File already exists: ${filePath}`);
       }
 
-      // Create parent directories if needed
+      // Créer les dossiers parents si nécessaire
       const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
       if (dirPath) {
         await this.createFolder(dirPath);
@@ -182,6 +187,11 @@ export class FilesStore {
 
       if (!relativePath) {
         throw new Error(`EINVAL: invalid folder path, create '${relativePath}'`);
+      }
+
+      // Vérifier si l'opération est autorisée
+      if (await this.#isOperationBlocked('create', folderPath)) {
+        throw new Error(`Operation blocked: Cannot create folder at ${folderPath}`);
       }
 
       // Vérifier si le dossier existe déjà
@@ -226,6 +236,11 @@ export class FilesStore {
         throw new Error(`EINVAL: invalid file path, delete '${relativePath}'`);
       }
 
+      // Vérifier si l'opération est autorisée
+      if (await this.#isOperationBlocked('delete', filePath)) {
+        throw new Error(`Operation blocked: Cannot delete file at ${filePath}`);
+      }
+
       const dirent = this.files.get()[filePath];
       if (!dirent || dirent.type !== 'file') {
         throw new Error(`File not found: ${filePath}`);
@@ -248,6 +263,11 @@ export class FilesStore {
 
       if (!relativePath) {
         throw new Error(`EINVAL: invalid folder path, delete '${relativePath}'`);
+      }
+
+      // Vérifier si l'opération est autorisée
+      if (await this.#isOperationBlocked('delete', folderPath)) {
+        throw new Error(`Operation blocked: Cannot delete folder at ${folderPath}`);
       }
 
       const dirent = this.files.get()[folderPath];
@@ -439,6 +459,23 @@ export class FilesStore {
       console.log(error);
       return '';
     }
+  }
+
+  // Nouvelle méthode pour vérifier si une opération est bloquée
+  async #isOperationBlocked(operation: 'create' | 'delete', path: string): Promise<boolean> {
+    // Implémentez ici votre logique de vérification
+    // Par exemple, vérifier avec une API externe ou des règles internes
+    // Retourne true si l'opération doit être bloquée
+    
+    // Exemple simple : bloquer la création/suppression dans certains dossiers
+    const blockedPaths = [
+      '/node_modules/',
+      '/.git/',
+      '/.next/',
+      '/.astro/'
+    ];
+
+    return blockedPaths.some(blockedPath => path.includes(blockedPath));
   }
 }
 
