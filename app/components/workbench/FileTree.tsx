@@ -467,24 +467,8 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
       if (success) {
         toast.success(`Dossier créé avec succès`);
         
-        const shouldAddToTargeted = confirm('Voulez-vous ajouter ce dossier aux fichiers ciblés pour le LLM ?');
-        if (shouldAddToTargeted) {
-          const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
-          if (textarea) {
-            // Vérifier si le dossier est déjà ciblé
-            const filesAttr = textarea.getAttribute('data-targeted-files');
-            const currentFiles = filesAttr ? JSON.parse(filesAttr) : [];
-            
-            if (!currentFiles.includes(newFolderPath)) {
-              const added = addTargetedFile(newFolderPath, textarea);
-              if (added) {
-                toast.success('Dossier ajouté aux fichiers ciblés');
-              }
-            } else {
-              toast.info('Ce dossier est déjà dans les fichiers ciblés');
-            }
-          }
-        }
+        
+      
       } else {
         toast.error(`Échec de la création du dossier`);
       }
