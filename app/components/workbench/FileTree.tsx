@@ -432,7 +432,7 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
         setShowCreateFileInput(false);
         setNewFileName('');
         
-        const shouldAddToTargeted = confirm('Voulez-vous ajouter ce fichier aux fichiers ciblés pour le LLM ?');
+        const shouldAddToTargeted = confirm('Voulez-vous ajouter ce fichier crée aux fichiers ciblés pour modification ?');
         if (shouldAddToTargeted) {
           const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
           if (textarea) {
