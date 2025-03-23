@@ -433,6 +433,25 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
         toast.success(`Fichier créé avec succès`);
         setShowCreateFileInput(false);
         setNewFileName('');
+        
+        const shouldAddToTargeted = confirm('Voulez-vous ajouter ce fichier aux fichiers ciblés pour le LLM ?');
+        if (shouldAddToTargeted) {
+          const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+          if (textarea) {
+            // Vérifier si le fichier est déjà ciblé
+            const filesAttr = textarea.getAttribute('data-targeted-files');
+            const currentFiles = filesAttr ? JSON.parse(filesAttr) : [];
+            
+            if (!currentFiles.includes(newFilePath)) {
+              const added = addTargetedFile(newFilePath, textarea);
+              if (added) {
+                toast.success('Fichier ajouté aux fichiers ciblés');
+              }
+            } else {
+              toast.info('Ce fichier est déjà dans les fichiers ciblés');
+            }
+          }
+        }
       }
     } catch (error) {
       if (error instanceof Error && error.message.includes('already exists')) {
@@ -449,6 +468,25 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
       const success = await workbench.createFolder(newFolderPath);
       if (success) {
         toast.success(`Dossier créé avec succès`);
+        
+        const shouldAddToTargeted = confirm('Voulez-vous ajouter ce dossier aux fichiers ciblés pour le LLM ?');
+        if (shouldAddToTargeted) {
+          const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+          if (textarea) {
+            // Vérifier si le dossier est déjà ciblé
+            const filesAttr = textarea.getAttribute('data-targeted-files');
+            const currentFiles = filesAttr ? JSON.parse(filesAttr) : [];
+            
+            if (!currentFiles.includes(newFolderPath)) {
+              const added = addTargetedFile(newFolderPath, textarea);
+              if (added) {
+                toast.success('Dossier ajouté aux fichiers ciblés');
+              }
+            } else {
+              toast.info('Ce dossier est déjà dans les fichiers ciblés');
+            }
+          }
+        }
       } else {
         toast.error(`Échec de la création du dossier`);
       }
