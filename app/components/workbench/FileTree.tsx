@@ -327,14 +327,14 @@ function FileContextMenu({
             )}
           </ContextMenu.Group>
           
-          <ContextMenu.Group className="p-1 border-b border-bolt-elements-borderColor/50">
+          <ContextMenu.Group className="p-1 border-b border-bolt-elements-borderColor/50 hover:bg-red-500/20">
             {onDelete && (
               <ContextMenuItem 
                 onSelect={onDelete}
                 data-testid="context-menu-delete"
               >
                 <span className="i-ph:trash text-white text-xl mr-2 text-red-500" />
-                <span className="text-bolt-elements-textPrimary">Supprimer</span>
+                <span className="text-bolt-elements-textPrimary ">Supprimer</span>
               </ContextMenuItem>
               
             )}
@@ -430,7 +430,7 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
     try {
       const success = await workbench.createFile(newFilePath, '');
       if (success) {
-        toast.success(`Fichier créé avec succès`);
+        // toast.success(`Fichier créé avec succès`);
         setShowCreateFileInput(false);
         setNewFileName('');
         
@@ -445,7 +445,7 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
             if (!currentFiles.includes(newFilePath)) {
               const added = addTargetedFile(newFilePath, textarea);
               if (added) {
-                toast.success('Fichier ajouté aux fichiers ciblés');
+                // toast.success('Fichier ajouté aux fichiers ciblés');
               }
             } else {
               toast.info('Ce fichier est déjà dans les fichiers ciblés');
