@@ -765,24 +765,24 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                       )}
                     </ClientOnly>
                     
-                    <div className="flex justify-between items-center text-sm p-4 pt-2 bg-gray-900/20 rounded-b-xl border-t border-gray-800/30">
-                      <div className="flex gap-2 items-center">
+                    <div className="flex justify-between items-center text-sm p-4 pt-2 bg-gray-900/30 backdrop-blur-sm rounded-b-xl border-t border-gray-800/40 shadow-lg">
+                      <div className="flex gap-3 items-center">
                         
                         <Tooltip.Root>
                           <Tooltip.Trigger asChild>
-                            <IconButton title="Upload file" className="transition-all" onClick={() => handleFileUpload()}>
-                              <div className="i-ph:paperclip text-xl"></div>
+                            <IconButton title="Upload file" className="transition-all hover:bg-bolt-elements-background-depth-2" onClick={() => handleFileUpload()}>
+                              <div className="i-ph:paperclip text-xl hover:scale-110 transition-transform"></div>
                             </IconButton>
                           </Tooltip.Trigger>
                           <Tooltip.Portal>
                             <Tooltip.Content
-                              className="bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary p-2 rounded-md text-xs border border-bolt-elements-borderColor max-w-xs"
+                              className="bg-bolt-elements-background-depth-3/95 text-bolt-elements-textPrimary p-3 rounded-lg text-xs border border-bolt-elements-borderColor max-w-xs shadow-xl backdrop-blur-sm"
                               sideOffset={5}
                             >
-                              <p>Joindre des fichiers</p>
-                              <div className="text-bolt-elements-textSecondary mt-1">
-                                <p>Formats pris en charge :</p>
-                                <p className="mt-1">• Images: png, jpg, jpeg, gif, etc.</p>
+                              <p className="font-medium">Joindre des fichiers</p>
+                              <div className="text-bolt-elements-textSecondary mt-2">
+                                <p className="font-medium">Formats pris en charge :</p>
+                                <p className="mt-1.5">• Images: png, jpg, jpeg, gif, etc.</p>
                                 <p>• Text: txt, md, js, py, html, css, json, etc.</p>
                                 <p>• Documents: pdf, docx</p>
                               </div>
@@ -794,17 +794,16 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         <IconButton
                           title="Améliorer le prompt"
                           disabled={input.length === 0 || enhancingPrompt}
-                          className={classNames('transition-all', enhancingPrompt ? 'opacity-100' : '')}
+                          className={classNames('transition-all hover:bg-bolt-elements-background-depth-2', enhancingPrompt ? 'opacity-100' : '')}
                           onClick={() => {
                             enhancePrompt?.(input);
-
                             toast('Prompt amélioré!');
                           }}
                         >
                           {enhancingPrompt ? (
                             <div className="i-svg-spinners:90-ring-with-bg text-bolt-elements-loader-progress text-xl animate-spin"></div>
                           ) : (
-                            <div className="i-bolt:stars text-xl"></div>
+                            <div className="i-bolt:stars text-xl hover:scale-110 transition-transform"></div>
                           )}
                         </IconButton>
 
@@ -837,11 +836,11 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         <IconButton
                           title="Paramètres du modèle"
                           className={classNames(
-                            'transition-all flex items-center gap-2.5 px-3.5 py-2 rounded-md border', 
+                            'transition-all flex items-center gap-2.5 px-4 py-2 rounded-lg border hover:shadow-lg', 
                             {
-                              'bg-gradient-to-br from-bolt-elements-background-depth-2 to-bolt-elements-background-depth-3 text-bolt-elements-textPrimary border-bolt-elements-border-subtle shadow-sm backdrop-blur-sm':
+                              'bg-gradient-to-br from-bolt-elements-background-depth-2 to-bolt-elements-background-depth-3 text-bolt-elements-textPrimary border-bolt-elements-border-subtle shadow-md backdrop-blur-sm hover:from-bolt-elements-background-depth-3 hover:to-bolt-elements-background-depth-4':
                                 isModelSettingsCollapsed,
-                              'bg-bolt-elements-background-depth-1/80 text-bolt-elements-textSecondary border-transparent hover:border-bolt-elements-border-subtle':
+                              'bg-bolt-elements-background-depth-1/90 text-bolt-elements-textSecondary border-transparent hover:bg-bolt-elements-background-depth-2/90 hover:border-bolt-elements-border-subtle':
                                 !isModelSettingsCollapsed,
                             }
                           )}
@@ -849,30 +848,34 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           disabled={!providerList || providerList.length === 0}
                         >
                           <div 
-                            className={`i-ph:caret-${isModelSettingsCollapsed ? 'right' : 'down'} text-base transition-transform duration-200 ease-in-out`} 
+                            className={classNames(
+                              'text-base transition-transform duration-300 ease-in-out',
+                              isModelSettingsCollapsed ? 'i-ph:caret-right' : 'i-ph:caret-down',
+                              'transform hover:scale-110'
+                            )}
                           />
                           {isModelSettingsCollapsed ? (
-                            <span className="text-sm font-medium tracking-wide truncate max-w-[120px]">
+                            <span className="text-sm font-medium tracking-wide truncate max-w-[120px] hover:text-bolt-elements-textPrimary">
                               {model}
                             </span>
                           ) : (
-                            <span className="text-sm font-medium tracking-wide">
+                            <span className="text-sm font-medium tracking-wide hover:text-bolt-elements-textPrimary">
                               Configuration
                             </span>
                           )}
                         </IconButton>
                         
                       </div>
-                      {input.length > 3 ? (
-                        <div className="text-xs text-bolt-elements-textTertiary">
-                          <kbd className="kdb px-1.5 py-0.5 rounded bg-bolt-elements-background-depth-2">Shift</kbd> + <kbd className="kdb px-1.5 py-0.5 rounded bg-bolt-elements-background-depth-2">↵</kbd> pour saut de ligne
+                      {/* {input.length > 3 ? (
+                        <div className="text-xs text-bolt-elements-textTertiary bg-bolt-elements-background-depth-1/50 px-3 py-1.5 rounded-lg">
+                          <kbd className="kdb px-2 py-0.5 rounded bg-bolt-elements-background-depth-2 shadow-sm">Shift</kbd> + <kbd className="kdb px-2 py-0.5 rounded bg-bolt-elements-background-depth-2 shadow-sm">↵</kbd> pour saut de ligne
                         </div>
-                      ) : null}
+                      ) : null} */}
                       
                       {input && (
                       <IconButton
                         title="Effacer le texte"
-                        className="transition-colors hover:bg-red-500/10"
+                        className="transition-all hover:bg-red-500/20 rounded-lg"
                         onClick={() => {
                           handleInputChange?.({
                             target: { value: '' },
@@ -881,7 +884,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         }}
                         aria-label="Effacer le texte saisi"
                       >
-                        <div className="i-ph:x-circle bg-red-500/10 text-lg text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary bg-red-500/50 transition-colors duration-200" />
+                        <div className="i-ph:x-circle text-lg text-bolt-elements-textSecondary hover:text-red-500 transition-colors duration-300 hover:scale-110" />
                       </IconButton>
                       
                       )}
