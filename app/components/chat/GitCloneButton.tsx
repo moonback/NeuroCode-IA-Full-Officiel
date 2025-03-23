@@ -217,7 +217,7 @@ ${escapeBoltTags(file.content)}
         title="Cloner un dépôt Git"
         variant="ghost"
         size="icon"
-        className="p-0 hover:bg-transparent -mx-1 bg-transparent border-none text-white hover:text-white bg-bolt-elements-background-depth-3 transition-all duration-200 hover:scale-105"
+        className="p-0 hover:bg-bolt-elements-background-depth-3 bg-transparent border-none text-white hover:text-white bg-bolt-elements-background-depth-3 transition-all duration-200 hover:scale-105"
         disabled={!ready || loading}
         aria-busy={loading}
       >
