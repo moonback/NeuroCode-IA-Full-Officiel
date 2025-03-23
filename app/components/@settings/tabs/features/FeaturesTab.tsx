@@ -146,15 +146,15 @@ export default function FeaturesTab() {
   React.useEffect(() => {
     // Only set defaults if values are undefined
     if (isLatestBranch === undefined) {
-      enableLatestBranch(false); // Default: OFF - Don't auto-update from main branch
+      enableLatestBranch(false); // Default: OFF - Ne pas mettre à jour automatiquement depuis la branche principale
     }
 
     if (contextOptimizationEnabled === undefined) {
-      enableContextOptimization(true); // Default: ON - Enable context optimization
+      enableContextOptimization(false); // Default: OFF - Optimisation du contexte désactivée
     }
 
     if (autoSelectTemplate === undefined) {
-      setAutoSelectTemplate(true); // Default: ON - Enable auto-select templates
+      setAutoSelectTemplate(false); // Default: OFF - Sélection automatique des modèles désactivée
     }
 
     if (promptId === undefined) {
@@ -162,7 +162,7 @@ export default function FeaturesTab() {
     }
 
     if (eventLogs === undefined) {
-      setEventLogs(true); // Default: ON - Enable event logging
+      setEventLogs(false); // Default: OFF - Journalisation des événements désactivée
     }
   }, []); // Only run once on component mount
 
@@ -208,7 +208,7 @@ export default function FeaturesTab() {
         description: 'Recevoir les dernières mises à jour de la branche principale',
         icon: 'i-ph:git-branch',
         enabled: isLatestBranch,
-        tooltip: 'Activé par défaut pour recevoir les mises à jour de la branche de développement principale',
+        tooltip: 'Désactivé par défaut. Activez cette fonctionnalité pour recevoir les mises à jour de la branche de développement principale. Attention : les mises à jour peuvent introduire des changements non testés.',
       },
       {
         id: 'autoSelectTemplate',
@@ -216,7 +216,7 @@ export default function FeaturesTab() {
         description: 'Sélectionner automatiquement le modèle de départ le plus approprié',
         icon: 'i-ph:selection',
         enabled: autoSelectTemplate,
-        tooltip: 'Activé par défaut pour sélectionner automatiquement le modèle de départ le plus approprié',
+        tooltip: 'Désactivé par défaut. Activez cette fonctionnalité pour que le système sélectionne automatiquement le modèle de départ le plus approprié en fonction du contexte. Recommandé pour les utilisateurs expérimentés.',
       },
       {
         id: 'contextOptimization',
@@ -224,7 +224,7 @@ export default function FeaturesTab() {
         description: 'Optimiser le contexte pour des réponses plus précises',
         icon: 'i-ph:brain',
         enabled: contextOptimizationEnabled,
-        tooltip: 'Activé par défaut pour améliorer les réponses IA',
+        tooltip: 'Désactivé par défaut. Activez cette fonctionnalité pour optimiser le contexte des réponses IA. Cela peut augmenter la précision mais aussi la consommation de ressources.',
       },
       {
         id: 'eventLogs',
@@ -232,7 +232,7 @@ export default function FeaturesTab() {
         description: 'Activer la journalisation détaillée des événements et des actions de l\'utilisateur',
         icon: 'i-ph:list-bullets',
         enabled: eventLogs,
-        tooltip: 'Activé par défaut pour enregistrer les logs détaillés des événements du système et des actions de l\'utilisateur',
+        tooltip: 'Désactivé par défaut. Activez cette fonctionnalité pour enregistrer les logs détaillés des événements du système et des actions de l\'utilisateur. Utile pour le débogage mais peut affecter les performances.',
       },
     ],
     beta: [],
@@ -263,70 +263,73 @@ export default function FeaturesTab() {
         className={classNames(
           'bg-bolt-elements-background-depth-2',
           'hover:bg-bolt-elements-background-depth-3',
-          'transition-all duration-200',
-          'rounded-xl p-6',
+          'transition-all duration-300 ease-out',
+          'rounded-2xl p-8',
           'group',
-          'flex flex-col gap-6'
+          'flex flex-col gap-8',
+          'shadow-lg hover:shadow-xl'
         )}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.3, type: 'spring', stiffness: 100 }}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <div
             className={classNames(
-              'p-3 rounded-xl text-2xl',
-              'bg-bolt-elements-background-depth-3 group-hover:bg-bolt-elements-background-depth-4',
-              'transition-colors duration-200',
-              'text-green-500',
+              'p-4 rounded-2xl text-3xl',
+              'bg-gradient-to-br from-green-400/10 to-green-600/10',
+              'group-hover:from-green-400/20 group-hover:to-green-600/20',
+              'transition-all duration-300 ease-out',
+              'text-green-500 shadow-inner'
             )}
           >
-            <div className="i-ph:book" />
+            <div className="i-ph:book transform group-hover:scale-110 transition-transform duration-300" />
           </div>
           <div>
-            <h4 className="text-lg font-semibold text-bolt-elements-textPrimary group-hover:text-green-500 transition-colors">
+            <h4 className="text-xl font-bold text-bolt-elements-textPrimary group-hover:text-green-500 transition-colors duration-300">
               Bibliothèque de prompts
             </h4>
-            <p className="text-sm text-bolt-elements-textSecondary mt-1">
-              Sélectionnez un prompt système prédéfini
+            <p className="text-sm text-bolt-elements-textSecondary/90 mt-2 max-w-lg">
+              Sélectionnez un prompt système prédéfini pour optimiser vos interactions
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {PromptLibrary.getList().map((prompt) => (
             <motion.div
               key={prompt.id}
               className={classNames(
-                'p-4 rounded-lg cursor-pointer',
-                'border border-bolt-elements-borderColor/20',
-                'transition-all duration-200',
+                'p-5 rounded-xl cursor-pointer',
+                'border-2',
+                'transition-all duration-300 ease-out',
                 promptId === prompt.id
-                  ? 'bg-green-500/10 border-green-500/30'
-                  : 'hover:bg-bolt-elements-background-depth-3 hover:border-bolt-elements-borderColor/40'
+                  ? 'bg-green-500/10 border-green-500/30 shadow-green-500/5'
+                  : 'hover:bg-bolt-elements-background-depth-3 border-bolt-elements-borderColor/20 hover:border-bolt-elements-borderColor/40'
               )}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.03, y: -4 }}
               onClick={() => {
                 setPromptId(prompt.id);
                 toast(`Prompt sélectionné : ${prompt.label}`);
               }}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-4">
                 <div className={classNames(
-                  'p-2 rounded-lg',
-                  'bg-bolt-elements-background-depth-3',
-                  promptId === prompt.id ? 'text-green-500' : 'text-bolt-elements-textSecondary'
+                  'p-3 rounded-xl shrink-0',
+                  'bg-bolt-elements-background-depth-3 shadow-inner',
+                  'transition-all duration-300 ease-out',
+                  promptId === prompt.id ? 'text-green-500 bg-green-500/10' : 'text-bolt-elements-textSecondary'
                 )}>
-                  <div className="i-ph:file-text text-xl" />
+                  <div className="i-ph:file-text text-2xl transform group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <div>
+                <div className="space-y-2 flex-1">
                   <h5 className={classNames(
-                    'font-medium',
+                    'font-semibold text-lg leading-tight',
                     promptId === prompt.id ? 'text-green-500' : 'text-bolt-elements-textPrimary'
                   )}>
                     {prompt.label}
                   </h5>
-                  <p className="text-xs text-bolt-elements-textSecondary mt-1 line-clamp-2">
+                  <p className="text-sm text-bolt-elements-textSecondary/80 line-clamp-3">
                     {prompt.description}
                   </p>
                 </div>
