@@ -831,9 +831,9 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         <IconButton
                           title="Paramètres du modèle"
                           className={classNames(
-                            'transition-all flex items-center gap-2.5 px-4 py-2 rounded-lg border hover:shadow-lg', 
+                            'transition-all flex items-center gap-2.5 px-4 py-2 ', 
                             {
-                              'bg-gradient-to-br from-bolt-elements-background-depth-2 to-bolt-elements-background-depth-3 text-bolt-elements-textPrimary border-bolt-elements-border-subtle shadow-md backdrop-blur-sm hover:from-bolt-elements-background-depth-3 hover:to-bolt-elements-background-depth-4':
+                              'bg-gradient-to-br from-bolt-elements-background-depth-2 to-bolt-elements-background-depth-2 text-bolt-elements-textPrimary border-bolt-elements-border-subtle shadow-md backdrop-blur-sm hover:from-bolt-elements-background-depth-3 hover:to-bolt-elements-background-depth-4':
                                 isModelSettingsCollapsed,
                               'bg-bolt-elements-background-depth-1/90 text-bolt-elements-textSecondary border-transparent hover:bg-bolt-elements-background-depth-2/90 hover:border-bolt-elements-border-subtle':
                                 !isModelSettingsCollapsed,
