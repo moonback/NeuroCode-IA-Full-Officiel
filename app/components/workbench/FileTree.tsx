@@ -239,7 +239,6 @@ interface FolderContextMenuProps {
   onDelete?: () => void;
   onCreateFile?: () => void;
   onCreateFolder?: () => void;
-  isFolder?: boolean;
   children: ReactNode;
 }
 
@@ -254,7 +253,17 @@ function ContextMenuItem({ onSelect, children }: { onSelect?: () => void; childr
   );
 }
 
-function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownload, onRename, onDelete, onCreateFile, onCreateFolder, isFolder = false, children }: FolderContextMenuProps) {
+function FileContextMenu({
+  onCopyPath, 
+  onCopyRelativePath, 
+  onSendToChat, 
+  onDownload, 
+  onRename, 
+  onDelete, 
+  onCreateFile, 
+  onCreateFolder, 
+  children 
+}: FolderContextMenuProps) {
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
@@ -319,15 +328,6 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
           </ContextMenu.Group>
           
           <ContextMenu.Group className="p-1 border-b border-bolt-elements-borderColor/50">
-            {/* {onRename && (
-              <ContextMenuItem 
-                onSelect={onRename}
-                data-testid="context-menu-rename"
-              >
-                <span className="i-ph:pencil-simple text-white text-xl mr-2 text-bolt-elements-textSecondary" />
-                <span className="text-bolt-elements-textPrimary">Renommer</span>
-              </ContextMenuItem>
-            )} */}
             {onDelete && (
               <ContextMenuItem 
                 onSelect={onDelete}
@@ -339,29 +339,6 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
               
             )}
           </ContextMenu.Group>
-          
-          {/* {isFolder &&  (
-            <ContextMenu.Group className="p-1">
-              {onCreateFile && (
-                <ContextMenuItem 
-                  onSelect={onCreateFile}
-                  data-testid="context-menu-create-file"
-                >
-                  <span className="i-ph:file-plus text-white text-xl mr-2 text-bolt-elements-textSecondary" />
-                  <span className="text-bolt-elements-textPrimary">Nouveau fichier</span>
-                </ContextMenuItem>
-              )}
-              {onCreateFolder && (
-                <ContextMenuItem 
-                  onSelect={onCreateFolder}
-                  data-testid="context-menu-create-folder"
-                >
-                  <span className="i-ph:folder-plus text-white text-xl mr-2 text-bolt-elements-textSecondary" />
-                  <span className="text-bolt-elements-textPrimary">Nouveau dossier</span>
-                </ContextMenuItem>
-              )}
-            </ContextMenu.Group>
-          )} */}
         </ContextMenu.Content>
       </ContextMenu.Portal>
     </ContextMenu.Root>
@@ -508,7 +485,6 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
         onDelete={handleDelete}
         onCreateFile={handleCreateFile}
         onCreateFolder={handleCreateFolder}
-        isFolder={true}
       >
         <NodeButton
           className={classNames('group', {
