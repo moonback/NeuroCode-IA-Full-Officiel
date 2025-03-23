@@ -146,19 +146,26 @@ export class FilesStore {
         throw new Error(`EINVAL: invalid file path, create '${relativePath}'`);
       }
 
-      // Vérifier si le fichier existe déjà
+      // Check if file already exists
       const dirent = this.files.get()[filePath];
       if (dirent) {
         throw new Error(`File already exists: ${filePath}`);
       }
 
-      // Créer les dossiers parents si nécessaire
+      // Create parent directories if needed
       const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
       if (dirPath) {
         await this.createFolder(dirPath);
       }
 
       await webcontainer.fs.writeFile(relativePath, content);
+      
+      // Update store with new file
+      this.files.setKey(filePath, { type: 'file', content, isBinary: false });
+      
+      // Track modification
+      this.#modifiedFiles.set(filePath, '');
+      
       logger.info(`File created: ${filePath}`);
       return true;
     } catch (error) {
@@ -268,32 +275,44 @@ export class FilesStore {
         throw new Error(`EINVAL: invalid file path, rename '${relativeOldPath}' to '${relativeNewPath}'`);
       }
 
-      // Vérifier si le fichier source existe
+      // Check if source file exists
       const sourceFile = this.files.get()[oldPath];
       if (!sourceFile) {
         throw new Error(`Source file not found: ${oldPath}`);
       }
 
-      // Vérifier si le fichier de destination existe déjà
+      // Check if destination file already exists
       const destFile = this.files.get()[newPath];
       if (destFile) {
         throw new Error(`Destination file already exists: ${newPath}`);
       }
 
-      // Créer les dossiers parents si nécessaire
+      // Create parent directories if needed
       const dirPath = newPath.substring(0, newPath.lastIndexOf('/'));
       if (dirPath) {
         await this.createFolder(dirPath);
       }
 
-      // Copier le contenu du fichier source vers le fichier de destination
+      // Copy content from source to destination
       if (sourceFile.type === 'file') {
         await webcontainer.fs.writeFile(relativeNewPath, sourceFile.content);
-        // Supprimer le fichier source
         await webcontainer.fs.rm(relativeOldPath);
+        
+        // Update store
+        this.files.setKey(newPath, sourceFile);
+        this.files.setKey(oldPath, undefined);
+        
+        // Track modification
+        if (this.#modifiedFiles.has(oldPath)) {
+          this.#modifiedFiles.set(newPath, this.#modifiedFiles.get(oldPath)!);
+          this.#modifiedFiles.delete(oldPath);
+        }
       } else {
-        // Pour les dossiers, utiliser une approche différente
         await webcontainer.fs.rename(relativeOldPath, relativeNewPath);
+        
+        // Update store for folder
+        this.files.setKey(newPath, sourceFile);
+        this.files.setKey(oldPath, undefined);
       }
 
       logger.info(`File renamed from ${oldPath} to ${newPath}`);
