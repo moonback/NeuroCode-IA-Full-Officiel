@@ -263,6 +263,26 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
           style={{ zIndex: 998 }}
           className="border border-bolt-elements-borderColor rounded-md z-context-menu bg-bolt-elements-background-depth-1 dark:bg-bolt-elements-background-depth-2 data-[state=open]:animate-in animate-duration-100 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-98 w-56"
         >
+          <ContextMenu.Group className="p-1">
+              {onCreateFile && (
+                <ContextMenuItem 
+                  onSelect={onCreateFile}
+                  data-testid="context-menu-create-file"
+                >
+                  <span className="i-ph:file-plus text-white text-xl mr-2 text-bolt-elements-textSecondary" />
+                  <span className="text-bolt-elements-textPrimary">Nouveau fichier</span>
+                </ContextMenuItem>
+              )}
+              {onCreateFolder && (
+                <ContextMenuItem 
+                  onSelect={onCreateFolder}
+                  data-testid="context-menu-create-folder"
+                >
+                  <span className="i-ph:folder-plus text-white text-xl mr-2 text-bolt-elements-textSecondary" />
+                  <span className="text-bolt-elements-textPrimary">Nouveau dossier</span>
+                </ContextMenuItem>
+              )}
+            </ContextMenu.Group>
           <ContextMenu.Group className="p-1 border-b border-bolt-elements-borderColor/50">
             {onSendToChat && (
               <ContextMenuItem 
@@ -299,7 +319,7 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
           </ContextMenu.Group>
           
           <ContextMenu.Group className="p-1 border-b border-bolt-elements-borderColor/50">
-            {onRename && (
+            {/* {onRename && (
               <ContextMenuItem 
                 onSelect={onRename}
                 data-testid="context-menu-rename"
@@ -307,7 +327,7 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
                 <span className="i-ph:pencil-simple text-white text-xl mr-2 text-bolt-elements-textSecondary" />
                 <span className="text-bolt-elements-textPrimary">Renommer</span>
               </ContextMenuItem>
-            )}
+            )} */}
             {onDelete && (
               <ContextMenuItem 
                 onSelect={onDelete}
@@ -316,10 +336,11 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
                 <span className="i-ph:trash text-white text-xl mr-2 text-red-500" />
                 <span className="text-bolt-elements-textPrimary">Supprimer</span>
               </ContextMenuItem>
+              
             )}
           </ContextMenu.Group>
           
-          {isFolder && (
+          {/* {isFolder &&  (
             <ContextMenu.Group className="p-1">
               {onCreateFile && (
                 <ContextMenuItem 
@@ -340,7 +361,7 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
                 </ContextMenuItem>
               )}
             </ContextMenu.Group>
-          )}
+          )} */}
         </ContextMenu.Content>
       </ContextMenu.Portal>
     </ContextMenu.Root>
@@ -508,7 +529,7 @@ function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativ
       
       {showCreateFileInput && (
         <div 
-          className="flex items-center w-full pr-2 border-2 border-transparent text-faded py-0.5 pl-8"
+          className="flex items-center text-green-500 w-full pr-2 border-2 border-transparent text-faded py-0.5 pl-8"
           style={{ paddingLeft: `${6 + (folder.depth + 1) * NODE_PADDING_LEFT}px` }}
         >
           <div className="scale-120 shrink-0 i-ph:file-plus scale-98"></div>
