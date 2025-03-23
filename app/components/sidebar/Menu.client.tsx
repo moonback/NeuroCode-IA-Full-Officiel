@@ -160,8 +160,15 @@ export const Menu = () => {
   };
 
   const handleDuplicate = async (id: string) => {
-    await duplicateCurrentChat(id);
-    loadEntries(); // Reload the list after duplication
+    try {
+      // Pass only the ID to duplicateCurrentChat
+      await duplicateCurrentChat(id);
+      loadEntries();
+      toast.success('Chat dupliqué avec succès');
+    } catch (error) {
+      console.error('Erreur lors de la duplication du chat:', error);
+      toast.error('Échec de la duplication du chat');
+    }
   };
 
   const handleSettingsClick = () => {
