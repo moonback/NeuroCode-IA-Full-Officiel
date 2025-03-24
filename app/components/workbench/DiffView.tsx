@@ -1107,6 +1107,21 @@ const InlineDiffComparison = memo(
       };
     }, [goToNextDiff, goToPrevDiff, goToNextSearchResult, goToPrevSearchResult]);
 
+    const [lineToNavigate, setLineToNavigate] = useState<number | ''>('');
+
+    // Add a function to handle line navigation
+    const navigateToLine = useCallback(() => {
+      if (lineToNavigate && lineToNavigate > 0 && lineToNavigate <= unifiedBlocks.length) {
+        const targetBlock = unifiedBlocks[lineToNavigate - 1]; // Adjust for zero-based index
+        const element = document.getElementById(`line-${targetBlock.lineNumber}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        toast.error('Numéro de ligne invalide');
+      }
+    }, [lineToNavigate, unifiedBlocks]);
+
     if (isBinary || error) return renderContentWarning(isBinary ? 'binary' : 'error');
 
     return (
@@ -1162,6 +1177,7 @@ const InlineDiffComparison = memo(
                       <DiffLine
                         key={`${block.type}-${block.lineNumber}-${index}`}
                         block={block}
+                        id={`line-${block.lineNumber}`}
                         isSelected={selectedLines.some(line => 
                         line.lineNumber === block.lineNumber && 
                         line.type === block.type
@@ -1195,6 +1211,19 @@ const InlineDiffComparison = memo(
             onSubmit={finalizeSendToChat}
           />
         )}
+
+        <div className="flex items-center">
+          <input
+            type="number"
+            value={lineToNavigate}
+            onChange={(e) => setLineToNavigate(Number(e.target.value))}
+            placeholder="Numéro de ligne"
+            className="form-input text-sm px-2 py-1 rounded bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary border border-bolt-elements-borderColor"
+          />
+          <button onClick={navigateToLine} className="ml-2 p-1 rounded bg-blue-500 text-white">
+            Aller
+          </button>
+        </div>
       </div>
     );
   },
@@ -1273,7 +1302,8 @@ const DiffLine = memo(({
   onSelect,
   highlighter,
   language,
-  theme
+  theme,
+  id
 }: {
   block: DiffBlock;
   isSelected: boolean;
@@ -1281,6 +1311,7 @@ const DiffLine = memo(({
   highlighter: any;
   language: string;
   theme: string;
+  id: string;
 }) => {
   // Utiliser des classes qui s'alignent avec CodeMirror
   const lineClass = classNames(
