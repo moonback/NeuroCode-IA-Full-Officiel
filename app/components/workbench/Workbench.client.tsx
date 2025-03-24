@@ -110,7 +110,7 @@ const FileModifiedDropdown = memo(
                 className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3 transition-colors text-bolt-elements-textPrimary border border-bolt-elements-borderColor"
                 aria-label="Afficher les fichiers modifiés"
               >
-                <div className="i-ph:file-diff" />
+                <div className="i-ph:file" />
                 <span className="font-medium">Fichiers modifiés</span>
                 {hasChanges && (
                   <span className="w-5 h-5 rounded-full bg-green-500/20 text-white text-xs flex items-center justify-center border border-green-500/30">
