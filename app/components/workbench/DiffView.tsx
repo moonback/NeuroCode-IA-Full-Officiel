@@ -70,7 +70,10 @@ const isBinaryFile = (content: string) => {
   return content.length > MAX_FILE_SIZE || BINARY_REGEX.test(content);
 };
 
+const [isLoading, setIsLoading] = useState(false);
+
 const processChanges = (beforeCode: string, afterCode: string, ignoreWhitespace: boolean = false) => {
+  setIsLoading(true);
   try {
     if (isBinaryFile(beforeCode) || isBinaryFile(afterCode)) {
       return {
@@ -296,6 +299,7 @@ const processChanges = (beforeCode: string, afterCode: string, ignoreWhitespace:
     };
   } catch (error) {
     console.error('Error processing changes:', error);
+    toast.error('An error occurred while processing the changes.');
     return {
       beforeLines: [],
       afterLines: [],
@@ -305,6 +309,8 @@ const processChanges = (beforeCode: string, afterCode: string, ignoreWhitespace:
       error: true,
       isBinary: false,
     };
+  } finally {
+    setIsLoading(false);
   }
 };
 
@@ -391,12 +397,12 @@ const NoChangesView = memo(
   ),
 );
 
-// Otimização do processamento de diferenças com memoização
+// Memoize the processChanges function
 const useProcessChanges = (beforeCode: string, afterCode: string, ignoreWhitespace: boolean = false) => {
   return useMemo(() => processChanges(beforeCode, afterCode, ignoreWhitespace), [beforeCode, afterCode, ignoreWhitespace]);
 };
 
-// Componente otimizado para renderização de linhas de código
+// Component otimizado para renderização de linhas de código
 const CodeLine = memo(
   ({
     lineNumber,
@@ -600,6 +606,273 @@ const useLineSelection = (unifiedBlocks: DiffBlock[]) => {
 import { DiffModeSelector, type DiffComparisonMode } from './DiffModeSelector';
 import { SideBySideDiffComparison } from './SideBySideDiffComparison';
 
+// Ajout de nouvelles options dans l'interface EditorSettings
+interface DiffViewSettings {
+  fontSize?: string;
+  gutterFontSize?: string;
+  lineWrapping?: boolean;
+  highlightActiveLines?: boolean;
+  showInlineDiff?: boolean;
+  syncScroll?: boolean;
+  showLineNumbers?: boolean;
+  diffAlgorithm?: 'standard' | 'advanced';
+}
+
+// Ajout d'un menu de paramètres pour le DiffView
+const DiffViewSettingsMenu = memo(({
+  settings,
+  onSettingsChange
+}: {
+  settings: DiffViewSettings;
+  onSettingsChange: (settings: Partial<DiffViewSettings>) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-1.5 rounded transition-colors bg-bolt-elements-background-depth-2 text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3 hover:text-bolt-elements-textPrimary"
+        title="Paramètres d'affichage"
+      >
+        <div className="i-ph:gear-six text-xl" />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute right-0 top-10 z-50 w-64 bg-bolt-elements-background-depth-2 rounded-lg border border-bolt-elements-borderColor shadow-lg p-3">
+          <h3 className="text-sm font-medium text-bolt-elements-textPrimary mb-2 border-b border-bolt-elements-borderColor pb-2">
+            Paramètres d'affichage
+          </h3>
+          
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-bolt-elements-textSecondary">Retour à la ligne</label>
+              <input
+                type="checkbox"
+                checked={settings.lineWrapping ?? false}
+                onChange={(e) => onSettingsChange({ lineWrapping: e.target.checked })}
+                className="form-checkbox h-4 w-4 text-blue-500 rounded"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-bolt-elements-textSecondary">Surligner lignes actives</label>
+              <input
+                type="checkbox"
+                checked={settings.highlightActiveLines ?? true}
+                onChange={(e) => onSettingsChange({ highlightActiveLines: e.target.checked })}
+                className="form-checkbox h-4 w-4 text-blue-500 rounded"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-bolt-elements-textSecondary">Différences caractère par caractère</label>
+              <input
+                type="checkbox"
+                checked={settings.showInlineDiff ?? true}
+                onChange={(e) => onSettingsChange({ showInlineDiff: e.target.checked })}
+                className="form-checkbox h-4 w-4 text-blue-500 rounded"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-bolt-elements-textSecondary">Défilement synchronisé</label>
+              <input
+                type="checkbox"
+                checked={settings.syncScroll ?? true}
+                onChange={(e) => onSettingsChange({ syncScroll: e.target.checked })}
+                className="form-checkbox h-4 w-4 text-blue-500 rounded"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-bolt-elements-textSecondary">Taille de police</label>
+              <select
+                value={settings.fontSize ?? '12px'}
+                onChange={(e) => onSettingsChange({ fontSize: e.target.value })}
+                className="form-select text-xs py-1 px-2 rounded bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary border border-bolt-elements-borderColor"
+              >
+                <option value="10px">10px</option>
+                <option value="12px">12px</option>
+                <option value="14px">14px</option>
+                <option value="16px">16px</option>
+              </select>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-bolt-elements-textSecondary">Algorithme de diff</label>
+              <select
+                value={settings.diffAlgorithm ?? 'standard'}
+                onChange={(e) => onSettingsChange({ 
+                  diffAlgorithm: e.target.value as 'standard' | 'advanced' 
+                })}
+                className="form-select text-xs py-1 px-2 rounded bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary border border-bolt-elements-borderColor"
+              >
+                <option value="standard">Standard</option>
+                <option value="advanced">Avancé</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Ajout du composant de recherche dans le diff, similaire à Ctrl+F dans CodeMirror
+const DiffSearch = memo(({
+  onSearch,
+  searchResults,
+  currentResult,
+  onNextResult,
+  onPrevResult,
+  onClose
+}: {
+  onSearch: (query: string) => void;
+  searchResults: number;
+  currentResult: number;
+  onNextResult: () => void;
+  onPrevResult: () => void;
+  onClose: () => void;
+}) => {
+  const [query, setQuery] = useState('');
+  
+  const handleSearch = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(query);
+  }, [query, onSearch]);
+  
+  return (
+    <div className="flex items-center gap-2 p-2 bg-bolt-elements-background-depth-2 border-t border-bolt-elements-borderColor">
+      <form onSubmit={handleSearch} className="flex items-center flex-1 gap-2">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Rechercher..."
+          className="form-input text-sm px-2 py-1 rounded bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary border border-bolt-elements-borderColor flex-1"
+          autoFocus
+        />
+        <button
+          type="submit"
+          className="p-1.5 rounded transition-colors bg-bolt-elements-background-depth-3 text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-4"
+        >
+          <div className="i-ph:magnifying-glass text-lg" />
+        </button>
+      </form>
+      
+      {searchResults > 0 && (
+        <div className="flex items-center gap-1 text-sm text-bolt-elements-textSecondary">
+          <span>{currentResult} / {searchResults}</span>
+          <button
+            onClick={onPrevResult}
+            className="p-1 rounded transition-colors hover:bg-bolt-elements-background-depth-3"
+          >
+            <div className="i-ph:caret-up text-lg" />
+          </button>
+          <button
+            onClick={onNextResult}
+            className="p-1 rounded transition-colors hover:bg-bolt-elements-background-depth-3"
+          >
+            <div className="i-ph:caret-down text-lg" />
+          </button>
+        </div>
+      )}
+      
+      <button
+        onClick={onClose}
+        className="p-1 rounded transition-colors hover:bg-bolt-elements-background-depth-3"
+      >
+        <div className="i-ph:x text-lg" />
+      </button>
+    </div>
+  );
+});
+
+// Ajout du bouton pour la navigation entre les différences
+const DiffNavigationControls = memo(({
+  onNextDiff,
+  onPrevDiff,
+  totalDiffs,
+  currentDiff
+}: {
+  onNextDiff: () => void;
+  onPrevDiff: () => void;
+  totalDiffs: number;
+  currentDiff: number;
+}) => {
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-xs text-bolt-elements-textSecondary">
+        {currentDiff}/{totalDiffs} diff
+      </span>
+      <button
+        onClick={onPrevDiff}
+        disabled={totalDiffs === 0 || currentDiff === 1}
+        className={`p-1 rounded transition-colors ${
+          totalDiffs === 0 || currentDiff === 1
+            ? 'text-bolt-elements-textTertiary cursor-not-allowed'
+            : 'text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3'
+        }`}
+      >
+        <div className="i-ph:arrow-up text-lg" />
+      </button>
+      <button
+        onClick={onNextDiff}
+        disabled={totalDiffs === 0 || currentDiff === totalDiffs}
+        className={`p-1 rounded transition-colors ${
+          totalDiffs === 0 || currentDiff === totalDiffs
+            ? 'text-bolt-elements-textTertiary cursor-not-allowed'
+            : 'text-bolt-elements-textSecondary hover:bg-bolt-elements-background-depth-3'
+        }`}
+      >
+        <div className="i-ph:arrow-down text-lg" />
+      </button>
+    </div>
+  );
+});
+
+// Ajout du composant d'historique de versions
+const FileVersionHistory = memo(({
+  versions,
+  currentVersion,
+  onSelectVersion,
+}: {
+  versions: Array<{ timestamp: number; content: string }>;
+  currentVersion: number;
+  onSelectVersion: (index: number) => void;
+}) => {
+  if (versions.length <= 1) return null;
+  
+  return (
+    <div className="p-2 border-t border-bolt-elements-borderColor bg-bolt-elements-background-depth-1">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-xs font-medium text-bolt-elements-textPrimary">Historique des versions</h3>
+        <span className="text-xs text-bolt-elements-textTertiary">{versions.length} versions</span>
+      </div>
+      
+      <div className="space-y-1 max-h-32 overflow-y-auto pr-1">
+        {versions.map((version, index) => (
+          <button
+            key={version.timestamp}
+            onClick={() => onSelectVersion(index)}
+            className={`w-full text-left px-2 py-1 rounded text-xs ${
+              index === currentVersion
+                ? 'bg-blue-500/20 text-blue-500'
+                : 'hover:bg-bolt-elements-background-depth-2 text-bolt-elements-textSecondary'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span>Version {index + 1}</span>
+              <span>{new Date(version.timestamp).toLocaleTimeString()}</span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+});
+
 // Refactorisation du composant InlineDiffComparison
 const InlineDiffComparison = memo(
   ({ beforeCode, afterCode, filename, language, lightTheme, darkTheme }: CodeComparisonProps) => {
@@ -719,6 +992,120 @@ const InlineDiffComparison = memo(
       
       toast.success(`${sortedLines.length} ligne(s) envoyée(s) au chat`);
     }, [pendingSelectedLines, instruction, language, filename, clearSelection]);
+
+    // Ajouter des états pour les nouvelles fonctionnalités
+    const [showSearch, setShowSearch] = useState(false);
+    const [searchResults, setSearchResults] = useState(0);
+    const [currentSearchResult, setCurrentSearchResult] = useState(0);
+    const [currentDiff, setCurrentDiff] = useState(1);
+    const [viewSettings, setViewSettings] = useState<DiffViewSettings>({
+      fontSize: '12px',
+      lineWrapping: false,
+      highlightActiveLines: true,
+      showInlineDiff: true,
+      syncScroll: true,
+      showLineNumbers: true,
+      diffAlgorithm: 'standard',
+    });
+    const [selectedVersion, setSelectedVersion] = useState(0);
+    
+    // Calculer le nombre total de différences
+    const totalDiffs = useMemo(() => {
+      return unifiedBlocks.filter(block => block.type !== 'unchanged').length;
+    }, [unifiedBlocks]);
+    
+    // Gérer la recherche
+    const handleSearch = useCallback((query: string) => {
+      if (!query.trim()) {
+        setSearchResults(0);
+        setCurrentSearchResult(0);
+        return;
+      }
+      
+      // Logique pour trouver les résultats de recherche
+      const results = unifiedBlocks.filter(block => 
+        block.content.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      setSearchResults(results.length);
+      setCurrentSearchResult(results.length > 0 ? 1 : 0);
+      
+      // Scroll to first result if found
+      if (results.length > 0) {
+        // Scroll logic here
+      }
+    }, [unifiedBlocks]);
+    
+    // Navigation entre les différences
+    const goToNextDiff = useCallback(() => {
+      if (currentDiff < totalDiffs) {
+        setCurrentDiff(prev => prev + 1);
+        // Scroll logic to next diff
+      }
+    }, [currentDiff, totalDiffs]);
+    
+    const goToPrevDiff = useCallback(() => {
+      if (currentDiff > 1) {
+        setCurrentDiff(prev => prev - 1);
+        // Scroll logic to prev diff
+      }
+    }, [currentDiff]);
+    
+    // Navigation des résultats de recherche
+    const goToNextSearchResult = useCallback(() => {
+      if (currentSearchResult < searchResults) {
+        setCurrentSearchResult(prev => prev + 1);
+        // Scroll logic to next search result
+      }
+    }, [currentSearchResult, searchResults]);
+    
+    const goToPrevSearchResult = useCallback(() => {
+      if (currentSearchResult > 1) {
+        setCurrentSearchResult(prev => prev - 1);
+        // Scroll logic to prev search result
+      }
+    }, [currentSearchResult]);
+    
+    // Ajouter des raccourcis clavier
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        // Ctrl+F pour la recherche
+        if (e.ctrlKey && e.key === 'f') {
+          e.preventDefault();
+          setShowSearch(true);
+        }
+        
+        // Échap pour fermer la recherche
+        if (e.key === 'Escape') {
+          setShowSearch(false);
+        }
+        
+        // F3 pour trouver le prochain résultat
+        if (e.key === 'F3') {
+          e.preventDefault();
+          if (e.shiftKey) {
+            goToPrevSearchResult();
+          } else {
+            goToNextSearchResult();
+          }
+        }
+        
+        // Alt+N / Alt+P pour la navigation entre différences
+        if (e.altKey && e.key === 'n') {
+          e.preventDefault();
+          goToNextDiff();
+        }
+        if (e.altKey && e.key === 'p') {
+          e.preventDefault();
+          goToPrevDiff();
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }, [goToNextDiff, goToPrevDiff, goToNextSearchResult, goToPrevSearchResult]);
 
     if (isBinary || error) return renderContentWarning(isBinary ? 'binary' : 'error');
 
