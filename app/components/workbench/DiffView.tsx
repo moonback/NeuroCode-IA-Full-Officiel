@@ -13,6 +13,7 @@ import { getLanguageFromExtension } from '~/utils/getLanguageFromExtension';
 import { themeStore } from '~/lib/stores/theme';
 import { toast } from 'react-toastify';
 import { classNames } from '~/utils/classNames';
+import { getTheme } from '~/components/editor/codemirror/cm-theme';
 
 interface CodeComparisonProps {
   beforeCode: string;
@@ -358,7 +359,7 @@ const NoChangesView = memo(
         <p className="font-medium text-bolt-elements-textPrimary">Les fichiers sont identiques</p>
         <p className="text-sm mt-1">Les deux versions correspondent exactement</p>
       </div>
-      <div className="mt-4 w-full max-w-2xl bg-bolt-elements-background-depth-1 rounded-lg border border-bolt-elements-borderColor overflow-hidden">
+      <div className="mt-4 w-full max-w-2xl bg-bolt-elements-background-depth-1 rounded-lg border border-bolt-elements-borderColor overflow-hidden cm-editor">
         <div className="p-2 text-xs font-bold text-bolt-elements-textTertiary border-b border-bolt-elements-borderColor">
         Contenu actuel
         </div>
@@ -416,7 +417,12 @@ const CodeLine = memo(
     theme: string;
     hideLineNumber?: boolean;
   }) => {
-    const bgColor = diffLineStyles[type];
+    // Utilise les classes de CodeMirror pour la coloration
+    const bgColor = type === 'added' 
+      ? 'cm-diff-added' 
+      : type === 'removed' 
+        ? 'cm-diff-removed' 
+        : '';
 
     const renderContent = () => {
       if (type === 'unchanged' || !block.charChanges) {
@@ -510,7 +516,7 @@ const FileInfo = memo(
     const showStats = additions > 0 || deletions > 0;
 
     return (
-      <div className="flex items-center bg-bolt-elements-background-depth-1 p-2 text-sm text-bolt-elements-textPrimary shrink-0">
+      <div className="flex items-center FileInfo p-2 text-sm text-bolt-elements-textPrimary shrink-0">
         <div className="i-ph:file mr-2 h-4 w-4 shrink-0" />
         <span className="truncate">{filename}</span>
         <span className="ml-auto shrink-0 flex items-center gap-2">
@@ -717,7 +723,7 @@ const InlineDiffComparison = memo(
     if (isBinary || error) return renderContentWarning(isBinary ? 'binary' : 'error');
 
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full cm-editor">
         <div className="flex items-center justify-between bg-bolt-elements-background-depth-1 p-2 border-b border-bolt-elements-borderColor">
           <DiffModeSelector
             currentMode={comparisonMode}
@@ -889,28 +895,40 @@ const DiffLine = memo(({
   language: string;
   theme: string;
 }) => {
+  // Utiliser des classes qui s'alignent avec CodeMirror
+  const lineClass = classNames(
+    'diff-line group cursor-pointer',
+    {
+      'cm-diff-added': block.type === 'added' && !isSelected,
+      'cm-diff-removed': block.type === 'removed' && !isSelected,
+      'selected': isSelected
+    }
+  );
+  
+  // Gérer le surbrillance des numéros de ligne comme dans CodeMirror
+  const numberClass = classNames(
+    "diff-line-number", 
+    { 
+      "selected": isSelected,
+      "cm-activeLine": isSelected || block.type !== 'unchanged'
+    }
+  );
+  
+  // Gérer le contenu avec les mêmes styles que CodeMirror
+  const contentClass = classNames(
+    "diff-line-content", 
+    {
+      'selected': isSelected
+    }
+  );
+
   return (
-    <div 
-      onClick={onSelect}
-      className={classNames(
-        'diff-line group cursor-pointer',
-        {
-          'diff-added': block.type === 'added' && !isSelected,
-          'diff-removed': block.type === 'removed' && !isSelected,
-          'selected': isSelected
-        }
-      )}
-    >
-      <div className={classNames("diff-line-number", { "selected": isSelected })}>
+    <div onClick={onSelect} className={lineClass}>
+      <div className={numberClass}>
         {isSelected && <span className="text-blue-500 mr-1">✓</span>}
-        {/* Fix: Display the correct line number based on type */}
-        {block.type === 'removed' ? block.lineNumber + 1 : 
-         block.type === 'added' ? block.lineNumber + 1 : 
-         block.lineNumber + 1}
+        {block.lineNumber + 1}
       </div>
-      <div className={classNames("diff-line-content", {
-        'bg-blue-500/30 border-l-4 border-blue-500': isSelected
-      })}>
+      <div className={contentClass}>
         <CodeLine
           lineNumber={block.lineNumber}
           content={block.content}
@@ -959,7 +977,7 @@ const DiffToolbar = memo(({
   }, [selectedLines]);
 
   return (
-    <div className="flex items-center justify-between p-2 border-b border-bolt-elements-borderColor bg-bolt-elements-background-depth-1 relative">
+    <div className="flex items-center justify-between p-2  relative">
       <div className="flex items-center gap-2">
         <span className="text-sm text-bolt-elements-textSecondary">
           {selectedLines.length > 0 
@@ -1035,6 +1053,151 @@ const DiffToolbar = memo(({
     </div>
   );
 });
+
+// Amélioration des styles CodeMirror pour le DiffView
+const cmDiffStyles = `
+.cm-diff-added {
+  background-color: var(--cm-diff-added-background);
+  border-left: 4px solid var(--cm-diff-added-border);
+}
+
+.cm-diff-removed {
+  background-color: var(--cm-diff-removed-background);
+  border-left: 4px solid var(--cm-diff-removed-border);
+}
+
+.diff-panel-content {
+  background-color: var(--cm-backgroundColor);
+  color: var(--cm-textColor);
+  font-family: 'Roboto Mono', monospace;
+}
+
+.diff-panel-content .cm-line {
+  padding: 0 0 0 4px;
+  line-height: 1.5;
+}
+
+.diff-line-number {
+  width: 40px;
+  min-width: 40px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  background-color: var(--cm-gutter-backgroundColor);
+  color: var(--cm-gutter-textColor);
+  border-right: 1px solid var(--cm-panels-borderColor);
+  user-select: none;
+}
+
+.diff-line-content {
+  color: var(--cm-textColor);
+  background-color: var(--cm-backgroundColor);
+  line-height: 1.5;
+  font-size: 12px;
+}
+
+.diff-line:hover .diff-line-content {
+  background-color: var(--cm-activeLineBackgroundColor);
+}
+
+.diff-line.selected .diff-line-number {
+  color: var(--cm-selection-textColor);
+  background-color: var(--cm-activeLineBackgroundColor);
+}
+
+.diff-line.selected .diff-line-content {
+  background-color: var(--cm-selection-backgroundColorFocused);
+  opacity: 0.8;
+}
+
+.diff-panel-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.diff-panel-content::-webkit-scrollbar-track {
+  background: var(--cm-backgroundColor);
+}
+
+.diff-panel-content::-webkit-scrollbar-thumb {
+  background-color: var(--cm-panels-borderColor);
+  border-radius: 4px;
+}
+
+.diff-panel-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cm-gutter-textColor);
+}
+
+.diff-line {
+  transition: all 0.1s ease;
+}
+
+.diff-line:hover {
+  box-shadow: 0 0 2px var(--cm-panels-borderColor);
+}
+
+.diff-toolbar {
+  background-color: var(--cm-search-backgroundColor);
+  border-bottom: 1px solid var(--cm-panels-borderColor);
+}
+
+.diff-toolbar button {
+  color: var(--cm-search-button-textColor);
+  background-color: var(--cm-search-button-backgroundColor);
+  border: 1px solid var(--cm-search-button-borderColor);
+}
+
+.diff-toolbar button:hover:not(:disabled) {
+  color: var(--cm-search-button-textColorHover);
+  background-color: var(--cm-search-button-backgroundColorHover);
+  border-color: var(--cm-search-button-borderColorHover);
+}
+
+.FileInfo {
+  background-color: var(--cm-search-backgroundColor);
+  border-bottom: 1px solid var(--cm-panels-borderColor);
+}
+`;
+
+// Composant amélioré pour injecter les styles CodeMirror
+const CodeMirrorThemeInjector = () => {
+  const theme = useStore(themeStore);
+  
+  useEffect(() => {
+    // Injecter les variables CSS du thème CodeMirror
+    const styleElement = document.createElement('style');
+    document.head.appendChild(styleElement);
+    
+    const vars = theme === 'dark' 
+      ? `
+        :root {
+          --cm-diff-added-background: rgba(16, 185, 129, 0.2);
+          --cm-diff-added-border: rgb(16, 185, 129);
+          --cm-diff-removed-background: rgba(239, 68, 68, 0.2);
+          --cm-diff-removed-border: rgb(239, 68, 68);
+          --cm-selection-textColor: #ffffff;
+          --cm-selection-backgroundColorFocused: rgba(38, 79, 120, 0.6);
+        }
+      ` 
+      : `
+        :root {
+          --cm-diff-added-background: rgba(16, 185, 129, 0.1);
+          --cm-diff-added-border: rgb(16, 185, 129);
+          --cm-diff-removed-background: rgba(239, 68, 68, 0.1);
+          --cm-diff-removed-border: rgb(239, 68, 68);
+          --cm-selection-textColor: #000000;
+          --cm-selection-backgroundColorFocused: rgba(76, 158, 240, 0.3);
+        }
+      `;
+      
+    styleElement.textContent = vars + cmDiffStyles;
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, [theme]);
+  
+  return null;
+};
 
 interface DiffViewProps {
   fileHistory: Record<string, FileHistory>;
@@ -1146,7 +1309,8 @@ export const DiffView = memo(({ fileHistory, setFileHistory, actionRunner }: Dif
 
   try {
     return (
-      <div className="h-full overflow-hidden">
+      <div className="h-full overflow-hidden cm-editor">
+        <CodeMirrorThemeInjector />
         <InlineDiffComparison
           beforeCode={effectiveOriginalContent}
           afterCode={currentContent}
