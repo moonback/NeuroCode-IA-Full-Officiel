@@ -125,9 +125,10 @@ export function TargetedFilesDisplay({ textareaRef, className }: TargetedFilesDi
 
   return (
     <div className={classNames(
-      'mt-1.5 mx-2 mb-2 rounded-md bg-bolt-elements-background-depth-2 border border-bolt-elements-borderColor/30 shadow-sm transition-all duration-200',
+      'mt-1.5 mx-2 mb-2 rounded-md bg-bolt-elements-background-depth-2 border border-bolt-elements-borderColor/30 shadow-lg hover:shadow-xl backdrop-blur-sm transition-all duration-300',
       className
     )}>
+      <div className="absolute inset-0 bg-gradient-to-br from-bolt-elements-accent/5 to-transparent rounded-md opacity-50" />
       <FileListHeader 
         isExpanded={isExpanded} 
         setIsExpanded={setIsExpanded} 
@@ -161,7 +162,7 @@ function FileListHeader({
 }) {
   return (
     <div 
-      className="flex items-center justify-between px-2.5 py-2 cursor-pointer hover:bg-bolt-elements-item-backgroundHover/30 rounded-t-md transition-colors duration-150"
+      className="relative flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-bolt-elements-item-backgroundHover/40 rounded-t-md transition-all duration-200 group"
       onClick={() => setIsExpanded(!isExpanded)}
     >
       <div className="flex items-center gap-1.5">
@@ -169,15 +170,16 @@ function FileListHeader({
           'transition-transform duration-200 ease-in-out',
           isExpanded ? 'rotate-90' : 'rotate-0'
         )}>
-          <span className="i-ph:caret-right text-[12px] text-bolt-elements-textSecondary/80 hover:text-bolt-elements-textSecondary transition-colors" />
+          <span className="i-ph:caret-right text-[13px] text-bolt-elements-textSecondary/80 group-hover:text-bolt-elements-accent transition-all duration-200" />
         </span>
-        <h3 className="text-[12px] font-medium text-bolt-elements-textSecondary flex items-center gap-1.5">
+        <h3 className="text-[13px] font-medium text-bolt-elements-textSecondary flex items-center gap-2">
           <span className="i-ph:files-duotone text-[13px] text-bolt-elements-textSecondary/80 hover:text-bolt-elements-textSecondary transition-colors" />
           <span className="relative">
             Fichiers ciblés
-            <span className="absolute -top-1.5 -right-2.5 w-2 h-2 bg-bolt-elements-accent rounded-full animate-pulse" />
+            <span className="absolute -top-1 -right-2 w-2 h-2 bg-bolt-elements-accent rounded-full animate-ping" />
+            <span className="absolute -top-1 -right-2 w-2 h-2 bg-bolt-elements-accent rounded-full animate-pulse" />
           </span>
-          <span className="px-1.5 py-0.5 bg-bolt-elements-background-depth-3 rounded-full text-[11px] font-semibold hover:bg-bolt-elements-background-depth-4 transition-colors">
+          <span className="px-2 py-0.5 bg-green-500/20 text-white rounded-full text-[11px] font-semibold group-hover:bg-bolt-elements-background-depth-4 group-hover:text-bolt-elements-accent transition-all duration-200 border border-bolt-elements-borderColor/20">
             {targetedFiles.length}
           </span>
         </h3>
@@ -193,7 +195,7 @@ function FileListHeader({
 // Collapsed file preview component
 function CollapsedFilePreview({ file, count }: { file: string; count: number }) {
   return (
-    <div className="flex items-center gap-1.5 text-[11px] text-bolt-elements-textSecondary bg-bolt-elements-background-depth-3 px-2.5 py-1 rounded-full">
+    <div className="flex items-center gap-2 text-[11px] text-bolt-elements-textSecondary bg-bolt-elements-background-depth-3/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-bolt-elements-borderColor/20 shadow-sm hover:shadow-md transition-all duration-200">
       <span className={classNames(getFileIcon(file), "flex-shrink-0 text-[12px]")} />
       <span className="font-mono truncate max-w-[120px]">
         {file.split('/').pop()}
@@ -216,7 +218,7 @@ function FileList({
   removeTargetedFile: (filePath: string) => void 
 }) {
   return (
-    <div className="space-y-1 max-h-[150px] overflow-y-auto pr-0.5 custom-scrollbar p-2 pt-1.5 border-t border-bolt-elements-borderColor/20">
+    <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-0.5 custom-scrollbar p-2.5 pt-2 border-t border-bolt-elements-borderColor/20 bg-bolt-elements-background-depth-2/50 backdrop-blur-sm">
       {targetedFiles.map((filePath, index) => (
         <FileListItem 
           key={`${filePath}-${index}`}
@@ -241,7 +243,7 @@ function FileListItem({
   
   return (
     <div 
-      className="flex items-center justify-between group py-1.5 px-2.5 rounded-md hover:bg-bolt-elements-item-backgroundHover transition-colors duration-150"
+      className="flex items-center justify-between group py-2 px-3 rounded-md hover:bg-bolt-elements-item-backgroundHover/80 hover:shadow-sm transition-all duration-200 backdrop-blur-sm border border-transparent hover:border-bolt-elements-borderColor/20"
       role="listitem"
       aria-label={`Fichier: ${fileName}`}
     >
@@ -274,7 +276,7 @@ function FileListItem({
           e.stopPropagation();
           onRemove(filePath);
         }}
-        className="opacity-0 group-hover:opacity-100 text-bolt-elements-textSecondary hover:text-white px-2 py-1 rounded-md bg-red-500/10 hover:bg-red-500 transition-all duration-150 text-[11px] font-medium flex items-center gap-1"
+        className="opacity-0 group-hover:opacity-100 text-bolt-elements-textSecondary hover:text-white px-2.5 py-1 rounded-md bg-red-500/10 hover:bg-red-500 transition-all duration-200 text-[11px] font-medium flex items-center gap-1.5 backdrop-blur-sm hover:shadow-md"
         title="Retirer ce fichier"
         aria-label={`Retirer ${filePath} des fichiers ciblés`}
       >
@@ -461,4 +463,4 @@ export function addTargetedFile(filePath: string, textareaElement: HTMLTextAreaE
     console.error('Error adding targeted file:', e);
     return false;
   }
-} 
+}
