@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Switch } from '~/components/ui/Switch';
 import { useSettings } from '~/lib/hooks/useSettings';
 import { LOCAL_PROVIDERS, URL_CONFIGURABLE_PROVIDERS } from '~/lib/stores/settings';
@@ -32,12 +32,8 @@ const PROVIDER_DESCRIPTIONS: Record<ProviderName, string> = {
   OpenAILike: 'Connect to OpenAI-compatible API endpoints',
 };
 
-// Add environment-based URLs with fallbacks
-const DEFAULT_URLS = {
-  Ollama: import.meta.env.VITE_OLLAMA_API_BASE_URL || 'http://127.0.0.1:11434',
-  LMStudio: import.meta.env.LMSTUDIO_API_BASE_URL || 'http://127.0.0.1:1234',
-  OpenAILike: import.meta.env.OPENAI_LIKE_API_BASE_URL || '',
-} as const;
+// Add a constant for the Ollama API base URL
+const DEFAULT_OLLAMA_API_URL = 'http://127.0.0.1:11434';
 
 interface OllamaModel {
   name: string;
@@ -75,43 +71,6 @@ const isOllamaPullResponse = (data: unknown): data is OllamaPullResponse => {
   );
 };
 
-// Update the UrlConfigInfo component to include model management info
-const UrlConfigInfo = ({ provider }: { provider: IProviderConfig }) => {
-  const defaultUrl = DEFAULT_URLS[provider.name as keyof typeof DEFAULT_URLS];
-
-  return (
-    <div className="mt-2 text-xs text-bolt-elements-textSecondary">
-      <div className="flex items-center gap-1 mb-1">
-        <div className="i-ph:info text-green-500" />
-        <span className="font-medium">Configuration Help:</span>
-      </div>
-      <ul className="list-disc list-inside space-y-1 ml-1">
-        <li>Default URL: {defaultUrl || 'Not set'}</li>
-        <li>Click the URL field above to edit</li>
-        <li>Format: http://IP:PORT (e.g., http://127.0.0.1:11434)</li>
-        <li>Settings will persist after page reload</li>
-        <li>You can also set the URL in your .env.local file</li>
-      </ul>
-
-      {provider.name === 'Ollama' && (
-        <>
-          <div className="flex items-center gap-1 mt-3 mb-1">
-            <div className="i-ph:warning text-yellow-500" />
-            <span className="font-medium">Important Note:</span>
-          </div>
-          <ul className="list-disc list-inside space-y-1 ml-1 text-bolt-elements-textTertiary">
-            <li>After installing or deleting Ollama models, restart the development server</li>
-            <li>This ensures proper model registration with the application</li>
-            <li>
-              Run <code className="px-1 py-0.5 bg-bolt-elements-background-depth-4 rounded">pnpm dev</code> to restart
-            </li>
-          </ul>
-        </>
-      )}
-    </div>
-  );
-};
-
 export default function LocalProvidersTab() {
   const { providers, updateProviderSettings } = useSettings();
   const [filteredProviders, setFilteredProviders] = useState<IProviderConfig[]>([]);
@@ -131,13 +90,10 @@ export default function LocalProvidersTab() {
         const envUrl = envKey ? (import.meta.env[envKey] as string | undefined) : undefined;
 
         // Set base URL if provided by environment
-        const baseUrl = provider.settings.baseUrl || envUrl || DEFAULT_URLS[key as keyof typeof DEFAULT_URLS];
-
-        // Update provider settings if needed
-        if (!provider.settings.baseUrl && (envUrl || DEFAULT_URLS[key as keyof typeof DEFAULT_URLS])) {
+        if (envUrl && !provider.settings.baseUrl) {
           updateProviderSettings(key, {
             ...provider.settings,
-            baseUrl,
+            baseUrl: envUrl,
           });
         }
 
@@ -145,7 +101,7 @@ export default function LocalProvidersTab() {
           name: key,
           settings: {
             ...provider.settings,
-            baseUrl,
+            baseUrl: provider.settings.baseUrl || envUrl,
           },
           staticModels: provider.staticModels || [],
           getDynamicModels: provider.getDynamicModels,
@@ -184,35 +140,17 @@ export default function LocalProvidersTab() {
     setCategoryEnabled(newCategoryState);
   }, [filteredProviders]);
 
-  // Fetch Ollama models when enabled
-  useEffect(() => {
-    const ollamaProvider = filteredProviders.find((p) => p.name === 'Ollama');
-
-    if (ollamaProvider?.settings.enabled) {
-      fetchOllamaModels();
-    }
-  }, [filteredProviders]);
+  /* Ollama */
+  const ollamaProvider = useMemo(() => filteredProviders.find((p) => p.name === 'Ollama'), [filteredProviders]);
+  const OLLAMA_API_URL = ollamaProvider?.settings.baseUrl || DEFAULT_OLLAMA_API_URL;
+  console.log(ollamaProvider);
 
   const fetchOllamaModels = async () => {
     try {
       setIsLoadingModels(true);
 
-      const ollamaProvider = filteredProviders.find((p) => p.name === 'Ollama');
-      const baseUrl = ollamaProvider?.settings.baseUrl || DEFAULT_URLS.Ollama;
-
-      const checkResponse = await fetch(`${baseUrl}/api/tags`, {
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (!checkResponse.ok) {
-        throw new Error(`Failed to fetch models: ${checkResponse.statusText}`);
-      }
-
-      const data = (await checkResponse.json()) as { models: OllamaModel[] };
-
-      if (!data.models) {
-        throw new Error('Invalid response format from Ollama API');
-      }
+      const response = await fetch(`${OLLAMA_API_URL}/api/tags`);
+      const data = (await response.json()) as { models: OllamaModel[] };
 
       setOllamaModels(
         data.models.map((model) => ({
@@ -220,35 +158,23 @@ export default function LocalProvidersTab() {
           status: 'idle' as const,
         })),
       );
-
-      // Log success
-      logStore.logProvider('Successfully fetched Ollama models', {
-        provider: 'Ollama',
-        modelCount: data.models.length,
-      });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      console.error('Error fetching Ollama models:', errorMessage);
-
-      // Show error toast to user
-      toast('Failed to fetch models - Please ensure Ollama is running and accessible');
-
-      // Log error
-      logStore.logProvider('Failed to fetch Ollama models', {
-        provider: 'Ollama',
-        error: errorMessage,
-      });
-
-      // Clear models list on error
-      setOllamaModels([]);
+      console.error('Error fetching Ollama models:', error);
     } finally {
       setIsLoadingModels(false);
     }
   };
 
+  // Fetch Ollama models when enabled
+  useEffect(() => {
+    if (ollamaProvider?.settings.enabled) {
+      fetchOllamaModels();
+    }
+  }, [ollamaProvider]);
+
   const updateOllamaModel = async (modelName: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${DEFAULT_URLS.Ollama}/api/pull`, {
+      const response = await fetch(`${OLLAMA_API_URL}/api/pull`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: modelName }),
@@ -300,7 +226,7 @@ export default function LocalProvidersTab() {
         }
       }
 
-      const updatedResponse = await fetch('http://127.0.0.1:11434/api/tags');
+      const updatedResponse = await fetch(`${OLLAMA_API_URL}/api/tags`);
       const updatedData = (await updatedResponse.json()) as { models: OllamaModel[] };
       const updatedModel = updatedData.models.find((m) => m.name === modelName);
 
@@ -322,19 +248,10 @@ export default function LocalProvidersTab() {
   );
 
   const handleToggleProvider = (provider: IProviderConfig, enabled: boolean) => {
-    // If enabling provider, ensure base URL is set from environment
-    if (enabled) {
-      updateProviderSettings(provider.name, {
-        ...provider.settings,
-        enabled,
-        baseUrl: provider.settings.baseUrl || DEFAULT_URLS[provider.name as keyof typeof DEFAULT_URLS],
-      });
-    } else {
-      updateProviderSettings(provider.name, {
-        ...provider.settings,
-        enabled,
-      });
-    }
+    updateProviderSettings(provider.name, {
+      ...provider.settings,
+      enabled,
+    });
 
     if (enabled) {
       logStore.logProvider(`Provider ${provider.name} enabled`, { provider: provider.name });
@@ -358,7 +275,7 @@ export default function LocalProvidersTab() {
     const updateSuccess = await updateOllamaModel(modelName);
 
     if (updateSuccess) {
-      toast(`Updated ${modelName} - Please restart the development server for changes to take effect`);
+      toast(`Updated ${modelName}`);
     } else {
       toast(`Failed to update ${modelName}`);
     }
@@ -366,7 +283,7 @@ export default function LocalProvidersTab() {
 
   const handleDeleteOllamaModel = async (modelName: string) => {
     try {
-      const response = await fetch(`${DEFAULT_URLS.Ollama}/api/delete`, {
+      const response = await fetch(`${OLLAMA_API_URL}/api/delete`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -379,7 +296,7 @@ export default function LocalProvidersTab() {
       }
 
       setOllamaModels((current) => current.filter((m) => m.name !== modelName));
-      toast(`Deleted ${modelName} - Please restart the development server for changes to take effect`);
+      toast(`Deleted ${modelName}`);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error(`Error deleting ${modelName}:`, errorMessage);
@@ -391,17 +308,17 @@ export default function LocalProvidersTab() {
   const ModelDetails = ({ model }: { model: OllamaModel }) => (
     <div className="flex items-center gap-3 text-xs text-bolt-elements-textSecondary">
       <div className="flex items-center gap-1">
-        <div className="i-ph:code text-green-500" />
+        <div className="i-ph:code text-purple-500" />
         <span>{model.digest.substring(0, 7)}</span>
       </div>
       {model.details && (
         <>
           <div className="flex items-center gap-1">
-            <div className="i-ph:database text-green-500" />
+            <div className="i-ph:database text-purple-500" />
             <span>{model.details.parameter_size}</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="i-ph:cube text-green-500" />
+            <div className="i-ph:cube text-purple-500" />
             <span>{model.details.quantization_level}</span>
           </div>
         </>
@@ -425,8 +342,8 @@ export default function LocalProvidersTab() {
         disabled={model.status === 'updating'}
         className={classNames(
           'rounded-lg p-2',
-          'bg-green-500/10 text-green-500',
-          'hover:bg-green-500/20',
+          'bg-purple-500/10 text-purple-500',
+          'hover:bg-purple-500/20',
           'transition-all duration-200',
           { 'opacity-50 cursor-not-allowed': model.status === 'updating' },
         )}
@@ -462,48 +379,10 @@ export default function LocalProvidersTab() {
     </div>
   );
 
-  // Add this near your other components
-  const OllamaStatus = () => {
-    const [status, setStatus] = useState<'checking' | 'running' | 'not-running'>('checking');
-
-    useEffect(() => {
-      const checkOllamaStatus = async () => {
-        try {
-          const response = await fetch('http://127.0.0.1:11434/api/tags', {
-            signal: AbortSignal.timeout(3000),
-          });
-          setStatus(response.ok ? 'running' : 'not-running');
-        } catch {
-          setStatus('not-running');
-        }
-      };
-
-      checkOllamaStatus();
-    }, []);
-
-    if (status === 'checking') {
-      return (
-        <div className="flex items-center gap-2 text-bolt-elements-textSecondary">
-          <div className="i-ph:spinner-gap-bold animate-spin w-4 h-4" />
-          <span>Checking Ollama status...</span>
-        </div>
-      );
-    }
-
-    return (
-      <div className={`flex items-center gap-2 ${status === 'running' ? 'text-green-500' : 'text-red-500'}`}>
-        <div className={`i-ph:${status === 'running' ? 'check-circle' : 'x-circle'} w-4 h-4`} />
-        <span>
-          {status === 'running' ? 'Ollama is running' : 'Ollama is not running - Please start Ollama service'}
-        </span>
-      </div>
-    );
-  };
-
   return (
     <div
       className={classNames(
-        'rounded-xl bg-bolt-elements-background text-bolt-elements-textPrimary shadow-sm p-6',
+        'rounded-lg bg-bolt-elements-background text-bolt-elements-textPrimary shadow-sm p-4',
         'hover:bg-bolt-elements-background-depth-2',
         'transition-all duration-200',
       )}
@@ -511,40 +390,37 @@ export default function LocalProvidersTab() {
       aria-label="Local Providers Configuration"
     >
       <motion.div
-        className="space-y-8"
+        className="space-y-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, type: 'spring' }}
+        transition={{ duration: 0.3 }}
       >
         {/* Header section */}
-        <div className="flex items-center justify-between gap-4 border-b border-bolt-elements-borderColor/30 pb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-4 border-b border-bolt-elements-borderColor pb-4">
+          <div className="flex items-center gap-3">
             <motion.div
               className={classNames(
-                'w-12 h-12 flex items-center justify-center rounded-xl',
-                'bg-green-500/10 text-green-500',
-                'shadow-sm'
+                'w-10 h-10 flex items-center justify-center rounded-xl',
+                'bg-purple-500/10 text-purple-500',
               )}
-              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileHover={{ scale: 1.05 }}
             >
-              <BiChip className="w-7 h-7" />
+              <BiChip className="w-6 h-6" />
             </motion.div>
             <div>
-              <h2 className="text-xl font-semibold text-bolt-elements-textPrimary">Local AI Models</h2>
-              <p className="text-sm text-bolt-elements-textSecondary/90 mt-1">
-                Configure and manage your local AI providers
-              </p>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-bolt-elements-textPrimary">Local AI Models</h2>
+              </div>
+              <p className="text-sm text-bolt-elements-textSecondary">Configure and manage your local AI providers</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <span className="text-sm text-bolt-elements-textSecondary">Enable All</span>
             <Switch
               checked={categoryEnabled}
               onCheckedChange={handleToggleCategory}
               aria-label="Toggle all local providers"
-              className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-bolt-elements-borderColor/50"
-              // thumbClassName="bg-white"
             />
           </div>
         </div>
@@ -558,9 +434,8 @@ export default function LocalProvidersTab() {
               className={classNames(
                 'bg-bolt-elements-background-depth-2 rounded-xl',
                 'hover:bg-bolt-elements-background-depth-3',
-                'transition-all duration-200 p-6',
+                'transition-all duration-200 p-5',
                 'relative overflow-hidden group',
-                provider.settings.enabled ? 'border-green-500/20' : 'border-bolt-elements-borderColor/20'
               )}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -573,8 +448,7 @@ export default function LocalProvidersTab() {
                     className={classNames(
                       'w-12 h-12 flex items-center justify-center rounded-xl',
                       'bg-bolt-elements-background-depth-3',
-                      provider.settings.enabled ? 'text-green-500' : 'text-bolt-elements-textSecondary',
-                      'shadow-sm'
+                      provider.settings.enabled ? 'text-purple-500' : 'text-bolt-elements-textSecondary',
                     )}
                     whileHover={{ scale: 1.1, rotate: 5 }}
                   >
@@ -585,10 +459,10 @@ export default function LocalProvidersTab() {
                   </motion.div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-bolt-elements-textPrimary">{provider.name}</h3>
+                      <h3 className="text-md font-semibold text-bolt-elements-textPrimary">{provider.name}</h3>
                       <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/10 text-green-500">Local</span>
                     </div>
-                    <p className="text-sm text-bolt-elements-textSecondary/90 mt-1">
+                    <p className="text-sm text-bolt-elements-textSecondary mt-1">
                       {PROVIDER_DESCRIPTIONS[provider.name as ProviderName]}
                     </p>
                   </div>
@@ -597,8 +471,6 @@ export default function LocalProvidersTab() {
                   checked={provider.settings.enabled}
                   onCheckedChange={(checked) => handleToggleProvider(provider, checked)}
                   aria-label={`Toggle ${provider.name} provider`}
-                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-bolt-elements-borderColor/50"
-                  // thumbClassName="bg-white"
                 />
               </div>
 
@@ -609,27 +481,20 @@ export default function LocalProvidersTab() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-6"
+                    className="mt-4"
                   >
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm text-bolt-elements-textSecondary">API Endpoint</label>
-                        {editingProvider === provider.name && (
-                          <span className="text-xs text-green-500">Press Enter to save, Escape to cancel</span>
-                        )}
-                      </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm text-bolt-elements-textSecondary">API Endpoint</label>
                       {editingProvider === provider.name ? (
                         <input
                           type="text"
-                          defaultValue={
-                            provider.settings.baseUrl || DEFAULT_URLS[provider.name as keyof typeof DEFAULT_URLS]
-                          }
-                          placeholder={`Enter ${provider.name} base URL`}
+                          defaultValue={OLLAMA_API_URL}
+                          placeholder="Enter Ollama base URL"
                           className={classNames(
                             'w-full px-3 py-2 rounded-lg text-sm',
-                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor/30',
+                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor',
                             'text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary',
-                            'focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500/50',
+                            'focus:outline-none focus:ring-2 focus:ring-purple-500/30',
                             'transition-all duration-200',
                           )}
                           onKeyDown={(e) => {
@@ -647,20 +512,17 @@ export default function LocalProvidersTab() {
                           onClick={() => setEditingProvider(provider.name)}
                           className={classNames(
                             'w-full px-3 py-2 rounded-lg text-sm cursor-pointer',
-                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor/30',
-                            'hover:border-green-500/30 hover:bg-bolt-elements-background-depth-4',
+                            'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor',
+                            'hover:border-purple-500/30 hover:bg-bolt-elements-background-depth-4',
                             'transition-all duration-200',
                           )}
                         >
                           <div className="flex items-center gap-2 text-bolt-elements-textSecondary">
                             <div className="i-ph:link text-sm" />
-                            <span>
-                              {provider.settings.baseUrl || DEFAULT_URLS[provider.name as keyof typeof DEFAULT_URLS]}
-                            </span>
+                            <span>{OLLAMA_API_URL}</span>
                           </div>
                         </div>
                       )}
-                      <UrlConfigInfo provider={provider} />
                     </div>
                   </motion.div>
                 )}
@@ -668,11 +530,11 @@ export default function LocalProvidersTab() {
 
               {/* Ollama Models Section */}
               {provider.settings.enabled && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 space-y-6">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="i-ph:cube-duotone text-green-500 text-xl" />
-                      <h4 className="text-base font-semibold text-bolt-elements-textPrimary">Installed Models</h4>
+                    <div className="flex items-center gap-2">
+                      <div className="i-ph:cube-duotone text-purple-500" />
+                      <h4 className="text-sm font-medium text-bolt-elements-textPrimary">Installed Models</h4>
                     </div>
                     {isLoadingModels ? (
                       <div className="flex items-center gap-2">
@@ -686,9 +548,9 @@ export default function LocalProvidersTab() {
                     )}
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {isLoadingModels ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {Array.from({ length: 3 }).map((_, i) => (
                           <div
                             key={i}
@@ -706,7 +568,7 @@ export default function LocalProvidersTab() {
                             href="https://ollama.com/library"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-green-500 hover:underline inline-flex items-center gap-0.5 text-base font-medium"
+                            className="text-purple-500 hover:underline inline-flex items-center gap-0.5 text-base font-medium"
                           >
                             ollama.com/library
                             <div className="i-ph:arrow-square-out text-xs" />
@@ -765,9 +627,6 @@ export default function LocalProvidersTab() {
                   <OllamaModelInstaller onModelInstalled={fetchOllamaModels} />
                 </motion.div>
               )}
-
-              {/* Ollama Status Section */}
-              {provider.name === 'Ollama' && <OllamaStatus />}
             </motion.div>
           ))}
 
@@ -798,7 +657,7 @@ export default function LocalProvidersTab() {
                         className={classNames(
                           'w-12 h-12 flex items-center justify-center rounded-xl',
                           'bg-bolt-elements-background-depth-3',
-                          provider.settings.enabled ? 'text-green-500' : 'text-bolt-elements-textSecondary',
+                          provider.settings.enabled ? 'text-purple-500' : 'text-bolt-elements-textSecondary',
                         )}
                         whileHover={{ scale: 1.1, rotate: 5 }}
                       >
@@ -815,7 +674,7 @@ export default function LocalProvidersTab() {
                               Local
                             </span>
                             {URL_CONFIGURABLE_PROVIDERS.includes(provider.name) && (
-                              <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/10 text-green-500">
+                              <span className="px-2 py-0.5 text-xs rounded-full bg-purple-500/10 text-purple-500">
                                 Configurable
                               </span>
                             )}
@@ -843,12 +702,7 @@ export default function LocalProvidersTab() {
                         className="mt-4"
                       >
                         <div className="flex flex-col gap-2">
-                          <div className="flex items-center justify-between">
-                            <label className="text-sm text-bolt-elements-textSecondary">API Endpoint</label>
-                            {editingProvider === provider.name && (
-                              <span className="text-xs text-green-500">Press Enter to save, Escape to cancel</span>
-                            )}
-                          </div>
+                          <label className="text-sm text-bolt-elements-textSecondary">API Endpoint</label>
                           {editingProvider === provider.name ? (
                             <input
                               type="text"
@@ -858,7 +712,7 @@ export default function LocalProvidersTab() {
                                 'w-full px-3 py-2 rounded-lg text-sm',
                                 'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor',
                                 'text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary',
-                                'focus:outline-none focus:ring-2 focus:ring-green-500/30',
+                                'focus:outline-none focus:ring-2 focus:ring-purple-500/30',
                                 'transition-all duration-200',
                               )}
                               onKeyDown={(e) => {
@@ -877,7 +731,7 @@ export default function LocalProvidersTab() {
                               className={classNames(
                                 'w-full px-3 py-2 rounded-lg text-sm cursor-pointer',
                                 'bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor',
-                                'hover:border-green-500/30 hover:bg-bolt-elements-background-depth-4',
+                                'hover:border-purple-500/30 hover:bg-bolt-elements-background-depth-4',
                                 'transition-all duration-200',
                               )}
                             >
@@ -887,7 +741,6 @@ export default function LocalProvidersTab() {
                               </div>
                             </div>
                           )}
-                          <UrlConfigInfo provider={provider} />
                         </div>
                       </motion.div>
                     )}
