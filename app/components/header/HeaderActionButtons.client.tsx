@@ -48,12 +48,12 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
 
   const handleNetlifyDeploy = async () => {
     if (!netlifyConn.user || !netlifyConn.token) {
-      toast.error('Please connect to Netlify first in the settings tab!');
+      toast.error('Veuillez d’abord vous connecter à Netlify dans l’onglet Paramètres !');
       return;
     }
 
     if (!currentChatId) {
-      toast.error('No active chat found');
+      toast.error('Aucun chat actif trouvé');
       return;
     }
 
@@ -63,7 +63,7 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
       const artifact = workbenchStore.firstArtifact;
 
       if (!artifact) {
-        throw new Error('No active project found');
+        throw new Error('Aucun projet actif trouvé');
       }
 
       const actionId = 'build-' + Date.now();
@@ -209,7 +209,7 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
 
   const handleVercelDeploy = async () => {
     if (!vercelConn.user || !vercelConn.token) {
-      toast.error('Please connect to Vercel first in the settings tab!');
+      toast.error('Veuillez d\'abord vous connecter à Vercel dans l\'onglet paramètres !');
       return;
     }
 
@@ -329,14 +329,14 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
   return (
     <div className="flex">
       <div className="relative" ref={dropdownRef}>
-        <div className="flex border border-bolt-elements-borderColor rounded-md overflow-hidden mr-2 text-sm">
+        <div className="flex border border-green rounded-md overflow-hidden mr-2 text-sm">
           <Button
             active
             disabled={isDeploying || !activePreview || isStreaming}
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="px-4 hover:bg-bolt-elements-item-backgroundActive flex items-center gap-2"
+            className="px-4 bg-bolt-elements-background-depth-1 hover:bg-green-500/20 text-white flex items-center gap-2"
           >
-            {isDeploying ? `Deploying to ${deployingTo}...` : 'Deploy'}
+            {isDeploying ? `Déploiement vers ${deployingTo}...` : 'Deployer'}
             <div
               className={classNames('i-ph:caret-down w-4 h-4 transition-transform', isDropdownOpen ? 'rotate-180' : '')}
             />
@@ -362,7 +362,7 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
                 src="https://cdn.simpleicons.org/netlify"
               />
               <span className="mx-auto">
-                {!netlifyConn.user ? 'No Netlify Account Connected' : 'Deploy to Netlify'}
+                {!netlifyConn.user ? 'Aucun compte Netlify connecté' : 'Deployer sur Netlify'}
               </span>
               {netlifyConn.user && <NetlifyDeploymentLink />}
             </Button>
@@ -383,7 +383,7 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
                 src="https://cdn.simpleicons.org/vercel/white"
                 alt="vercel"
               />
-              <span className="mx-auto">{!vercelConn.user ? 'No Vercel Account Connected' : 'Deploy to Vercel'}</span>
+              <span className="mx-auto">{!vercelConn.user ? 'Aucun compte Vercel connecté' : 'Deployer sur Vercel'}</span>
               {vercelConn.user && <VercelDeploymentLink />}
             </Button>
             <Button
@@ -405,7 +405,7 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
           </div>
         )}
       </div>
-      <div className="flex border border-bolt-elements-borderColor rounded-md overflow-hidden">
+      <div className="flex border border-green rounded-md overflow-hidden">
         <Button
           active={showChat}
           disabled={!canHideChat || isSmallViewport} // expand button is disabled on mobile as it's not needed
@@ -449,7 +449,7 @@ function Button({ active = false, disabled = false, children, onClick, className
       className={classNames(
         'flex items-center p-1.5',
         {
-          'bg-bolt-elements-item-backgroundDefault hover:bg-bolt-elements-item-backgroundActive text-bolt-elements-textTertiary hover:text-bolt-elements-textPrimary':
+          'bg-bolt-elements-background-depth-1 text-white hover:bg-bolt-elements-item-backgroundActive text-white hover:text-bolt-elements-textPrimary':
             !active,
           'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent': active && !disabled,
           'bg-bolt-elements-item-backgroundDefault text-alpha-gray-20 dark:text-alpha-white-20 cursor-not-allowed':
