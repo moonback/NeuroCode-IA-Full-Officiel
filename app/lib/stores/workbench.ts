@@ -303,6 +303,110 @@ export class WorkbenchStore {
 
     this.unsavedFiles.set(newUnsavedFiles);
   }
+  
+  async createFile(filePath: string, content: string = '') {
+    try {
+      await this.#filesStore.createFile(filePath, content);
+      // Sélectionner le nouveau fichier
+      this.setSelectedFile(filePath);
+      return true;
+    } catch (error) {
+      console.error('Failed to create file:', error);
+      return false;
+    }
+  }
+
+  async createFolder(folderPath: string) {
+    try {
+      return await this.#filesStore.createFolder(folderPath);
+    } catch (error) {
+      console.error('Failed to create folder:', error);
+      return false;
+    }
+  }
+
+  async deleteFile(filePath: string) {
+    try {
+      // Si le fichier est actuellement sélectionné, désélectionner
+      if (this.selectedFile.get() === filePath) {
+        this.setSelectedFile(undefined);
+      }
+      
+      // Si le fichier a des modifications non sauvegardées, les supprimer
+      const unsavedFiles = this.unsavedFiles.get();
+      if (unsavedFiles.has(filePath)) {
+        const newUnsavedFiles = new Set(unsavedFiles);
+        newUnsavedFiles.delete(filePath);
+        this.unsavedFiles.set(newUnsavedFiles);
+      }
+      
+      return await this.#filesStore.deleteFile(filePath);
+    } catch (error) {
+      console.error('Failed to delete file:', error);
+      return false;
+    }
+  }
+
+  async deleteFolder(folderPath: string, recursive: boolean = true) {
+    try {
+      // Désélectionner tout fichier dans ce dossier
+      const currentFile = this.selectedFile.get();
+      if (currentFile && currentFile.startsWith(folderPath)) {
+        this.setSelectedFile(undefined);
+      }
+      
+      // Supprimer les fichiers non sauvegardés dans ce dossier
+      const unsavedFiles = this.unsavedFiles.get();
+      const newUnsavedFiles = new Set<string>();
+      
+      for (const file of unsavedFiles) {
+        if (!file.startsWith(folderPath)) {
+          newUnsavedFiles.add(file);
+        }
+      }
+      
+      if (newUnsavedFiles.size !== unsavedFiles.size) {
+        this.unsavedFiles.set(newUnsavedFiles);
+      }
+      
+      return await this.#filesStore.deleteFolder(folderPath, recursive);
+    } catch (error) {
+      console.error('Failed to delete folder:', error);
+      return false;
+    }
+  }
+
+  async renameFile(oldPath: string, newPath: string) {
+    try {
+      // Si le fichier est actuellement sélectionné, mettre à jour la sélection
+      if (this.selectedFile.get() === oldPath) {
+        this.setSelectedFile(newPath);
+      }
+      
+      // Si le fichier a des modifications non sauvegardées, les transférer
+      const unsavedFiles = this.unsavedFiles.get();
+      if (unsavedFiles.has(oldPath)) {
+        const newUnsavedFiles = new Set(unsavedFiles);
+        newUnsavedFiles.delete(oldPath);
+        newUnsavedFiles.add(newPath);
+        this.unsavedFiles.set(newUnsavedFiles);
+      }
+      
+      return await this.#filesStore.renameFile(oldPath, newPath);
+    } catch (error) {
+      console.error('Failed to rename file:', error);
+      return false;
+    }
+  }
+  
+  async saveBase64Image(filePath: string, base64Data: string) {
+    try {
+      return await this.#filesStore.saveBase64Image(filePath, base64Data);
+    } catch (error) {
+      console.error('Failed to save base64 image:', error);
+      return false;
+    }
+  }
 
   async saveCurrentDocument() {
     const currentDocument = this.currentDocument.get();

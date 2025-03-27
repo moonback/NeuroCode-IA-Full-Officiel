@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState, type ReactNode, useCallback } from 'react';
+import { memo, useEffect, useMemo, useState, type ReactNode, useCallback, useRef } from 'react';
 import type { FileMap } from '~/lib/stores/files';
 import { classNames } from '~/utils/classNames';
 import { createScopedLogger, renderLogger } from '~/utils/logger';
@@ -7,6 +7,7 @@ import type { FileHistory } from '~/types/actions';
 import { diffLines, type Change } from 'diff';
 import { toast } from 'react-toastify';
 import { addTargetedFile } from '~/components/chat/TargetedFilesDisplay';
+import { workbenchStore } from '~/lib/stores/workbench';
 
 const logger = createScopedLogger('FileTree');
 
@@ -45,6 +46,9 @@ export const FileTree = memo(
     fileHistory = {},
     onMultiFileSelect,
     }: Props) => {
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragTarget, setDragTarget] = useState<string | null>(null);
+    const workbench =  workbenchStore;;
     renderLogger.trace('FileTree');
 
     const computedHiddenFiles = useMemo(() => [...DEFAULT_HIDDEN_FILES, ...(hiddenFiles ?? [])], [hiddenFiles]);
@@ -229,6 +233,10 @@ interface FolderContextMenuProps {
   onCopyRelativePath?: () => void;
   onSendToChat?: () => void;
   onDownload?: () => void;
+  // onRename?: () => void;
+  onDelete?: () => void;
+  onCreateFile?: () => void;
+  onCreateFolder?: () => void;
   children: ReactNode;
 }
 
@@ -243,7 +251,17 @@ function ContextMenuItem({ onSelect, children }: { onSelect?: () => void; childr
   );
 }
 
-function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownload, children }: FolderContextMenuProps) {
+function FileContextMenu({
+  onCopyPath, 
+  onCopyRelativePath, 
+  onSendToChat, 
+  onDownload, 
+  // onRename, 
+  onDelete, 
+  onCreateFile, 
+  onCreateFolder, 
+  children 
+}: FolderContextMenuProps) {
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
@@ -252,14 +270,36 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
           style={{ zIndex: 998 }}
           className="border border-bolt-elements-borderColor rounded-md z-context-menu bg-bolt-elements-background-depth-1 dark:bg-bolt-elements-background-depth-2 data-[state=open]:animate-in animate-duration-100 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-98 w-56"
         >
+          <ContextMenu.Group className="p-1">
+              {onCreateFile && (
+                <ContextMenuItem 
+                  onSelect={onCreateFile}
+                  data-testid="context-menu-create-file"
+                >
+                  <span className="i-ph:file-plus text-white text-xl mr-2 text-bolt-elements-textSecondary" />
+                  <span className="text-bolt-elements-textPrimary">Nouveau fichier</span>
+                </ContextMenuItem>
+              )}
+              {onCreateFolder && (
+                <ContextMenuItem 
+                  onSelect={onCreateFolder}
+                  data-testid="context-menu-create-folder"
+                >
+                  <span className="i-ph:folder-plus text-white text-xl mr-2 text-bolt-elements-textSecondary" />
+                  <span className="text-bolt-elements-textPrimary">Nouveau dossier</span>
+                </ContextMenuItem>
+              )}
+            </ContextMenu.Group>
           <ContextMenu.Group className="p-1 border-b border-bolt-elements-borderColor/50">
-            <ContextMenuItem 
-              onSelect={onSendToChat}
-              data-testid="context-menu-send-to-chat"
-            >
-              <span className="i-ph:chat-circle-text text-white text-xl mr-2 text-bolt-elements-textSecondary" />
-              <span className="text-bolt-elements-textPrimary">Cibler le fichier</span>
-            </ContextMenuItem>
+            {onSendToChat && (
+              <ContextMenuItem 
+                onSelect={onSendToChat}
+                data-testid="context-menu-send-to-chat"
+              >
+                <span className="i-ph:chat-circle-text text-white text-xl mr-2 text-bolt-elements-textSecondary" />
+                <span className="text-bolt-elements-textPrimary">Cibler le fichier</span>
+              </ContextMenuItem>
+            )}
             <ContextMenuItem 
               onSelect={onCopyPath}
               data-testid="context-menu-copy-path"
@@ -274,13 +314,28 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
               <span className="i-ph:clipboard-text text-white text-xl mr-2 text-bolt-elements-textSecondary" />
               <span className="text-bolt-elements-textPrimary">Copier le chemin relatif</span>
             </ContextMenuItem>
-            <ContextMenuItem 
-              onSelect={onDownload}
-              data-testid="context-menu-download"
-            >
-              <span className="i-ph:download-simple text-white text-xl mr-2 text-bolt-elements-textSecondary" />
-              <span className="text-bolt-elements-textPrimary">Télécharger</span>
-            </ContextMenuItem>
+            {onDownload && (
+              <ContextMenuItem 
+                onSelect={onDownload}
+                data-testid="context-menu-download"
+              >
+                <span className="i-ph:download-simple text-white text-xl mr-2 text-bolt-elements-textSecondary" />
+                <span className="text-bolt-elements-textPrimary">Télécharger</span>
+              </ContextMenuItem>
+            )}
+          </ContextMenu.Group>
+          
+          <ContextMenu.Group className="p-1 border-b border-bolt-elements-borderColor/50 hover:bg-red-500/20">
+            {onDelete && (
+              <ContextMenuItem 
+                onSelect={onDelete}
+                data-testid="context-menu-delete"
+              >
+                <span className="i-ph:trash text-white text-xl mr-2 text-red-500" />
+                <span className="text-bolt-elements-textPrimary ">Supprimer</span>
+              </ContextMenuItem>
+              
+            )}
           </ContextMenu.Group>
         </ContextMenu.Content>
       </ContextMenu.Portal>
@@ -289,28 +344,245 @@ function FileContextMenu({ onCopyPath, onCopyRelativePath, onSendToChat, onDownl
 }
 
 function Folder({ folder, collapsed, selected = false, onCopyPath, onCopyRelativePath, onClick }: FolderProps) {
-  return (
-    <FileContextMenu 
-      onCopyPath={onCopyPath}
-      onCopyRelativePath={onCopyRelativePath}
-      onDownload={() => {}}
-    >
-      <NodeButton
-        className={classNames('group', {
-          'bg-transparent text-bolt-elements-item-contentDefault hover:text-bolt-elements-item-contentActive hover:bg-bolt-elements-item-backgroundActive':
-            !selected,
-          'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent': selected,
-        })}
-        depth={folder.depth}
-        iconClasses={classNames({
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [newName, setNewName] = useState(folder.name);
+  const [showCreateFileInput, setShowCreateFileInput] = useState(false);
+  const [showCreateFolderInput, setShowCreateFolderInput] = useState(false);
+  const [newFileName, setNewFileName] = useState('');
+  const [newFolderName, setNewFolderName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const createFileInputRef = useRef<HTMLInputElement>(null);
+  const createFolderInputRef = useRef<HTMLInputElement>(null);
+  
+  // Importer le store workbench
+  const workbench =  workbenchStore;;
+  
+  useEffect(() => {
+    if (isRenaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isRenaming]);
+  
+  useEffect(() => {
+    if (showCreateFileInput && createFileInputRef.current) {
+      createFileInputRef.current.focus();
+    }
+  }, [showCreateFileInput]);
+  
+  useEffect(() => {
+    if (showCreateFolderInput && createFolderInputRef.current) {
+      createFolderInputRef.current.focus();
+    }
+  }, [showCreateFolderInput]);
+  
+  const handleRename = () => {
+    setIsRenaming(true);
+  };
+  
+  const handleRenameSubmit = async () => {
+    if (newName && newName !== folder.name) {
+      const oldPath = folder.fullPath;
+      const parentPath = oldPath.substring(0, oldPath.lastIndexOf('/'));
+      const newPath = `${parentPath}/${newName}`;
+      
+      const success = await workbench.renameFile(oldPath, newPath);
+      if (success) {
+        toast.success(`Dossier renommé avec succès`);
+      } else {
+        toast.error(`Échec du renommage du dossier`);
+        setNewName(folder.name); // Reset to original name
+      }
+    }
+    setIsRenaming(false);
+  };
+  
+  const handleDelete = () => {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le dossier "${folder.name}" et tout son contenu ?`)) {
+      workbench.deleteFolder(folder.fullPath).then((success: boolean) => {
+        if (success) {
+          toast.success(`Dossier supprimé avec succès`);
+        } else {
+          toast.error(`Échec de la suppression du dossier`);
+        }
+      });
+    }
+  };
+  
+  const handleCreateFile = () => {
+    setShowCreateFileInput(true);
+  };
+  
+  const handleCreateFolder = () => {
+    setShowCreateFolderInput(true);
+  };
+  
+  const handleCreateFileSubmit = async () => {
+    if (!newFileName) {
+      toast.error('Veuillez entrer un nom de fichier');
+      return;
+    }
+
+    const newFilePath = `${folder.fullPath}/${newFileName}`;
+    
+    try {
+      const success = await workbench.createFile(newFilePath, '');
+      if (success) {
+        // toast.success(`Fichier créé avec succès`);
+        setShowCreateFileInput(false);
+        setNewFileName('');
+        
+        const shouldAddToTargeted = confirm('Voulez-vous ajouter ce fichier crée aux fichiers ciblés pour modification ?');
+        if (shouldAddToTargeted) {
+          const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+          if (textarea) {
+            // Vérifier si le fichier est déjà ciblé
+            const filesAttr = textarea.getAttribute('data-targeted-files');
+            const currentFiles = filesAttr ? JSON.parse(filesAttr) : [];
+            
+            if (!currentFiles.includes(newFilePath)) {
+              const added = addTargetedFile(newFilePath, textarea);
+              if (added) {
+                // toast.success('Fichier ajouté aux fichiers ciblés');
+              }
+            } else {
+              toast.info('Ce fichier est déjà dans les fichiers ciblés');
+            }
+          }
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('already exists')) {
+        toast.error(`Le fichier existe déjà. Veuillez choisir un autre nom.`);
+      } else {
+        toast.error(`Échec de la création du fichier: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      }
+    }
+  };
+  
+  const handleCreateFolderSubmit = async () => {
+    if (newFolderName) {
+      const newFolderPath = `${folder.fullPath}/${newFolderName}`;
+      const success = await workbench.createFolder(newFolderPath);
+      if (success) {
+        toast.success(`Dossier créé avec succès`);
+        
+        
+      
+      } else {
+        toast.error(`Échec de la création du dossier`);
+      }
+    }
+    setShowCreateFolderInput(false);
+    setNewFolderName('');
+  };
+  
+  if (isRenaming) {
+    return (
+      <div 
+        className="flex items-center w-full pr-2 border-2 border-transparent text-faded py-0.5"
+        style={{ paddingLeft: `${6 + folder.depth * NODE_PADDING_LEFT}px` }}
+      >
+        <div className={classNames('scale-120 shrink-0', {
           'i-ph:caret-right scale-98': collapsed,
           'i-ph:caret-down scale-98': !collapsed,
-        })}
-        onClick={onClick}
+        })}></div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          onBlur={handleRenameSubmit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleRenameSubmit();
+            if (e.key === 'Escape') {
+              setNewName(folder.name);
+              setIsRenaming(false);
+            }
+          }}
+          className="bg-bolt-elements-background-depth-2 text-bolt-elements-textPrimary border border-bolt-elements-borderColor rounded px-1 py-0 w-full"
+        />
+      </div>
+    );
+  }
+  
+  return (
+    <>
+      <FileContextMenu 
+        onCopyPath={onCopyPath}
+        onCopyRelativePath={onCopyRelativePath}
+        // onRename={handleRename}
+        onDelete={handleDelete}
+        onCreateFile={handleCreateFile}
+        onCreateFolder={handleCreateFolder}
       >
-        {folder.name}
-      </NodeButton>
-    </FileContextMenu>
+        <NodeButton
+          className={classNames('group', {
+            'bg-transparent text-bolt-elements-item-contentDefault hover:text-bolt-elements-item-contentActive hover:bg-bolt-elements-item-backgroundActive':
+              !selected,
+            'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent': selected,
+          })}
+          depth={folder.depth}
+          iconClasses={classNames({
+            'i-ph:caret-right scale-98': collapsed,
+            'i-ph:caret-down scale-98': !collapsed,
+          })}
+          onClick={onClick}
+        >
+          {folder.name}
+        </NodeButton>
+      </FileContextMenu>
+      
+      {showCreateFileInput && (
+        <div 
+          className="flex items-center text-green-500 w-full pr-2 border-2 border-transparent text-faded py-0.5 pl-8"
+          style={{ paddingLeft: `${6 + (folder.depth + 1) * NODE_PADDING_LEFT}px` }}
+        >
+          <div className="scale-120 shrink-0 i-ph:file-plus scale-98"></div>
+          <input
+            ref={createFileInputRef}
+            type="text"
+            value={newFileName}
+            onChange={(e) => setNewFileName(e.target.value)}
+            onBlur={handleCreateFileSubmit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleCreateFileSubmit();
+              if (e.key === 'Escape') {
+                setNewFileName('');
+                setShowCreateFileInput(false);
+              }
+            }}
+            placeholder="Nom du fichier"
+            className="bg-bolt-elements-background-depth-2 text-bolt-elements-textPrimary border border-bolt-elements-borderColor rounded px-1 py-0 w-full ml-2"
+          />
+        </div>
+      )}
+      
+      {showCreateFolderInput && (
+        <div 
+          className="flex items-center text-green-500  w-full pr-2 border-2 border-transparent text-faded py-0.5 pl-8"
+          style={{ paddingLeft: `${6 + (folder.depth + 1) * NODE_PADDING_LEFT}px` }}
+        >
+          <div className="scale-120 shrink-0 i-ph:folder-plus scale-98"></div>
+          <input
+            ref={createFolderInputRef}
+            type="text"
+            value={newFolderName}
+            onChange={(e) => setNewFolderName(e.target.value)}
+            onBlur={handleCreateFolderSubmit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleCreateFolderSubmit();
+              if (e.key === 'Escape') {
+                setNewFolderName('');
+                setShowCreateFolderInput(false);
+              }
+            }}
+            placeholder="Nom du dossier"
+            className="bg-bolt-elements-background-depth-2 text-bolt-elements-textPrimary border border-bolt-elements-borderColor rounded px-1 py-0 w-full ml-2"
+          />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -359,6 +631,7 @@ function getFileIcon(fileName: string): string {
     || 'i-ph:file-duotone text-gray-400';
 }
 
+
 function File({
   file: { depth, name, fullPath },
   onClick,
@@ -370,8 +643,54 @@ function File({
   unsavedChanges = false,
   fileHistory = {},
 }: FileProps) {
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [newName, setNewName] = useState(name);
+  const inputRef = useRef<HTMLInputElement>(null);
   const isMultiSelected = selectedFiles?.has(fullPath);
   const fileIcon = getFileIcon(name);
+  
+  // Importer le store workbench
+  const workbench = workbenchStore;
+  
+  useEffect(() => {
+    if (isRenaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isRenaming]);
+  
+  const handleRename = () => {
+    setIsRenaming(true);
+  };
+  
+  const handleRenameSubmit = async () => {
+    if (newName && newName !== name) {
+      const oldPath = fullPath;
+      const parentPath = oldPath.substring(0, oldPath.lastIndexOf('/'));
+      const newPath = `${parentPath}/${newName}`;
+      
+      const success = await workbench.renameFile(oldPath, newPath);
+      if (success) {
+        toast.success(`Fichier renommé avec succès`);
+      } else {
+        toast.error(`Échec du renommage du fichier`);
+        setNewName(name); // Reset to original name
+      }
+    }
+    setIsRenaming(false);
+  };
+  
+  const handleDelete = () => {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le fichier "${name}" ?`)) {
+      workbench.deleteFile(fullPath).then((success: boolean) => {
+        if (success) {
+          toast.success(`Fichier supprimé avec succès`);
+        } else {
+          toast.error(`Échec de la suppression du fichier`);
+        }
+      });
+    }
+  };
   
   const handleSendToChat = () => {
     const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
@@ -396,7 +715,9 @@ function File({
       
       // Show success message
       if (addedCount > 0) {
-        
+        // toast.success(`${addedCount} fichier(s) ciblé(s) dans le chat`, 
+        //   { autoClose: 2000, position: 'bottom-right', theme: 'dark' }
+        // );
       } else {
         toast.info('ℹ️ Ces fichiers sont déjà ciblés', 
           { autoClose: 2000, position: 'bottom-right', theme: 'dark' }
@@ -447,12 +768,41 @@ function File({
   }, [fileModifications]);
 
   const showStats = additions > 0 || deletions > 0;
+  
+  if (isRenaming) {
+    return (
+      <div 
+        className="flex items-center w-full pr-2 border-2 border-transparent text-faded py-0.5"
+        style={{ paddingLeft: `${6 + depth * NODE_PADDING_LEFT}px` }}
+      >
+        <div className={classNames('scale-120 shrink-0', fileIcon)}></div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          onBlur={handleRenameSubmit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleRenameSubmit();
+            if (e.key === 'Escape') {
+              setNewName(name);
+              setIsRenaming(false);
+            }
+          }}
+          className="bg-bolt-elements-background-depth-2 text-bolt-elements-textPrimary border border-bolt-elements-borderColor rounded px-1 py-0 w-full ml-2"
+        />
+      </div>
+    );
+  }
+  
   return (
     <FileContextMenu 
       onCopyPath={onCopyPath}
       onCopyRelativePath={onCopyRelativePath}
       onSendToChat={handleSendToChat}
       onDownload={onDownload}
+      // onRename={handleRename}
+      onDelete={handleDelete}
     >
       <NodeButton
         className={classNames('group', {
@@ -466,17 +816,15 @@ function File({
         })}
         onClick={onClick}
       >
-        <div
-          className={classNames('flex items-center', {
-            'group-hover:text-bolt-elements-item-contentActive': !selected && !isMultiSelected,
-          })}
-        >
+        <div className={classNames('flex items-center', {
+          'group-hover:text-bolt-elements-item-contentActive': !selected && !isMultiSelected,
+        })}>
           <div className="flex-1 truncate pr-2">{name}</div>
           <div className="flex items-center gap-1">
             {showStats && (
               <div className="flex items-center gap-1 text-xs">
-                  {additions > 0 && <span className="text-green-500">+{additions}</span>}
-                  {deletions > 0 && <span className="text-red-500">-{deletions}</span>}
+                {additions > 0 && <span className="text-green-500">+{additions}</span>}
+                {deletions > 0 && <span className="text-red-500">-{deletions}</span>}
               </div>
             )}
             {unsavedChanges && <span className="i-ph:circle-fill scale-68 shrink-0 text-orange-500" />}
@@ -487,6 +835,7 @@ function File({
     </FileContextMenu>
   );
 }
+
 
 interface ButtonProps {
   depth: number;
