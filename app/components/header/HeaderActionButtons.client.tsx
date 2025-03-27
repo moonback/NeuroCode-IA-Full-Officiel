@@ -15,7 +15,6 @@ import { NetlifyDeploymentLink } from '~/components/chat/NetlifyDeploymentLink.c
 import { SyncSidebar } from '~/components/sync/SyncSidebar';
 import Tooltip from '~/components/ui/Tooltip';
 import { Dialog, Transition } from '@headlessui/react';
-import { NetlifyModal } from '~/components/modals/NetlifyModal.client';
 
 // Types
 interface HeaderActionButtonsProps {}
@@ -340,7 +339,6 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
 
   return (
     <div className="flex items-center gap-2">
-      {connection.user && (
         <DeployButton
           isDeploying={isDeploying}
           connection={connection}
@@ -348,29 +346,10 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
           isStreaming={isStreaming}
           onDeploy={handleDeploy}
         />
-      )}
 
-      {/* Netlify Info Button */}
-      <ActionButton
-        onClick={() => setIsNetlifyModalOpen(true)}
-        className={classNames(
-          'p-1.5 rounded-lg border border-bolt-elements-borderColor transition-all relative',
-          'bg-bolt-elements-background-depth-1 hover:bg-bolt-elements-background-depth-2',
-          'text-bolt-elements-textTertiary hover:text-bolt-elements-textPrimary',
-          'focus:outline-none'
-        )}
-        tooltip={connection.user ? "Informations Netlify" : "Non connecter à Netlify"}
-      >
-        <div className="i-ph:rocket-launch-duotone w-4 h-4 text-[#00AD9F]" />
-        {connection.user && (
-          <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        )}
-      </ActionButton>
+      
 
-      <NetlifyModal 
-        isOpen={isNetlifyModalOpen} 
-        onClose={() => setIsNetlifyModalOpen(false)} 
-      />
+     
       <ActionButton
         onClick={() => setIsSyncSidebarOpen(!isSyncSidebarOpen)}
         className={classNames(
