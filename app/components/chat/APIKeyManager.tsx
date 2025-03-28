@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { IconButton } from '~/components/ui/IconButton';
-import { Switch } from '~/components/ui/Switch';
 import type { ProviderInfo } from '~/types/model';
 import Cookies from 'js-cookie';
+
 interface APIKeyManagerProps {
   provider: ProviderInfo;
   apiKey: string;
@@ -35,17 +35,7 @@ export function getApiKeysFromCookies() {
 export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, setApiKey }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempKey, setTempKey] = useState(apiKey);
-  const [isPromptCachingEnabled, setIsPromptCachingEnabled] = useState(() => {
-    // Read initial state from localStorage, defaulting to true
-    const savedState = localStorage.getItem('PROMPT_CACHING_ENABLED');
-    return savedState !== null ? JSON.parse(savedState) : true;
-  });
   const [isEnvKeySet, setIsEnvKeySet] = useState(false);
-
-  useEffect(() => {
-    // Update localStorage whenever the prompt caching state changes
-    localStorage.setItem('PROMPT_CACHING_ENABLED', JSON.stringify(isPromptCachingEnabled));
-  }, [isPromptCachingEnabled]);
 
   // Reset states and load saved key when provider changes
   useEffect(() => {
@@ -83,153 +73,97 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
     checkEnvApiKey();
   }, [checkEnvApiKey]);
 
-  // Version compacte du status indicator
-  const statusIndicator = useMemo(() => (
-    <div className="flex items-center gap-1">
-      <div className={`w-2 h-2 rounded-full ${apiKey || isEnvKeySet ? 'bg-green-500' : 'bg-red-500'}`} />
-      <span className={`text-xs ${apiKey || isEnvKeySet ? 'text-green-500' : 'text-red-500'}`}>
-        {apiKey ? 'OK' : isEnvKeySet ? 'ENV' : 'Erreur'}
-      </span>
-    </div>
-  ), [apiKey, isEnvKeySet]);
-
-  // Optimized input handler
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => setTempKey(e.target.value.trim()),
-    []
-  );
-
-  // Ajout d'une validation plus robuste pour les clés API
-  const validateApiKey = useCallback((key: string): boolean => {
-    if (!key) return false;
-    // Validation basique pour les clés API courantes
-    return /^[a-zA-Z0-9-_]{20,100}$/.test(key);
-  }, []);
-
-  // Enhanced save handler with better validation
-  const handleSave = useCallback(() => {
-    if (!validateApiKey(tempKey)) {
-      alert('Clé API invalide. Veuillez vérifier le format.');
-      return;
-    }
-    
+  const handleSave = () => {
+    // Save to parent state
     setApiKey(tempKey);
-    const updatedKeys = { ...getApiKeysFromCookies(), [provider.name]: tempKey };
-    Cookies.set('apiKeys', JSON.stringify(updatedKeys), {
-      expires: 30, // 30 jours
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    });
-    setIsEditing(false);
-  }, [tempKey, provider.name, setApiKey, validateApiKey]);
 
-  const handleClear = () => {
-    setApiKey('');
-    setIsEnvKeySet(false);
+    // Save to cookies
     const currentKeys = getApiKeysFromCookies();
-    const newKeys = { ...currentKeys, [provider.name]: '' };
+    const newKeys = { ...currentKeys, [provider.name]: tempKey };
     Cookies.set('apiKeys', JSON.stringify(newKeys));
+
+    setIsEditing(false);
   };
 
-  // Ajout d'un effet pour nettoyer le cache lors du démontage
-  useEffect(() => {
-    return () => {
-      // Cleanup provider cache
-      delete providerEnvKeyStatusCache[provider.name];
-    };
-  }, [provider.name]);
-
-  // Ajout d'un indicateur de sécurité pour les clés API
-  const securityIndicator = useMemo(() => (
-    <div className="flex items-center gap-1 text-xs text-bolt-elements-textTertiary">
-      <div className="i-ph:shield-check" />
-      <span>Clé sécurisée</span>
-    </div>
-  ), []);
-
   return (
-    <div className="group flex flex-col gap-2 p-2 rounded-lg bg-bolt-elements-prompt-background border border-bolt-elements-borderColor/50">
-      <div className="flex items-center gap-2">
-        {provider?.icon && (
-          <div className={`${provider.icon} w-4 h-4 text-bolt-elements-textPrimary/90`} />
-        )}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <h3 className="text-sm font-medium truncate text-bolt-elements-textPrimary">
-              {provider?.name}
-            </h3>
-            {statusIndicator}
-          </div>
-          {provider?.description && (
-            <p className="text-xs text-bolt-elements-textTertiary line-clamp-1">
-              {provider.description}
-            </p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-1">
-          {isEditing ? (
-            <div className="flex items-center gap-1">
-              <input
-                type="password"
-                value={tempKey}
-                placeholder="Clé API..."
-                onChange={handleInputChange}
-                className="w-32 px-2 py-1 text-sm rounded border border-bolt-elements-borderColor/20 bg-transparent focus:outline-none focus:ring-1 focus:ring-bolt-elements-focus"
-                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                aria-label="Entrez votre clé API"
-              />
-              {securityIndicator}
-              <IconButton
-                onClick={handleSave}
-                aria-label="Enregistrer"
-                className="p-1 text-green-500 hover:bg-green-500/10"
-              >
-                <div className="i-ph:check-bold w-3.5 h-3.5" />
-              </IconButton>
-              <IconButton
-                onClick={() => setIsEditing(false)}
-                aria-label="Annuler"
-                className="p-1 text-red-500 hover:bg-red-500/10"
-              >
-                <div className="i-ph:x-bold w-3.5 h-3.5" />
-              </IconButton>
-            </div>
-          ) : (
-            <>
-              <IconButton
-                onClick={() => setIsEditing(true)}
-                aria-label="Modifier"
-                className="p-1 text-bolt-elements-textPrimary hover:bg-bolt-elements-borderColor/10"
-              >
-                <div className="i-ph:pencil-simple-line-duotone w-3.5 h-3.5" />
-              </IconButton>
-              {apiKey && !isEnvKeySet && (
-                <IconButton
-                  onClick={handleClear}
-                  aria-label="Effacer"
-                  className="p-1 text-red-500 hover:bg-red-500/10"
-                >
-                  <div className="i-ph:trash-simple-duotone w-3.5 h-3.5" />
-                </IconButton>
+    <div className="flex items-center justify-between py-3 px-1">
+      <div className="flex items-center gap-2 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-bolt-elements-textSecondary">{provider?.name} API Key:</span>
+          {!isEditing && (
+            <div className="flex items-center gap-2">
+              {apiKey ? (
+                <>
+                  <div className="i-ph:check-circle-fill text-green-500 w-4 h-4" />
+                  <span className="text-xs text-green-500">Défini via l'interface</span>
+                </>
+              ) : isEnvKeySet ? (
+                <>
+                  <div className="i-ph:check-circle-fill text-green-500 w-4 h-4" />
+                  <span className="text-xs text-green-500">Défini via variable d'environnement</span>
+                </>
+              ) : (
+                <>
+                  <div className="i-ph:x-circle-fill text-red-500 w-4 h-4" />
+                  <span className="text-xs text-red-500">Non défini (Veuillez définir via l'interface ou ENV_VAR)</span>
+                </>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
 
-      {provider?.name === 'Anthropic' && (
-        <div className="flex items-center gap-2 pt-1 border-t border-bolt-elements-borderColor/15">
-          <Switch 
-            checked={isPromptCachingEnabled} 
-            onCheckedChange={setIsPromptCachingEnabled}
-            className="scale-75 data-[state=checked]:bg-green-500"
-          />
-          <div className="text-xs text-bolt-elements-textPrimary">
-            Cache <span className="text-bolt-elements-textTertiary">(économies)</span>
+      <div className="flex items-center gap-2 shrink-0">
+        {isEditing ? (
+          <div className="flex items-center gap-2">
+            <input
+              type="password"
+              value={tempKey}
+              placeholder="Enter API Key"
+              onChange={(e) => setTempKey(e.target.value)}
+              className="w-[300px] px-3 py-1.5 text-sm rounded border border-bolt-elements-borderColor 
+                        bg-bolt-elements-prompt-background text-bolt-elements-textPrimary 
+                        focus:outline-none focus:ring-2 focus:ring-bolt-elements-focus"
+            />
+            <IconButton
+              onClick={handleSave}
+              title="Enregistrer la clé API"
+              className="bg-green-500/10 hover:bg-green-500/20 text-green-500"
+            >
+              <div className="i-ph:check w-4 h-4" />
+            </IconButton>
+            <IconButton
+              onClick={() => setIsEditing(false)}
+              title="Annuler"
+              className="bg-red-500/10 hover:bg-red-500/20 text-red-500"
+            >
+              <div className="i-ph:x w-4 h-4" />
+            </IconButton>
           </div>
-        </div>
-      )}
+        ) : (
+          <>
+            {
+              <IconButton
+                onClick={() => setIsEditing(true)}
+                title="Modifier la clé API"
+                className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-500"
+              >
+                <div className="i-ph:pencil-simple w-4 h-4" />
+              </IconButton>
+            }
+            {provider?.getApiKeyLink && !apiKey && (
+              <IconButton
+                onClick={() => window.open(provider?.getApiKeyLink)}
+                title="Obtenir une clé API"
+                className="bg-purple-500/10 hover:bg-purple-500/20 text-purple-500 flex items-center gap-2"
+              >
+                <span className="text-xs whitespace-nowrap">{provider?.labelForGetApiKey || 'Obtenir une clé API'}</span>
+                <div className={`${provider?.icon || 'i-ph:key'} w-4 h-4`} />
+              </IconButton>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
