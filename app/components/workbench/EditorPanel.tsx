@@ -1,5 +1,5 @@
 import { useStore } from '@nanostores/react';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import {
   CodeMirrorEditor,
@@ -71,6 +71,16 @@ export const EditorPanel = memo(
       return editorDocument !== undefined && unsavedFiles?.has(editorDocument.filePath);
     }, [editorDocument, unsavedFiles]);
 
+    const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+
+    const handleFileSelect = (filePath: string) => {
+      setSelectedFiles(prev => {
+        const newSet = new Set(prev);
+        newSet.has(filePath) ? newSet.delete(filePath) : newSet.add(filePath);
+        return newSet;
+      });
+    };
+
     return (
       <PanelGroup direction="vertical">
         <Panel defaultSize={showTerminal ? DEFAULT_EDITOR_SIZE : 100} minSize={20}>
@@ -79,7 +89,7 @@ export const EditorPanel = memo(
               <div className="flex flex-col border-r border-bolt-elements-borderColor h-full">
                 <PanelHeader>
                   <div className="i-ph:tree-structure-duotone shrink-0" />
-                  Fichiers
+                  Fichier
                 </PanelHeader>
                 <FileTree
                   className="h-full"
@@ -96,19 +106,28 @@ export const EditorPanel = memo(
             <PanelResizeHandle />
             <Panel className="flex flex-col" defaultSize={80} minSize={20}>
               <PanelHeader className="overflow-x-auto">
+                
                 {activeFileSegments?.length && (
+                  
                   <div className="flex items-center flex-1 text-sm">
+                    
                     <FileBreadcrumb pathSegments={activeFileSegments} files={files} onFileSelect={onFileSelect} />
                     {activeFileUnsaved && (
                       <div className="flex gap-1 ml-auto -mr-1.5">
+                        <PanelHeaderButton onClick={() => workbenchStore.saveAllFiles()}>
+                          <div className="i-ph:floppy-disks-duotone" />
+                          Tout sauvegarder
+                        </PanelHeaderButton>
                         <PanelHeaderButton onClick={onFileSave}>
                           <div className="i-ph:floppy-disk-duotone" />
                           Sauvegarder
                         </PanelHeaderButton>
+                        
                         <PanelHeaderButton onClick={onFileReset}>
                           <div className="i-ph:clock-counter-clockwise-duotone" />
                           Réinitialiser
                         </PanelHeaderButton>
+                        
                       </div>
                     )}
                   </div>
